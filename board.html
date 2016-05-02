@@ -83,15 +83,15 @@
 			<th>In Progress</th>
 		</tr>
 		<tr class="tasks">
-			<td id="col1"></td>
-			<td id="col2"></td>
-			<td id="col3"></td>
-			<td id="col4"></td>
-			<td id="col5"></td>
-			<td id="col6"></td>
-			<td id="col7"></td>
-			<td id="col8"></td>
-			<td id="col9"></td>
+			<td id="input"></td>
+			<td id="analysis"></td>
+			<td id="analysed"></td>
+			<td id="development"></td>
+			<td id="developed"></td>
+			<td id="qa"></td>
+			<td id="tested"></td>
+			<td id="deployment"></td>
+			<td id="done"></td>
 		</tr>
 	</table>
 	</div>
@@ -101,10 +101,12 @@
 	var hour=0;
 	var taskCounter = 1;
 	updateTime(hour);
+	
 	setInterval( "hourPassed()", hourLengthInSeconds * 1000 );
 	
-	function hourPassed() {
+	function hourPassed() {		
 		updateTime(++hour);
+		resetColumnsCapacity();
 		addNewTasks();
 		moveTasks();
 	}
@@ -118,16 +120,40 @@
 		if (Math.random() < 0.7) {
 			var newTask = $("<div class='task'>Task " + (taskCounter++) +"</div>");
 			newTask.data("created", hour);
-			$('#col1').append(newTask);
+			newTask.data("analysis", 2);
+			newTask.data("development", 3);
+			newTask.data("qa", 2);
+			newTask.data("deployment", 1);
+			$('#input').append(newTask);
 		}
 	}
 	
 	function moveTasks() {
-		$($('.task').get().reverse()).each(function() {
-			var nextColumn = $(this).parent().next();
-			if (!nextColumn) $(this).remove();
-			else $(this).animateAppendTo(nextColumn,  hourLengthInSeconds * 100);
+		$($('.task').get()).each(function() {
+			var finished = workOn(this);
+			if (finished) {
+				var nextColumn = $(this).parent().next();
+				if (!nextColumn) $(this).remove();
+				else $(this).animateAppendTo(nextColumn,  hourLengthInSeconds * 100);
+			}
 		});
+	}
+	
+	function workOn(task) {
+		var workType = $(task).parent().attr('id');
+		var headsAvailable = $(task).parent().data("heads");
+		if ($(task).data(workType) > 0 && headsAvailable > 0) {
+			$(task).parent().data("heads", headsAvailable - 1);
+			$(task).data(workType, $(task).data(workType) - 1);
+		}
+		return $(task).data(workType) == 0 || !$(task).data(workType);
+	}
+	
+	function resetColumnsCapacity() {
+		$("#analysis").data("heads", 2);
+		$("#development").data("heads", 3);
+		$("#qa").data("heads", 2);
+		$("#deployment").data("heads", 1);
 	}
 	</script>
 </body>
