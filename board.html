@@ -97,18 +97,19 @@
 	</div>
 	
 	<script>
-	var hourLengthInSeconds = 0.5;
+	var hourLengthInSeconds = 0.1;
 	var hour=0;
 	var taskCounter = 1;
 	updateTime(hour);
 	
-	setInterval( "hourPassed()", hourLengthInSeconds * 1000 );
+	setTimeout( "hourPassed()", hourLengthInSeconds * 1000 );
 	
 	function hourPassed() {		
 		updateTime(++hour);
 		resetColumnsCapacity();
 		addNewTasks();
 		moveTasks();
+		setTimeout( "hourPassed()", hourLengthInSeconds * 1000 );
 	}
 	
 	function updateTime(hour) {
@@ -117,12 +118,12 @@
 	}
 	
 	function addNewTasks() {
-		if (Math.random() < 0.7) {
+		if (Math.random() < 0.3) {
 			var newTask = $("<div class='task'>Task " + (taskCounter++) +"</div>");
 			newTask.data("created", hour);
-			newTask.data("analysis", 2);
-			newTask.data("development", 3);
-			newTask.data("qa", 2);
+			newTask.data("analysis", 4);
+			newTask.data("development", 7);
+			newTask.data("qa", 5);
 			newTask.data("deployment", 1);
 			$('#input').append(newTask);
 		}
@@ -154,6 +155,10 @@
 		$("#development").data("heads", 3);
 		$("#qa").data("heads", 2);
 		$("#deployment").data("heads", 1);
+	}
+	
+	function setColumnsConstraints() {
+		
 	}
 	</script>
 </body>
