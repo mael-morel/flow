@@ -63,7 +63,7 @@
 </head>
 <body>
 	<div class="board-overlay">
-		Day: <span id="day"></span>
+		Day: <span id="day"></span>, time: <span id="hour"></span>
 	<table class="board">
 		<tr>
 			<th colspan="2">Analysis</th>
@@ -97,29 +97,29 @@
 	</div>
 	
 	<script>
-	$('td div').click(function() {
-	    $(this).animateAppendTo('#target', 200);
-	});
-	</script>
-	
-	<script>
-	var dayLength = 0.5;
-	var day=0;
+	var hourLengthInSeconds = 0.5;
+	var hour=0;
 	var taskCounter = 1;
-	setInterval( "dayPassed()", dayLength * 1000 );
+	updateTime(hour);
+	setInterval( "hourPassed()", hourLengthInSeconds * 1000 );
 	
-	function dayPassed() {
-		$("#day").text(++day);
+	function hourPassed() {
+		updateTime(++hour);
 		if (Math.random() < 0.7) {
 			var newTask = $("<div class='task'>Task " + (taskCounter++) +"</div>");
-			newTask.data("created", day);
+			newTask.data("created", hour);
 			$('#col1').append(newTask);
 		}
 		$($('.task').get().reverse()).each(function() {
 			var nextColumn = $(this).parent().next();
 			if (!nextColumn) $(this).remove();
-			else $(this).animateAppendTo(nextColumn,  dayLength * 100);
+			else $(this).animateAppendTo(nextColumn,  hourLengthInSeconds * 100);
 		});
+	}
+	
+	function updateTime(hour) {
+		$("#day").text(Math.floor(hour / 8) + 1);
+		$("#hour").text((hour % 8 + 9) +":00");
 	}
 	</script>
 </body>
