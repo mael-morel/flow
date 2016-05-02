@@ -66,21 +66,21 @@
 		Day: <span id="day"></span>, time: <span id="hour"></span>
 	<table class="board">
 		<tr>
+			<th rowspan="2">Backlog</th>
 			<th colspan="2">Analysis</th>
 			<th colspan="2">Development</th>
 			<th colspan="2">QA</th>
 			<th colspan="2">Deployment</th>
-			<th rowspan="2">Done</th>
 		</tr>
 		<tr>
-			<th>To Do</th>
-			<th>In Progress</th>
-			<th>To Do</th>
-			<th>In Progress</th>
-			<th>To Do</th>
-			<th>In Progress</th>
-			<th>To Do</th>
-			<th>In Progress</th>
+			<th>Doing</th>
+			<th>Done</th>
+			<th>Doing</th>
+			<th>Done</th>
+			<th>Doing</th>
+			<th>Done</th>
+			<th>Doing</th>
+			<th>Done</th>
 		</tr>
 		<tr class="tasks">
 			<td id="input"></td>
@@ -118,7 +118,7 @@
 	}
 	
 	function addNewTasks() {
-		if (Math.random() < 0.3) {
+		if (Math.random() < 0.4) {
 			var newTask = $("<div class='task'>Task " + (taskCounter++) +"</div>");
 			newTask.data("created", hour);
 			newTask.data("analysis", 4);
