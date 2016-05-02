@@ -1,0 +1,126 @@
+<html>
+<head>
+	<style>
+	.board-overlay {
+		border-radius: 10pt;
+		background: #aaa;
+		padding: 10pt;
+		border: 1px solid black;
+		display:inline-block;
+	}
+	.board {
+		background: #eee;
+		border-collapse: collapse;
+	}
+	.tasks {
+	    height: 200pt;
+	}
+	.tasks td {
+		width:70pt;
+		text-align: center;
+		border: 1px solid black;
+		vertical-align: top;
+	}
+	.task {
+		    background: yellow;
+		    border-radius: 6pt;
+		    padding: 3pt;
+		    margin: 3pt;
+		    border-style: solid;
+		    border-color: black;
+		    border-width: thin;
+			text-align: center;
+		}
+	.board th {
+		text-align: center;
+		border: 1px solid black;
+		background-color: eea;
+	}
+	
+	
+	</style>
+	<script src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
+	<script>
+	$.fn.animateAppendTo = function(sel, speed) {
+		if (speed < 10) {
+			this.detach();
+			this.appendTo(sel);
+			return this;
+		}
+	    var $this = this,
+	        newEle = $this.clone(true).appendTo(sel),
+	        newPos = newEle.position();
+	    newEle.hide();
+		thisPosition = this.position();
+		this.width(this.width());
+	    $this.css('position', 'absolute').css(thisPosition).animate(newPos, speed, function() {
+	        newEle.show();
+	        $this.remove();
+	    });
+	    return newEle;
+	};
+	</script>
+</head>
+<body>
+	<div class="board-overlay">
+		Day: <span id="day"></span>
+	<table class="board">
+		<tr>
+			<th colspan="2">Analysis</th>
+			<th colspan="2">Development</th>
+			<th colspan="2">QA</th>
+			<th colspan="2">Deployment</th>
+			<th rowspan="2">Done</th>
+		</tr>
+		<tr>
+			<th>To Do</th>
+			<th>In Progress</th>
+			<th>To Do</th>
+			<th>In Progress</th>
+			<th>To Do</th>
+			<th>In Progress</th>
+			<th>To Do</th>
+			<th>In Progress</th>
+		</tr>
+		<tr class="tasks">
+			<td id="col1"></td>
+			<td id="col2"></td>
+			<td id="col3"></td>
+			<td id="col4"></td>
+			<td id="col5"></td>
+			<td id="col6"></td>
+			<td id="col7"></td>
+			<td id="col8"></td>
+			<td id="col9"></td>
+		</tr>
+	</table>
+	</div>
+	
+	<script>
+	$('td div').click(function() {
+	    $(this).animateAppendTo('#target', 200);
+	});
+	</script>
+	
+	<script>
+	var dayLength = 0.5;
+	var day=0;
+	var taskCounter = 1;
+	setInterval( "dayPassed()", dayLength * 1000 );
+	
+	function dayPassed() {
+		$("#day").text(++day);
+		if (Math.random() < 0.7) {
+			var newTask = $("<div class='task'>Task " + (taskCounter++) +"</div>");
+			newTask.data("created", day);
+			$('#col1').append(newTask);
+		}
+		$($('.task').get().reverse()).each(function() {
+			var nextColumn = $(this).parent().next();
+			if (!nextColumn) $(this).remove();
+			else $(this).animateAppendTo(nextColumn,  dayLength * 100);
+		});
+	}
+	</script>
+</body>
+</html>
