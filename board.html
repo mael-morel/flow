@@ -131,13 +131,32 @@
 	
 	function moveTasks() {
 		$($('.task').get()).each(function() {
-			var finished = workOn(this);
-			if (finished) {
-				var nextColumn = $(this).parent().next();
+			workOn(this);
+			if (finished(this)) {
+				var nextColumn = findNextColumn(this);
 				if (!nextColumn) $(this).remove();
 				else $(this).animateAppendTo(nextColumn,  hourLengthInSeconds * 100);
 			}
 		});
+	}
+	
+	function findNextColumn(task) {
+		var column = $(task).parent();
+		var workType = column.attr('id');
+		while (finished(task, column) && column){
+			if (finished(task, column)) {
+				column = column.next();
+			}
+		}
+		return column;
+	}
+	
+	function finished(task, column) {
+		if (!column) {
+			column = $(task).parent();
+		}
+		var workType = column.attr('id');
+		return $(task).data(workType) == 0 || !$(task).data(workType);
 	}
 	
 	function workOn(task) {
@@ -147,7 +166,6 @@
 			$(task).parent().data("heads", headsAvailable - 1);
 			$(task).data(workType, $(task).data(workType) - 1);
 		}
-		return $(task).data(workType) == 0 || !$(task).data(workType);
 	}
 	
 	function resetColumnsCapacity() {
