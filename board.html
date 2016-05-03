@@ -101,14 +101,17 @@
 	var hour=0;
 	var taskCounter = 1;
 	updateTime(hour);
-	
+	var columns = createColumns();
+	var tasks = {};
 	setTimeout( "hourPassed()", hourLengthInSeconds * 1000 );
 	
 	function hourPassed() {		
 		updateTime(++hour);
-		resetColumnsCapacity();
-		addNewTasks();
-		moveTasks();
+		resetColumnsCapacity(columns);
+		addNewTasks(columns[0]);
+		doWork(columns);
+		moveTasks(columns);
+		updateUI(columns, tasks);
 		setTimeout( "hourPassed()", hourLengthInSeconds * 1000 );
 	}
 	
@@ -117,65 +120,135 @@
 		$("#hour").text((hour % 8 + 9) +":00");
 	}
 	
-	function addNewTasks() {
-		if (Math.random() < 0.4) {
-			var newTask = $("<div class='task'>Task " + (taskCounter++) +"</div>");
-			newTask.data("created", hour);
-			newTask.data("analysis", 4);
-			newTask.data("development", 7);
-			newTask.data("qa", 5);
-			newTask.data("deployment", 1);
-			$('#input').append(newTask);
+	function addNewTasks(column) {
+		if (Math.random() < 0.5) {
+			var task = {};
+			task.id = "Task" + (taskCounter++);
+			task.column = column;
+			task.created = hour;
+			task.analysis = 4;
+			task.development = 7;
+			task.qa = 5;
+			task.deployment = 1;
+			column.tasks.push(task);
+			tasks[task.id] = task;
 		}
 	}
 	
-	function moveTasks() {
-		$($('.task').get()).each(function() {
-			workOn(this);
-			if (finished(this)) {
-				var nextColumn = findNextColumn(this);
-				if (!nextColumn) $(this).remove();
-				else $(this).animateAppendTo(nextColumn,  hourLengthInSeconds * 100);
-			}
-		});
+	function moveTasks(columns) {
+		var changed = true;
+		while (changed) {
+			changed = false;
+			columns.forEach(function(column) {
+				column.tasks.forEach(function(task) {
+					if (finished(task)) {
+						var nextColumn = findNextColumn(task, columns);
+						if (nextColumn != column) {
+							changed = true;
+							column.tasks.splice( column.tasks.indexOf(task), 1 );
+							task.column = nextColumn;
+							if (nextColumn) {
+							 	nextColumn.tasks.push(task);
+							}
+						}
+						
+					}
+				});
+			});
+		}
 	}
 	
-	function findNextColumn(task) {
-		var column = $(task).parent();
-		var workType = column.attr('id');
-		while (finished(task, column) && column){
-			if (finished(task, column)) {
-				column = column.next();
-			}
+	function findNextColumn(task, columns) {
+		var column = task.column;
+		var index = columns.indexOf(column);
+		while (column && finished(task, column) && availableSpace(columns[index + 1]) > 0) {
+			column = columns[++index];
 		}
 		return column;
 	}
 	
+	function availableSpace(column) {
+		if (!column) return 1;
+		var limit = column.limit;
+		return limit - column.tasks.length;
+	}
+	
 	function finished(task, column) {
 		if (!column) {
-			column = $(task).parent();
+			column = task.column;
 		}
-		var workType = column.attr('id');
-		return $(task).data(workType) == 0 || !$(task).data(workType);
+		return task[column.name] == 0 || !task[column.name];
 	}
 	
-	function workOn(task) {
-		var workType = $(task).parent().attr('id');
-		var headsAvailable = $(task).parent().data("heads");
-		if ($(task).data(workType) > 0 && headsAvailable > 0) {
-			$(task).parent().data("heads", headsAvailable - 1);
-			$(task).data(workType, $(task).data(workType) - 1);
+	function doWork(columns) {
+		columns.forEach(function(column){
+			var i=0;
+			while(column.capacityLeft > 0 && i < column.tasks.length) {
+				var task = column.tasks[i++];
+				if (task[column.name] && task[column.name] > 0) {
+					task[column.name] = task[column.name] - 1;
+					column.capacityLeft--;
+				}
+			}
+		});
+	}
+	
+	function resetColumnsCapacity(columns) {
+		columns.forEach(function(column){
+			column.capacityLeft = column.capacity;
+		});
+	}
+	
+	function createColumns() {
+		var columns = [];
+		columns.push(createColumn("input"));
+		columns.push(createColumn("analysis", 5, 2));
+		columns.push(createColumn("analysed"));
+		columns.push(createColumn("development", 5, 3));
+		columns.push(createColumn("developed"));
+		columns.push(createColumn("qa", 5, 2));
+		columns.push(createColumn("tested"));
+		columns.push(createColumn("deployment", 5, 1));
+		columns.push(createColumn("done"));
+		return columns;
+	}
+	
+	function createColumn(name, limit = Number.POSITIVE_INFINITY, capacity = Number.POSITIVE_INFINITY) {
+		var column = {};
+		column.name = name;
+		column.limit = limit;
+		column.capacity = capacity;
+		column.capacityLeft = capacity;
+		column.tasks = [];
+		return column;
+	}
+	
+	function updateUI(columns, tasks) {
+		$($('.tasks td').get().reverse()).each(function() {
+			var columnVisual = $(this);
+			var id = columnVisual.attr("id");
+			columnVisual.children().each(function() {
+				var taskVisual = $(this);
+				var taskId = taskVisual.attr("id");
+				var task = tasks[taskId];
+				if (task.column && task.column.name != id) {
+					taskVisual.animateAppendTo(task.column.name,  hourLengthInSeconds * 100);
+				} else if (!task.column) {
+					taskVisual.remove();
+					delete tasks[taskId];
+				}
+			});
+		});
+		for (var key in tasks) {
+		    if (!tasks.hasOwnProperty(key)) {
+		        continue;
+		    }
+		    var task = tasks[key];
+			if ($("#" + task.id).length == 0) {
+				var newTask = $("<div class='task' id='" + task.id +"'>" + task.id +"</div>");
+				$('#' + task.column.name).append(newTask);
+			}
 		}
-	}
-	
-	function resetColumnsCapacity() {
-		$("#analysis").data("heads", 2);
-		$("#development").data("heads", 3);
-		$("#qa").data("heads", 2);
-		$("#deployment").data("heads", 1);
-	}
-	
-	function setColumnsConstraints() {
 		
 	}
 	</script>
