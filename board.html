@@ -20,8 +20,14 @@
 		background: #ccc;
 		border-collapse: collapse;
 	}
+	.board tbody {
+		height: 330pt;
+	    overflow-y: hidden;
+	    overflow-x: hidden;
+		display:block;
+	}
 	.tasks {
-	    height: 200pt;
+	    height: 300pt;
 	}
 	.tasks td {
 		width:70pt;
@@ -79,6 +85,7 @@
 			<input id="timescale" data-slider-id='timescaleSlider' type="text" data-slider-min="1" data-slider-max="20" data-slider-step="1" data-slider-value="5"/>
 		</div>
 	<table class="board">
+	
 		<tr>
 			<th rowspan="2">Backlog</th>
 			<th colspan="2">Analysis</th>
@@ -96,6 +103,7 @@
 			<th>Doing</th>
 			<th>Done</th>
 		</tr>
+	
 		<tr class="tasks">
 			<td id="input"></td>
 			<td id="analysis"></td>
@@ -107,6 +115,7 @@
 			<td id="deployment"></td>
 			<td id="done"></td>
 		</tr>
+
 	</table>
 	</div>
 	
