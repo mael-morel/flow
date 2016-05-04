@@ -17,17 +17,13 @@
 		font-family: arial;
 	}
 	.board {
+	    height: 100%;
 		background: #ccc;
 		border-collapse: collapse;
 	}
-	.board tbody {
-		height: 330pt;
-	    overflow-y: hidden;
-	    overflow-x: hidden;
-		display:block;
-	}
+
 	.tasks {
-	    height: 300pt;
+	    height: 100%;
 	}
 	.tasks td {
 		width:70pt;
@@ -70,6 +66,14 @@
 	#timescaleSlider .slider-selection {
 		background: #BABABA;
 	}
+	
+	.board-wrapper{ 
+	    border-width: 1pt;
+	    border-style: solid;
+	    overflow-y: hidden;
+	    overflow-x: hidden;
+	    height: 300pt;
+	}
 	</style>
 
 </head>
@@ -84,6 +88,7 @@
 			<button type="button" class="btn btn-danger stop">&#9724;</button>
 			<input id="timescale" data-slider-id='timescaleSlider' type="text" data-slider-min="1" data-slider-max="20" data-slider-step="1" data-slider-value="5"/>
 		</div>
+	<div class="board-wrapper">
 	<table class="board">
 	
 		<tr>
@@ -117,6 +122,7 @@
 		</tr>
 
 	</table>
+	</div>
 	</div>
 	
 	<script>
