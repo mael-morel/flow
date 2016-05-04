@@ -151,6 +151,8 @@
 		value: 100
 	}).on("slide", function(event) {
 		hourLengthInSeconds = 100/event.value;
+	}).on("slideStop", function(event) {
+		hourLengthInSeconds = 100/event.value;
 	});
 	
 	$(".stop").click(function() {
