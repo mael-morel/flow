@@ -4,6 +4,9 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 	<!-- Latest compiled and minified JavaScript -->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/7.0.2/bootstrap-slider.min.js"></script>
+	
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/7.0.2/css/bootstrap-slider.min.css">
 	<style>
 	.board-overlay {
 		border-radius: 10pt;
@@ -57,6 +60,10 @@
 	    from {border-color: white;box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);}
 	    to {border-color: black;}
 	}
+	
+	#timescaleSlider .slider-selection {
+		background: #BABABA;
+	}
 	</style>
 
 </head>
@@ -69,6 +76,7 @@
 			<button type="button" class="btn btn-success play">&#9654;</button>
 			<button type="button" class="btn btn-info pause">&#10074;&#10074;</button>
 			<button type="button" class="btn btn-danger stop">&#9724;</button>
+			<input id="timescale" data-slider-id='timescaleSlider' type="text" data-slider-min="1" data-slider-max="20" data-slider-step="1" data-slider-value="5"/>
 		</div>
 	<table class="board">
 		<tr>
@@ -103,7 +111,7 @@
 	</div>
 	
 	<script>
-	var hourLengthInSeconds = 0.2;
+	var hourLengthInSeconds = 1;
 	var hour;
 	var taskCounter;
 	var columns;
@@ -120,6 +128,15 @@
 		tasks = {};
 	}
 	
+	$('#timescale').slider({
+		min: 50,
+		max: 100000,
+		scale: 'logarithmic',
+		step: 5,
+		value: 100
+	}).on("slide", function(event) {
+		hourLengthInSeconds = 100/event.value;
+	});
 	
 	$(".stop").click(function() {
 		clearTimeout(timeoutHandler);
