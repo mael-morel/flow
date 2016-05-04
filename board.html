@@ -1,16 +1,20 @@
 <html>
 <head>
+	<script src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 	<style>
 	.board-overlay {
 		border-radius: 10pt;
-		background: #aaa;
+		background: #eee;
 		padding: 10pt;
 		border: 1px solid black;
 		display:inline-block;
 		font-family: arial;
 	}
 	.board {
-		background: #eee;
+		background: #ccc;
 		border-collapse: collapse;
 	}
 	.tasks {
@@ -54,11 +58,18 @@
 	    to {border-color: black;}
 	}
 	</style>
-	<script src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
+
 </head>
 <body>
 	<div class="board-overlay">
-		Day: <span id="day"></span>, time: <span id="hour"></span>
+		<div>
+			Day: <span id="day"></span>, time: <span id="hour"></span>
+		</div>
+		<div class=buttons>
+			<button type="button" class="btn btn-success play">&#9654;</button>
+			<button type="button" class="btn btn-info pause">&#10074;&#10074;</button>
+			<button type="button" class="btn btn-danger stop">&#9724;</button>
+		</div>
 	<table class="board">
 		<tr>
 			<th rowspan="2">Backlog</th>
@@ -93,12 +104,37 @@
 	
 	<script>
 	var hourLengthInSeconds = 0.2;
-	var hour=0;
-	var taskCounter = 1;
+	var hour;
+	var taskCounter;
+	var columns;
+	var tasks;
+	initBasics();
 	updateTime(hour);
-	var columns = createColumns();
-	var tasks = {};
-	setTimeout( "hourPassed()", hourLengthInSeconds * 1000 );
+	var timeoutHandler = setTimeout( "hourPassed()", hourLengthInSeconds * 1000 );
+	
+	function initBasics() {
+		hour=0;
+		taskCounter = 1;
+		updateTime(hour);
+		columns = createColumns();
+		tasks = {};
+	}
+	
+	
+	$(".stop").click(function() {
+		clearTimeout(timeoutHandler);
+		timeoutHandler = null;
+		initBasics();
+		updateUI(columns, tasks)
+	});
+	$(".pause").click(function() {
+		clearTimeout(timeoutHandler);
+		timeoutHandler = null;
+	});
+	$(".play").click(function() {
+		if (!timeoutHandler)
+			timeoutHandler = setTimeout( "hourPassed()", hourLengthInSeconds * 1000 );
+	});
 	
 	function hourPassed() {		
 		updateTime(++hour);
@@ -107,7 +143,7 @@
 		doWork(columns);
 		moveTasks(columns);
 		updateUI(columns, tasks);
-		setTimeout( "hourPassed()", hourLengthInSeconds * 1000 );
+		timeoutHandler = setTimeout( "hourPassed()", hourLengthInSeconds * 1000 );
 	}
 	
 	function updateTime(hour) {
@@ -226,7 +262,9 @@
 				var taskVisual = $(this);
 				var taskId = taskVisual.attr("id");
 				var task = tasks[taskId];
-				if (task.column && task.column.name != id) {
+				if (!task) {
+					taskVisual.remove();
+				} else if (task.column && task.column.name != id) {
 					taskVisual.animateAppendTo(task.column.name,  hourLengthInSeconds * 1000);
 				} else if (!task.column) {
 					taskVisual.remove();
