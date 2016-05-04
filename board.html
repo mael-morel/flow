@@ -30,6 +30,10 @@
 		    border-color: black;
 		    border-width: thin;
 			text-align: center;
+		    -webkit-animation-name: taskAnimation; /* Chrome, Safari, Opera */
+		     -webkit-animation-duration: .2s; /* Chrome, Safari, Opera */
+		     animation-name: taskAnimation;
+		     animation-duration: .2s;
 		}
 	.board th {
 		text-align: center;
@@ -37,29 +41,19 @@
 		background-color: eea;
 	}
 	
-	
+
+	/* Standard syntax */
+	@keyframes taskAnimation {
+	    from {border-color: white;box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);}
+	    to {border-color: black;}
+	}
+	/* Chrome, Safari, Opera */
+	@-webkit-keyframes taskAnimation {
+	    from {border-color: white;box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);}
+	    to {border-color: black;}
+	}
 	</style>
 	<script src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
-	<script>
-	$.fn.animateAppendTo = function(sel, speed) {
-		if (speed < 10) {
-			this.detach();
-			this.appendTo(sel);
-			return this;
-		}
-	    var $this = this,
-	        newEle = $this.clone(true).appendTo(sel),
-	        newPos = newEle.position();
-	    newEle.hide();
-		thisPosition = this.position();
-		this.width(this.width());
-	    $this.css('position', 'absolute').css(thisPosition).animate(newPos, speed, function() {
-	        newEle.show();
-	        $this.remove();
-	    });
-	    return newEle;
-	};
-	</script>
 </head>
 <body>
 	<div class="board-overlay">
@@ -97,7 +91,7 @@
 	</div>
 	
 	<script>
-	var hourLengthInSeconds = 0.1;
+	var hourLengthInSeconds = 0.2;
 	var hour=0;
 	var taskCounter = 1;
 	updateTime(hour);
@@ -232,7 +226,7 @@
 				var taskId = taskVisual.attr("id");
 				var task = tasks[taskId];
 				if (task.column && task.column.name != id) {
-					taskVisual.animateAppendTo(task.column.name,  hourLengthInSeconds * 100);
+					taskVisual.animateAppendTo(task.column.name,  hourLengthInSeconds * 1000);
 				} else if (!task.column) {
 					taskVisual.remove();
 					delete tasks[taskId];
@@ -251,6 +245,11 @@
 		}
 		
 	}
+	
+	$.fn.animateAppendTo = function(sel, speed) {
+		this.detach().appendTo(sel);
+	    return this;
+	};
 	</script>
 </body>
 </html>
