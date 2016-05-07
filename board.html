@@ -225,12 +225,12 @@
 	
 	function addNewTasks(column) {
 		//if (hour % 2 == 0 || hour % 3 == 0) {
-		if (Math.random()<0.65) {
+		if (Math.random()<0.7) {
 			var task = {};
 			task.id = "Task" + (taskCounter++);
 			task.column = column;
 			task.created = hour;
-			task.analysis = 3;
+			task.analysis = 2;
 			task.development = 7;
 			task.qa = 4;
 			task.deployment = 1;
