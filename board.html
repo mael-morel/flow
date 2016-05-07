@@ -224,14 +224,14 @@
 	}
 	
 	function addNewTasks(column) {
-		if (Math.random() < 0.5) {
+		if (hour % 2 == 0 || hour % 3 == 0) {
 			var task = {};
 			task.id = "Task" + (taskCounter++);
 			task.column = column;
 			task.created = hour;
-			task.analysis = 4;
+			task.analysis = 3;
 			task.development = 7;
-			task.qa = 5;
+			task.qa = 4;
 			task.deployment = 1;
 			column.tasks.push(task);
 			tasks[task.id] = task;
@@ -320,9 +320,9 @@
 		columns.push(createColumn("input"));
 		columns.push(createColumn("analysis", 5, 2));
 		columns.push(createColumn("analysed"));
-		columns.push(createColumn("development", 5, 3));
+		columns.push(createColumn("development", 5, 5));
 		columns.push(createColumn("developed"));
-		columns.push(createColumn("qa", 5, 2));
+		columns.push(createColumn("qa", 5, 3));
 		columns.push(createColumn("tested"));
 		columns.push(createColumn("deployment", 5, 1));
 		columns.push(createColumn("done"));
@@ -381,11 +381,11 @@
 		dataPoints['wipCount'][position] =  Object.keys(tasks).length - lastColumn.tasks.length;
 		if (dataPoints['leadTimes'].length == dataPointsToRemember) {
 			var wipAvg = average(dataPoints['wipCount']);
-			$('#stats-wip').text(wipAvg);
-			var throughputAvg = average(dataPoints['tasksFinished'])/8;
-			$('#stats-throughput').text(throughputAvg);
+			$('#stats-wip').text(wipAvg.toFixed(1));
+			var throughputAvg = average(dataPoints['tasksFinished'])*8;
+			$('#stats-throughput').text(throughputAvg.toFixed(1));
 			var leadTimeAvg = average([].concat.apply([], dataPoints['leadTimes']));
-			$('#stats-lead-time').text(leadTimeAvg);
+			$('#stats-lead-time').text(leadTimeAvg.toFixed(1));
 		}
 	}
 	
