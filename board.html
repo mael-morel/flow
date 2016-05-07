@@ -164,6 +164,9 @@
 	initBasics();
 	updateTime(hour);
 	var timeoutHandler = setTimeout( "hourPassed()", hourLengthInSeconds * 1000 );
+	var dataPoints;
+	var dataPointsToRemember = 8*5; //from last 5 days
+	
 	
 	function initBasics() {
 		hour=0;
@@ -171,6 +174,10 @@
 		updateTime(hour);
 		columns = createColumns();
 		tasks = {};
+		dataPoints = {};
+		dataPoints['leadTimes'] = [];
+		dataPoints['wipCount'] = [];
+		dataPoints['tasksFinished'] = [];
 	}
 	
 	$('#timescale').slider({
@@ -363,7 +370,31 @@
 		
 	}
 	function updateStats(columns) {
-		
+		var position = hour % dataPointsToRemember;
+		var lastColumn = columns[columns.length - 1];
+		var leadTimes = [];
+		dataPoints['leadTimes'][position] = leadTimes;
+		lastColumn.tasks.forEach(function(task) {
+			leadTimes.push(hour - task.created);
+		});
+		dataPoints['tasksFinished'][position] = lastColumn.tasks.length;
+		dataPoints['wipCount'][position] =  Object.keys(tasks).length - lastColumn.tasks.length;
+		if (dataPoints['leadTimes'].length == dataPointsToRemember) {
+			var wipAvg = average(dataPoints['wipCount']);
+			$('#stats-wip').text(wipAvg);
+			var throughputAvg = average(dataPoints['tasksFinished'])/8;
+			$('#stats-throughput').text(throughputAvg);
+			var leadTimeAvg = average([].concat.apply([], dataPoints['leadTimes']));
+			$('#stats-lead-time').text(leadTimeAvg);
+		}
+	}
+	
+	function average(array){
+		var total = 0;
+		for(var i = 0; i < array.length; i++) {
+		    total += array[i];
+		}
+		return total / array.length;
 	}
 	$.fn.animateAppendTo = function(sel, speed) {
 		this.detach().appendTo(sel);
