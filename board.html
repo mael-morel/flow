@@ -224,7 +224,8 @@
 	}
 	
 	function addNewTasks(column) {
-		if (hour % 2 == 0 || hour % 3 == 0) {
+		//if (hour % 2 == 0 || hour % 3 == 0) {
+		if (Math.random()<0.65) {
 			var task = {};
 			task.id = "Task" + (taskCounter++);
 			task.column = column;
@@ -322,7 +323,7 @@
 		columns.push(createColumn("analysed"));
 		columns.push(createColumn("development", 5, 5));
 		columns.push(createColumn("developed"));
-		columns.push(createColumn("qa", 5, 3));
+		columns.push(createColumn("qa", 3, 3));
 		columns.push(createColumn("tested"));
 		columns.push(createColumn("deployment", 5, 1));
 		columns.push(createColumn("done"));
