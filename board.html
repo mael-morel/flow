@@ -78,6 +78,14 @@
 	.wiplimit {
 		width: 20pt;
 	}
+	
+	.stats tr td:first-of-type {
+		 text-align: right;
+		 font-weight: bold;
+	}
+	.stats td {
+		padding: 1pt;
+	}
 	</style>
 
 </head>
@@ -127,6 +135,24 @@
 
 	</table>
 	</div>
+	<div class="stats">
+		<table>
+			<tr>
+				<td>WIP:</td>
+				<td><span id="stats-wip"></span></td>
+			</tr>
+			<tr>
+				<td>Throughput:</td>
+				<td><span id="stats-throughput"></span>/d</td>
+			</tr>
+			<tr>
+				<td>Avg. Lead Time:</td>
+				<td><span id="stats-lead-time"></span>h</td>
+			</tr>
+		</table>
+	</div>
+	</div>
+	
 	</div>
 	
 	<script>
@@ -181,6 +207,7 @@
 		doWork(columns);
 		moveTasks(columns);
 		updateUI(columns, tasks);
+		updateStats(columns);
 		timeoutHandler = setTimeout( "hourPassed()", hourLengthInSeconds * 1000 );
 	}
 	
@@ -205,6 +232,7 @@
 	}
 	
 	function moveTasks(columns) {
+		removeDoneTasks(columns);
 		var changed = true;
 		while (changed) {
 			changed = false;
@@ -227,11 +255,23 @@
 		}
 	}
 	
+	function removeDoneTasks(columns) {
+		var lastColumn = columns[columns.length - 1];
+		lastColumn.tasks.forEach(function(task) {
+			task.column = null;
+		})
+		lastColumn.tasks = [];
+	}
+	
 	function findNextColumn(task, columns) {
 		var column = task.column;
 		var index = columns.indexOf(column);
 		while (column && finished(task, column) && availableSpace(columns[index + 1]) > 0) {
 			column = columns[++index];
+		}
+		if (!column) {
+			// move to done just before removing from the board
+			column = columns[columns.length - 1];
 		}
 		return column;
 	}
@@ -322,7 +362,9 @@
 		}
 		
 	}
-	
+	function updateStats(columns) {
+		
+	}
 	$.fn.animateAppendTo = function(sel, speed) {
 		this.detach().appendTo(sel);
 	    return this;
