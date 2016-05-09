@@ -243,7 +243,9 @@
 			}
 		}
 		
-		stableFlow();
+		//stableFlow();
+		//stableRandomFlow();
+		scrumStrategy();
 	}
 	
 	
@@ -353,7 +355,9 @@
 		return columns;
 	}
 	
-	function createColumn(name, limit = Number.POSITIVE_INFINITY, capacity = Number.POSITIVE_INFINITY) {
+	function createColumn(name, limit, capacity) {
+		if (!limit) limit = Number.POSITIVE_INFINITY;
+		if (!capacity) capacity = Number.POSITIVE_INFINITY;
 		var column = {};
 		column.name = name;
 		column.limit = limit;
