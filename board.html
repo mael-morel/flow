@@ -317,12 +317,11 @@
 		if (column.children.length > 0) {
 			//checking for parent column of task
 			var indexOfTasksColumn = column.children.indexOf(task.column);
-			if (indexOfTasksColumn >= 0) {
-				numberOfTasks--;
+			if (indexOfTasksColumn < 0) {
+				column.children.forEach(function (subColumn) {
+					numberOfTasks += subColumn.tasks.length;
+				});
 			}
-			column.children.forEach(function (subColumn) {
-				numberOfTasks += subColumn.tasks.length;
-			});
 		}
 		return limit - numberOfTasks > 0 && availableSpace(task, column.parent);
 	}
