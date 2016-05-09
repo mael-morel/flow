@@ -104,14 +104,14 @@
 	<table class="board">
 	
 		<tr>
-			<th rowspan="2">Backlog</th>
-			<th colspan="2">Analysis</th>
-			<th colspan="2">Development</th>
-			<th colspan="2">QA</th>
-			<th colspan="2">Deployment</th>
+			<th rowspan="2">Backlog (<span>3</span>)</th>
+			<th colspan="2" id="analysisWithQueueHeader">Analysis <input type="text" class="wiplimit" maxlength="2" value="5"/></th>
+			<th colspan="2" id="developmentWithQueueHeader">Development <input type="text" class="wiplimit" maxlength="2" value="5"/></th>
+			<th colspan="2" id="qaWithQueueHeader">QA <input type="text" class="wiplimit" maxlength="2" value="3"/></th>
+			<th colspan="2" id="deploymentWithQueueHeader">Deployment <input type="text" class="wiplimit" maxlength="2" value="5"/></th>
 		</tr>
 		<tr>
-			<th>Doing <span>3</span>/<input type="text" class="wiplimit" maxlength="2"/></th>
+			<th>Doing (<span>3</span>)</th>
 			<th>Done</th>
 			<th>Doing</th>
 			<th>Done</th>
@@ -165,7 +165,7 @@
 	updateTime(hour);
 	var timeoutHandler = setTimeout( "hourPassed()", hourLengthInSeconds * 1000 );
 	var dataPoints;
-	var dataPointsToRemember = 8*20; //from last 5 days
+	var dataPointsToRemember = 4*20;
 	
 	
 	function initBasics() {
@@ -209,6 +209,7 @@
 	
 	function hourPassed() {		
 		updateTime(hour);
+		updateColumnsLimits(columns);
 		resetColumnsCapacity(columns);
 		addNewTasks(columns[0]);
 		doWork(columns);
@@ -355,18 +356,16 @@
 	function createColumns() {
 		var columns = [];
 		columns.push(createColumn("input"));
-		
-		Array.prototype.push.apply(columns, createColumnWithChildren("analysis", 5, 2).children);
-		Array.prototype.push.apply(columns, createColumnWithChildren("development", 5, 5).children);
-		Array.prototype.push.apply(columns, createColumnWithChildren("qa", 3, 3).children);
-		Array.prototype.push.apply(columns, createColumnWithChildren("deployment", 5, 1).children);
-		
+		Array.prototype.push.apply(columns, createColumnWithChildren("analysis", 2).children);
+		Array.prototype.push.apply(columns, createColumnWithChildren("development", 5).children);
+		Array.prototype.push.apply(columns, createColumnWithChildren("qa", 3).children);
+		Array.prototype.push.apply(columns, createColumnWithChildren("deployment", 1).children);
 		return columns;
 	}
 	
-	function createColumnWithChildren(name, limit, capacity) {
-		var parentColumn = createColumn(name + "WithQueue", limit);
-		var column = createColumn(name, undefined, capacity);
+	function createColumnWithChildren(name, capacity) {
+		var parentColumn = createColumn(name + "WithQueue");
+		var column = createColumn(name, capacity);
 		column.parent = parentColumn;
 		var done = createColumn(name + "Done");
 		done.parent = parentColumn;
@@ -375,18 +374,33 @@
 		return parentColumn;
 	}
 	
-	function createColumn(name, limit, capacity) {
-		if (!limit) limit = Number.POSITIVE_INFINITY;
+	function createColumn(name, capacity) {
 		if (!capacity) capacity = Number.POSITIVE_INFINITY;
 		var column = {};
 		column.name = name;
-		column.limit = limit;
+		column.limit = Number.POSITIVE_INFINITY;
 		column.capacity = capacity;
 		column.capacityLeft = capacity;
 		column.tasks = [];
 		column.children = [];
 		column.parent = null;
 		return column;
+	}
+	
+	function updateColumnsLimits(columns) {
+		var updateColumnLimit = function (column) {
+			if (!column) return;
+			var input = $("#" + column.name + "Header input");
+			if (input.length) {
+				column.limit = input.val();
+			}
+		}
+		
+		columns.forEach(function (column) {
+			updateColumnLimit(column);
+			updateColumnLimit(column.parent);
+		});
+		
 	}
 	
 	function updateUI(columns, tasks) {
