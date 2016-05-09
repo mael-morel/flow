@@ -124,13 +124,13 @@
 		<tr class="tasks">
 			<td id="input"></td>
 			<td id="analysis"></td>
-			<td id="analysed"></td>
+			<td id="analysisDone"></td>
 			<td id="development"></td>
-			<td id="developed"></td>
+			<td id="developmentDone"></td>
 			<td id="qa"></td>
-			<td id="tested"></td>
+			<td id="qaDone"></td>
 			<td id="deployment"></td>
-			<td id="done"></td>
+			<td id="deploymentDone"></td>
 		</tr>
 
 	</table>
@@ -299,7 +299,7 @@
 	function findNextColumn(task, columns) {
 		var column = task.column;
 		var index = columns.indexOf(column);
-		while (column && finished(task, column) && availableSpace(columns[index + 1]) > 0) {
+		while (column && finished(task, column) && availableSpace(task, columns[index + 1])) {
 			column = columns[++index];
 		}
 		if (!column) {
@@ -309,10 +309,21 @@
 		return column;
 	}
 	
-	function availableSpace(column) {
+	function availableSpace(task, column) {
 		if (!column) return 1;
 		var limit = column.limit;
-		return limit - column.tasks.length;
+		var numberOfTasks = column.tasks.length;
+		if (column.children.length > 0) {
+			//checking for parent column of task
+			var indexOfTasksColumn = column.children.indexOf(task.column);
+			if (indexOfTasksColumn >= 0) {
+				numberOfTasks--;
+			}
+			column.children.forEach(function (subColumn) {
+				numberOfTasks += subColumn.tasks.length;
+			});
+		}
+		return limit - numberOfTasks > 0 && availableSpace(task, column.parent);
 	}
 	
 	function finished(task, column) {
@@ -344,15 +355,24 @@
 	function createColumns() {
 		var columns = [];
 		columns.push(createColumn("input"));
-		columns.push(createColumn("analysis", 5, 2));
-		columns.push(createColumn("analysed"));
-		columns.push(createColumn("development", 5, 5));
-		columns.push(createColumn("developed"));
-		columns.push(createColumn("qa", 3, 3));
-		columns.push(createColumn("tested"));
-		columns.push(createColumn("deployment", 5, 1));
-		columns.push(createColumn("done"));
+		
+		Array.prototype.push.apply(columns, createColumnWithChildren("analysis", 5, 2).children);
+		Array.prototype.push.apply(columns, createColumnWithChildren("development", 5, 5).children);
+		Array.prototype.push.apply(columns, createColumnWithChildren("qa", 3, 3).children);
+		Array.prototype.push.apply(columns, createColumnWithChildren("deployment", 5, 1).children);
+		
 		return columns;
+	}
+	
+	function createColumnWithChildren(name, limit, capacity) {
+		var parentColumn = createColumn(name + "WithQueue", limit);
+		var column = createColumn(name, undefined, capacity);
+		column.parent = parentColumn;
+		var done = createColumn(name + "Done");
+		done.parent = parentColumn;
+		parentColumn.children.push(column);
+		parentColumn.children.push(done);
+		return parentColumn;
 	}
 	
 	function createColumn(name, limit, capacity) {
@@ -364,6 +384,8 @@
 		column.capacity = capacity;
 		column.capacityLeft = capacity;
 		column.tasks = [];
+		column.children = [];
+		column.parent = null;
 		return column;
 	}
 	
