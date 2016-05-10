@@ -296,7 +296,7 @@ $(document).ready(function() {
 				if (!task) {
 					taskVisual.remove();
 				} else if (task.column && task.column.name != id) {
-					taskVisual.animateAppendTo(task.column.name, hourLengthInSeconds * 1000);
+					taskVisual.detach().appendTo(task.column.name);
 				}
 			});
 		});
@@ -319,9 +319,5 @@ $(document).ready(function() {
 		}
 		return total / array.length;
 	}
-	$.fn.animateAppendTo = function(sel, speed) {
-		this.detach().appendTo(sel);
-		return this;
-	};
 
 });
