@@ -274,11 +274,11 @@ $(document).ready(function() {
 	function updateStats(columns) {
 
 		if (dataPoints['leadTimes'].length == dataPointsToRemember) {
-			var wipAvg = average(dataPoints['wipCount']);
+			var wipAvg = dataPoints['wipCount'].average();
 			$('#stats-wip').text(wipAvg.toFixed(1));
-			var throughputAvg = average(dataPoints['tasksFinished']) * 8;
+			var throughputAvg = dataPoints['tasksFinished'].average() * 8;
 			$('#stats-throughput').text(throughputAvg.toFixed(1));
-			var leadTimeAvg = average([].concat.apply([], dataPoints['leadTimes'])) / 8;
+			var leadTimeAvg = ([].concat.apply([], dataPoints['leadTimes'])).average() / 8;
 			$('#stats-lead-time').text(leadTimeAvg.toFixed(1));
 			$('#stats-wip-lead-time').text((wipAvg / leadTimeAvg).toFixed(1));
 
@@ -312,12 +312,13 @@ $(document).ready(function() {
 		}
 	}
 
-	function average(array) {
-		var total = 0;
-		for (var i = 0; i < array.length; i++) {
-			total += array[i];
-		}
-		return total / array.length;
-	}
 
 });
+
+Array.prototype.average = function(){
+	var total = 0;
+	for (var i = 0; i < this.length; i++) {
+		total += this[i];
+	}
+	return total / this.length;
+}
