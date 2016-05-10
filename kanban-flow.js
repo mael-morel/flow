@@ -52,14 +52,14 @@ $(".play").click(function() {
 });
 
 function hourPassed() {		
-	updateTime(hour);
+	
 	updateColumnsLimits(columns);
 	resetColumnsCapacity(columns);
 	addNewTasks(columns[0]);
 	doWork(columns);
 	moveTasks(columns);
+	recalculateStats();
 	updateUI(columns, tasks);
-	updateStats(columns);
 	timeoutHandler = setTimeout( hourPassed, hourLengthInSeconds * 1000 );
 	hour++;
 }
@@ -249,7 +249,42 @@ function updateColumnsLimits(columns) {
 	
 }
 
+function recalculateStats() {
+	var position = hour % dataPointsToRemember;
+	var lastColumn = columns[columns.length - 1];
+	var leadTimes = [];
+	dataPoints['leadTimes'][position] = leadTimes;
+	lastColumn.tasks.forEach(function(task) {
+		leadTimes.push(hour - task.created);
+	});
+	dataPoints['tasksFinished'][position] = lastColumn.tasks.length;
+	dataPoints['wipCount'][position] =  Object.keys(tasks).length - lastColumn.tasks.length;
+}
+
 function updateUI(columns, tasks) {
+	if (hourLengthInSeconds <0.01 && hour%4 != 0) return;
+	
+	updateTime(hour);
+	updateStats(columns);
+	updateBoard();
+	
+	
+}
+function updateStats(columns) {
+
+	if (dataPoints['leadTimes'].length == dataPointsToRemember) {
+		var wipAvg = average(dataPoints['wipCount']);
+		$('#stats-wip').text(wipAvg.toFixed(1));
+		var throughputAvg = average(dataPoints['tasksFinished'])*8;
+		$('#stats-throughput').text(throughputAvg.toFixed(1));
+		var leadTimeAvg = average([].concat.apply([], dataPoints['leadTimes']))/8;
+		$('#stats-lead-time').text(leadTimeAvg.toFixed(1));
+		$('#stats-wip-lead-time').text((wipAvg / leadTimeAvg).toFixed(1));
+		
+	}
+}
+
+function updateBoard() {
 	$($('.tasks td').get().reverse()).each(function() {
 		var columnVisual = $(this);
 		var id = columnVisual.attr("id");
@@ -273,28 +308,6 @@ function updateUI(columns, tasks) {
 			var newTask = $("<div class='task' id='" + task.id +"'>" + task.id +"</div>");
 			$('#' + task.column.name).append(newTask);
 		}
-	}
-	
-}
-function updateStats(columns) {
-	var position = hour % dataPointsToRemember;
-	var lastColumn = columns[columns.length - 1];
-	var leadTimes = [];
-	dataPoints['leadTimes'][position] = leadTimes;
-	lastColumn.tasks.forEach(function(task) {
-		leadTimes.push(hour - task.created);
-	});
-	dataPoints['tasksFinished'][position] = lastColumn.tasks.length;
-	dataPoints['wipCount'][position] =  Object.keys(tasks).length - lastColumn.tasks.length;
-	if (dataPoints['leadTimes'].length == dataPointsToRemember) {
-		var wipAvg = average(dataPoints['wipCount']);
-		$('#stats-wip').text(wipAvg.toFixed(1));
-		var throughputAvg = average(dataPoints['tasksFinished'])*8;
-		$('#stats-throughput').text(throughputAvg.toFixed(1));
-		var leadTimeAvg = average([].concat.apply([], dataPoints['leadTimes']))/8;
-		$('#stats-lead-time').text(leadTimeAvg.toFixed(1));
-		$('#stats-wip-lead-time').text((wipAvg / leadTimeAvg).toFixed(1));
-		
 	}
 }
 
