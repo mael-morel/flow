@@ -23,32 +23,6 @@ $(document).ready(function() {
 		gui.update(columns, tasks);
 	}
 
-	$('#timescale').slider({
-		min: 50,
-		max: 100000,
-		scale: 'logarithmic',
-		step: 5,
-		value: 100
-	}).on("slide", function(event) {
-		hourLengthInSeconds = 100 / event.value;
-	}).on("slideStop", function(event) {
-		hourLengthInSeconds = 100 / event.value;
-	});
-
-	$(".stop").click(function() {
-		clearTimeout(timeoutHandler);
-		timeoutHandler = null;
-		initBasics();
-	});
-	$(".pause").click(function() {
-		clearTimeout(timeoutHandler);
-		timeoutHandler = null;
-	});
-	$(".play").click(function() {
-		if (!timeoutHandler)
-			timeoutHandler = setTimeout(hourPassed, hourLengthInSeconds * 1000);
-	});
-
 	function hourPassed() {
 		updateColumnsLimits(columns);
 		resetColumnsCapacity(columns);
@@ -254,6 +228,32 @@ $(document).ready(function() {
 	}
 	
 	function GUI() {
+		$('#timescale').slider({
+			min: 50,
+			max: 100000,
+			scale: 'logarithmic',
+			step: 5,
+			value: 100
+		}).on("slide", function(event) {
+			hourLengthInSeconds = 100 / event.value;
+		}).on("slideStop", function(event) {
+			hourLengthInSeconds = 100 / event.value;
+		});
+
+		$(".stop").click(function() {
+			clearTimeout(timeoutHandler);
+			timeoutHandler = null;
+			initBasics();
+		});
+		$(".pause").click(function() {
+			clearTimeout(timeoutHandler);
+			timeoutHandler = null;
+		});
+		$(".play").click(function() {
+			if (!timeoutHandler)
+				timeoutHandler = setTimeout(hourPassed, hourLengthInSeconds * 1000);
+		});
+		
 		this.update = function(columns, tasks) {
 			if (hourLengthInSeconds < 0.01 && hour % 4 != 0) return;
 			updateTime(hour);
@@ -306,12 +306,6 @@ $(document).ready(function() {
 			}
 		}
 	}
-
-
-
-
-
-
 });
 
 Array.prototype.average = function(){
