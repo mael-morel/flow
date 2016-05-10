@@ -69,6 +69,10 @@ $(document).ready(function() {
 		task.development = 700;
 		task.qa = 400;
 		task.deployment = 100;
+		task.analysisOriginal = 200;
+		task.developmentOriginal = 700;
+		task.qaOriginal = 400;
+		task.deploymentOriginal = 100;
 		task.column = column;
 		column.tasks.push(task);
 		tasks[task.id] = task;
@@ -287,11 +291,15 @@ $(document).ready(function() {
 					var taskVisual = $(this);
 					var taskId = taskVisual.attr("id");
 					var task = tasks[taskId];
+					if (task) {
+						taskVisual.find('.progress-bar').width((100 * task[task.column.name] / task[task.column.name + 'Original']).toFixed(1) + '%');
+					}
 					if (!task) {
 						taskVisual.remove();
 					} else if (task.column && task.column.name != id) {
 						taskVisual.detach().appendTo(task.column.name);
 					}
+
 				});
 			});
 			for (var key in tasks) {
@@ -300,7 +308,7 @@ $(document).ready(function() {
 				}
 				var task = tasks[key];
 				if ($("#" + task.id).length == 0) {
-					var newTask = $("<div class='task' id='" + task.id + "'>" + task.id + "</div>");
+					var newTask = $("<div class='task' id='" + task.id + "'><div>" + task.id + "</div><div class='progress'><div class='progress-bar progress-bar-info' style='width:100%'/></div></div>");
 					$('#' + task.column.name).append(newTask);
 				}
 			}

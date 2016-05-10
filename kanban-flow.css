@@ -35,6 +35,15 @@
 	     animation-name: taskAnimation;
 	     animation-duration: .2s;
 	}
+.task .progress {
+    height: 6px;
+    margin-bottom: 0px;
+}
+.task .progress-bar {
+    -webkit-transition: width .1s ease;
+    -o-transition: width .1s ease;
+    transition: width 0.1s ease;
+}
 .board th {
 	text-align: center;
 	border: 1px solid black;
