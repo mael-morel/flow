@@ -65,10 +65,10 @@ $(document).ready(function() {
 		var task = {};
 		task.id = "Task" + (taskCounter++);
 		task.created = hour;
-		task.analysis = 2;
-		task.development = 7;
-		task.qa = 4;
-		task.deployment = 1;
+		task.analysis = 200;
+		task.development = 700;
+		task.qa = 400;
+		task.deployment = 100;
 		task.column = column;
 		column.tasks.push(task);
 		tasks[task.id] = task;
@@ -141,14 +141,14 @@ $(document).ready(function() {
 		if (!column) {
 			column = task.column;
 		}
-		return task[column.name] <= 0.1 || !task[column.name];
+		return task[column.name] <= 0 || !task[column.name];
 	}
 
 	function doWork(columns) {
 		columns.forEach(function(column) {
 			var i = 0;
-			var amountOfWorkPerTask = column.tasks.length > 0 ? (column.capacityLeft / column.tasks.length) : 0;
-			amountOfWorkPerTask = amountOfWorkPerTask > 2 ? 2 : amountOfWorkPerTask;
+			var amountOfWorkPerTask = column.tasks.length > 0 ? Math.ceil(column.capacityLeft / column.tasks.length) : 0;
+			amountOfWorkPerTask = amountOfWorkPerTask > 200 ? 200 : amountOfWorkPerTask;
 			while (column.capacityLeft > 0 && i < column.tasks.length) {
 				var task = column.tasks[i++];
 				if (task[column.name] && task[column.name] > 0) {
@@ -168,10 +168,10 @@ $(document).ready(function() {
 	function createColumns() {
 		var columns = [];
 		columns.push(createColumn("input"));
-		Array.prototype.push.apply(columns, createColumnWithChildren("analysis", 2).children);
-		Array.prototype.push.apply(columns, createColumnWithChildren("development", 5).children);
-		Array.prototype.push.apply(columns, createColumnWithChildren("qa", 3).children);
-		Array.prototype.push.apply(columns, createColumnWithChildren("deployment", 1).children);
+		Array.prototype.push.apply(columns, createColumnWithChildren("analysis", 200).children);
+		Array.prototype.push.apply(columns, createColumnWithChildren("development", 500).children);
+		Array.prototype.push.apply(columns, createColumnWithChildren("qa", 300).children);
+		Array.prototype.push.apply(columns, createColumnWithChildren("deployment", 100).children);
 		return columns;
 	}
 
@@ -204,7 +204,7 @@ $(document).ready(function() {
 			if (!column) return;
 			var input = $("#" + column.name + "Header input");
 			if (input.length) {
-				column.limit = input.val();
+				column.limit = !parseInt(input.val()) ? Number.POSITIVE_INFINITY : Math.abs(parseInt(input.val()));
 			}
 		}
 
