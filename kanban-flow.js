@@ -7,7 +7,7 @@ var columns;
 var tasks;
 initBasics();
 updateTime(hour);
-var timeoutHandler = setTimeout( "hourPassed()", hourLengthInSeconds * 1000 );
+var timeoutHandler = setTimeout( hourPassed, hourLengthInSeconds * 1000 );
 var dataPoints;
 var dataPointsToRemember = 4*20;
 
@@ -48,7 +48,7 @@ $(".pause").click(function() {
 });
 $(".play").click(function() {
 	if (!timeoutHandler)
-		timeoutHandler = setTimeout( "hourPassed()", hourLengthInSeconds * 1000 );
+		timeoutHandler = setTimeout( hourPassed, hourLengthInSeconds * 1000 );
 });
 
 function hourPassed() {		
@@ -60,7 +60,7 @@ function hourPassed() {
 	moveTasks(columns);
 	updateUI(columns, tasks);
 	updateStats(columns);
-	timeoutHandler = setTimeout( "hourPassed()", hourLengthInSeconds * 1000 );
+	timeoutHandler = setTimeout( hourPassed, hourLengthInSeconds * 1000 );
 	hour++;
 }
 

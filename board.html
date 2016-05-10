@@ -1,93 +1,13 @@
 <html>
 <head>
-	<script src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-	<!-- Latest compiled and minified JavaScript -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/7.0.2/css/bootstrap-slider.min.css">
+	<link rel="stylesheet" href="kanban-flow.css">
+	
+	<script src="https://code.jquery.com/jquery-2.2.3.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/7.0.2/bootstrap-slider.min.js"></script>
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/7.0.2/css/bootstrap-slider.min.css">
 	<script src="kanban-flow.js"></script>
-
-	<style>
-	.board-overlay {
-		border-radius: 10pt;
-		background: #eee;
-		padding: 10pt;
-		border: 1px solid black;
-		display:inline-block;
-		font-family: arial;
-	}
-	.board {
-	    height: 100%;
-		background: #ccc;
-		border-collapse: collapse;
-	}
-
-	.tasks {
-	    height: 100%;
-	}
-	.tasks td {
-		width:70pt;
-		text-align: center;
-		border: 1px solid black;
-		vertical-align: top;
-	}
-	.task {
-		    background: yellow;
-		    border-radius: 6pt;
-		    padding: 3pt;
-		    margin: 3pt;
-		    border-style: solid;
-		    border-color: black;
-		    border-width: thin;
-			text-align: center;
-		    -webkit-animation-name: taskAnimation; /* Chrome, Safari, Opera */
-		     -webkit-animation-duration: .2s; /* Chrome, Safari, Opera */
-		     animation-name: taskAnimation;
-		     animation-duration: .2s;
-		}
-	.board th {
-		text-align: center;
-		border: 1px solid black;
-		background-color: eea;
-	}
-	
-
-	/* Standard syntax */
-	@keyframes taskAnimation {
-	    from {border-color: white;box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);}
-	    to {border-color: black;}
-	}
-	/* Chrome, Safari, Opera */
-	@-webkit-keyframes taskAnimation {
-	    from {border-color: white;box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);}
-	    to {border-color: black;}
-	}
-	
-	#timescaleSlider .slider-selection {
-		background: #BABABA;
-	}
-	
-	.board-wrapper{ 
-	    border-width: 1pt;
-	    border-style: solid;
-	    overflow-y: hidden;
-	    overflow-x: hidden;
-	    height: 300pt;
-	}
-	
-	.wiplimit {
-		width: 20pt;
-	}
-	
-	.stats tr td:first-of-type {
-		 text-align: right;
-		 font-weight: bold;
-	}
-	.stats td {
-		padding: 1pt;
-	}
-	</style>
 
 </head>
 <body>
