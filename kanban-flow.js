@@ -137,6 +137,7 @@ function removeDoneTasks(columns) {
 	var lastColumn = columns[columns.length - 1];
 	lastColumn.tasks.forEach(function(task) {
 		task.column = null;
+		delete tasks[task.id];
 	})
 	lastColumn.tasks = [];
 }
@@ -260,10 +261,7 @@ function updateUI(columns, tasks) {
 				taskVisual.remove();
 			} else if (task.column && task.column.name != id) {
 				taskVisual.animateAppendTo(task.column.name,  hourLengthInSeconds * 1000);
-			} else if (!task.column) {
-				taskVisual.remove();
-				delete tasks[taskId];
-			}
+			} 
 		});
 	});
 	for (var key in tasks) {
