@@ -142,13 +142,17 @@
 				<td><span id="stats-wip"></span></td>
 			</tr>
 			<tr>
+				<td>Avg. Lead Time:</td>
+				<td><span id="stats-lead-time"></span>d</td>
+			</tr>			
+			<tr>
 				<td>Throughput:</td>
 				<td><span id="stats-throughput"></span>/d</td>
 			</tr>
 			<tr>
-				<td>Avg. Lead Time:</td>
-				<td><span id="stats-lead-time"></span>d</td>
-			</tr>
+				<td>WIP/Lead Time:</td>
+				<td><span id="stats-wip-lead-time"></span></td>
+			</tr>			
 		</table>
 	</div>
 	</div>
@@ -449,6 +453,8 @@
 			$('#stats-throughput').text(throughputAvg.toFixed(1));
 			var leadTimeAvg = average([].concat.apply([], dataPoints['leadTimes']))/8;
 			$('#stats-lead-time').text(leadTimeAvg.toFixed(1));
+			$('#stats-wip-lead-time').text((wipAvg / leadTimeAvg).toFixed(1));
+			
 		}
 	}
 	
