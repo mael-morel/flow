@@ -334,17 +334,19 @@
 		if (!column) {
 			column = task.column;
 		}
-		return task[column.name] == 0 || !task[column.name];
+		return task[column.name] <= 0 || !task[column.name];
 	}
 	
 	function doWork(columns) {
 		columns.forEach(function(column){
 			var i=0;
+			var amountOfWorkPerTask = column.tasks.length > 0 ? (column.capacityLeft / column.tasks.length) : 0;
+			amountOfWorkPerTask = amountOfWorkPerTask > 2 ? 2 : amountOfWorkPerTask;
 			while(column.capacityLeft > 0 && i < column.tasks.length) {
 				var task = column.tasks[i++];
 				if (task[column.name] && task[column.name] > 0) {
-					task[column.name] = task[column.name] - 1;
-					column.capacityLeft--;
+					task[column.name] = task[column.name] - amountOfWorkPerTask;
+					column.capacityLeft -= amountOfWorkPerTask;
 				}
 			}
 		});
