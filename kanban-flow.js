@@ -5,23 +5,22 @@ $(document).ready(function() {
 	var taskCounter;
 	var columns;
 	var tasks;
-	initBasics();
-	updateTime(hour);
 	var timeoutHandler = setTimeout(hourPassed, hourLengthInSeconds * 1000);
 	var dataPoints;
 	var dataPointsToRemember = 4 * 20;
-
+	var gui = new GUI();
+	initBasics();
 
 	function initBasics() {
 		hour = 0;
 		taskCounter = 1;
-		updateTime(hour);
 		columns = createColumns();
 		tasks = {};
 		dataPoints = {};
 		dataPoints['leadTimes'] = [];
 		dataPoints['wipCount'] = [];
 		dataPoints['tasksFinished'] = [];
+		gui.update(columns, tasks);
 	}
 
 	$('#timescale').slider({
@@ -40,7 +39,6 @@ $(document).ready(function() {
 		clearTimeout(timeoutHandler);
 		timeoutHandler = null;
 		initBasics();
-		updateUI(columns, tasks)
 	});
 	$(".pause").click(function() {
 		clearTimeout(timeoutHandler);
@@ -52,21 +50,15 @@ $(document).ready(function() {
 	});
 
 	function hourPassed() {
-
 		updateColumnsLimits(columns);
 		resetColumnsCapacity(columns);
 		addNewTasks(columns[0]);
 		doWork(columns);
 		moveTasks(columns);
 		recalculateStats();
-		updateUI(columns, tasks);
+		gui.update(columns, tasks);
 		timeoutHandler = setTimeout(hourPassed, hourLengthInSeconds * 1000);
 		hour++;
-	}
-
-	function updateTime(hour) {
-		$("#day").text(Math.floor(hour / 8) + 1);
-		$("#hour").text((hour % 8 + 9) + ":00");
 	}
 
 	function addNewTasks(column) {
@@ -260,57 +252,64 @@ $(document).ready(function() {
 		dataPoints['tasksFinished'][position] = lastColumn.tasks.length;
 		dataPoints['wipCount'][position] = Object.keys(tasks).length - lastColumn.tasks.length;
 	}
-
-	function updateUI(columns, tasks) {
-		if (hourLengthInSeconds < 0.01 && hour % 4 != 0) return;
-
-		updateTime(hour);
-		updateStats(columns);
-		updateBoard();
-
-
-	}
-
-	function updateStats(columns) {
-
-		if (dataPoints['leadTimes'].length == dataPointsToRemember) {
-			var wipAvg = dataPoints['wipCount'].average();
-			$('#stats-wip').text(wipAvg.toFixed(1));
-			var throughputAvg = dataPoints['tasksFinished'].average() * 8;
-			$('#stats-throughput').text(throughputAvg.toFixed(1));
-			var leadTimeAvg = ([].concat.apply([], dataPoints['leadTimes'])).average() / 8;
-			$('#stats-lead-time').text(leadTimeAvg.toFixed(1));
-			$('#stats-wip-lead-time').text((wipAvg / leadTimeAvg).toFixed(1));
-
+	
+	function GUI() {
+		this.update = function(columns, tasks) {
+			if (hourLengthInSeconds < 0.01 && hour % 4 != 0) return;
+			updateTime(hour);
+			updateStats(columns);
+			updateBoard();
 		}
-	}
 
-	function updateBoard() {
-		$($('.tasks td').get().reverse()).each(function() {
-			var columnVisual = $(this);
-			var id = columnVisual.attr("id");
-			columnVisual.children().each(function() {
-				var taskVisual = $(this);
-				var taskId = taskVisual.attr("id");
-				var task = tasks[taskId];
-				if (!task) {
-					taskVisual.remove();
-				} else if (task.column && task.column.name != id) {
-					taskVisual.detach().appendTo(task.column.name);
-				}
+		function updateTime(hour) {
+			$("#day").text(Math.floor(hour / 8) + 1);
+			$("#hour").text((hour % 8 + 9) + ":00");
+		}
+		
+		function updateStats(columns) {
+			if (dataPoints['leadTimes'].length == dataPointsToRemember) {
+				var wipAvg = dataPoints['wipCount'].average();
+				$('#stats-wip').text(wipAvg.toFixed(1));
+				var throughputAvg = dataPoints['tasksFinished'].average() * 8;
+				$('#stats-throughput').text(throughputAvg.toFixed(1));
+				var leadTimeAvg = ([].concat.apply([], dataPoints['leadTimes'])).average() / 8;
+				$('#stats-lead-time').text(leadTimeAvg.toFixed(1));
+				$('#stats-wip-lead-time').text((wipAvg / leadTimeAvg).toFixed(1));
+
+			}
+		}
+
+		function updateBoard() {
+			$($('.tasks td').get().reverse()).each(function() {
+				var columnVisual = $(this);
+				var id = columnVisual.attr("id");
+				columnVisual.children().each(function() {
+					var taskVisual = $(this);
+					var taskId = taskVisual.attr("id");
+					var task = tasks[taskId];
+					if (!task) {
+						taskVisual.remove();
+					} else if (task.column && task.column.name != id) {
+						taskVisual.detach().appendTo(task.column.name);
+					}
+				});
 			});
-		});
-		for (var key in tasks) {
-			if (!tasks.hasOwnProperty(key)) {
-				continue;
-			}
-			var task = tasks[key];
-			if ($("#" + task.id).length == 0) {
-				var newTask = $("<div class='task' id='" + task.id + "'>" + task.id + "</div>");
-				$('#' + task.column.name).append(newTask);
+			for (var key in tasks) {
+				if (!tasks.hasOwnProperty(key)) {
+					continue;
+				}
+				var task = tasks[key];
+				if ($("#" + task.id).length == 0) {
+					var newTask = $("<div class='task' id='" + task.id + "'>" + task.id + "</div>");
+					$('#' + task.column.name).append(newTask);
+				}
 			}
 		}
 	}
+
+
+
+
 
 
 });
