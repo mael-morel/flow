@@ -62,21 +62,29 @@ $(document).ready(function() {
 
 
 	function createTask(column) {
-		var task = {};
-		task.id = "Task" + (taskCounter++);
-		task.created = hour;
-		task.analysis = 200;
-		task.development = 700;
-		task.qa = 400;
-		task.deployment = 100;
-		task.analysisOriginal = 200;
-		task.developmentOriginal = 700;
-		task.qaOriginal = 400;
-		task.deploymentOriginal = 100;
-		task.column = column;
-		column.tasks.push(task);
+		var task = new Task(taskCounter++);
 		tasks[task.id] = task;
+		task.setColumn(column);
 		return task;
+	}
+	
+	function Task(taskId) {
+		this.id = "Task" + taskId;
+		this.created = hour;
+		this.analysis = 200;
+		this.development = 700;
+		this.qa = 400;
+		this.deployment = 100;
+		this.analysisOriginal = 200;
+		this.developmentOriginal = 700;
+		this.qaOriginal = 400;
+		this.deploymentOriginal = 100;
+		this.column = null;
+		
+		this.setColumn = function (column) {
+			this.column = column;
+			column.tasks.push(this);
+		}
 	}
 
 	function moveTasks(columns) {
