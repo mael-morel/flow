@@ -85,6 +85,13 @@ $(document).ready(function() {
 			this.column = column;
 			column.tasks.push(this);
 		}
+		
+		this.finished = function (column) {
+			if (!column) {
+				column = this.column;
+			}
+			return this[column.name] <= 0 || !this[column.name];
+		}
 	}
 
 	function moveTasks(columns) {
@@ -94,7 +101,7 @@ $(document).ready(function() {
 			changed = false;
 			columns.forEach(function(column) {
 				column.tasks.forEach(function(task) {
-					if (finished(task)) {
+					if (task.finished()) {
 						var nextColumn = findNextColumn(task, columns);
 						if (nextColumn != column) {
 							changed = true;
@@ -123,7 +130,7 @@ $(document).ready(function() {
 	function findNextColumn(task, columns) {
 		var column = task.column;
 		var index = columns.indexOf(column);
-		while (column && finished(task, column) && availableSpace(task, columns[index + 1])) {
+		while (column && task.finished(column) && availableSpace(task, columns[index + 1])) {
 			column = columns[++index];
 		}
 		if (!column) {
@@ -149,12 +156,7 @@ $(document).ready(function() {
 		return limit - numberOfTasks > 0 && availableSpace(task, column.parent);
 	}
 
-	function finished(task, column) {
-		if (!column) {
-			column = task.column;
-		}
-		return task[column.name] <= 0 || !task[column.name];
-	}
+
 
 	function doWork(columns) {
 		columns.forEach(function(column) {
