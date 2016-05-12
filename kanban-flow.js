@@ -153,7 +153,7 @@ $(document).ready(function() {
 
 	function createColumns() {
 		var columns = [];
-		columns.push(createColumn("input"));
+		columns.push(new Column("input"));
 		Array.prototype.push.apply(columns, createColumnWithChildren("analysis", 200).children);
 		Array.prototype.push.apply(columns, createColumnWithChildren("development", 500).children);
 		Array.prototype.push.apply(columns, createColumnWithChildren("qa", 300).children);
@@ -162,27 +162,14 @@ $(document).ready(function() {
 	}
 
 	function createColumnWithChildren(name, capacity) {
-		var parentColumn = createColumn(name + "WithQueue");
-		var column = createColumn(name, capacity);
+		var parentColumn = new Column(name + "WithQueue");
+		var column = new Column(name, capacity);
 		column.parent = parentColumn;
-		var done = createColumn(name + "Done");
+		var done = new Column(name + "Done");
 		done.parent = parentColumn;
 		parentColumn.children.push(column);
 		parentColumn.children.push(done);
 		return parentColumn;
-	}
-
-	function createColumn(name, capacity) {
-		if (!capacity) capacity = Number.POSITIVE_INFINITY;
-		var column = {};
-		column.name = name;
-		column.limit = Number.POSITIVE_INFINITY;
-		column.capacity = capacity;
-		column.capacityLeft = capacity;
-		column.tasks = [];
-		column.children = [];
-		column.parent = null;
-		return column;
 	}
 
 	function updateColumnsLimits(columns) {
@@ -339,4 +326,15 @@ function Task(taskId, time) {
 		}
 		return 0;
 	}
+}
+
+function Column(name, capacity) {
+	if (!capacity) capacity = Number.POSITIVE_INFINITY;
+	this.name = name;
+	this.limit = Number.POSITIVE_INFINITY;
+	this.capacity = capacity;
+	this.capacityLeft = capacity;
+	this.tasks = [];
+	this.children = [];
+	this.parent = null;
 }
