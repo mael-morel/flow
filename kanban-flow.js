@@ -89,7 +89,7 @@ $(document).ready(function() {
 	function findNextColumn(task, columns) {
 		var column = task.column;
 		var index = columns.indexOf(column);
-		while (column && task.finished(column) && availableSpace(task, columns[index + 1])) {
+		while (column && task.finished(column) && (!columns[index + 1] || columns[index + 1].availableSpace(task))) {
 			column = columns[++index];
 		}
 		if (!column) {
@@ -98,24 +98,6 @@ $(document).ready(function() {
 		}
 		return column;
 	}
-
-	function availableSpace(task, column) {
-		if (!column) return 1;
-		var limit = column.limit;
-		var numberOfTasks = column.tasks.length;
-		if (column.children.length > 0) {
-			//checking for parent column of task
-			var indexOfTasksColumn = column.children.indexOf(task.column);
-			if (indexOfTasksColumn < 0) {
-				column.children.forEach(function(subColumn) {
-					numberOfTasks += subColumn.tasks.length;
-				});
-			}
-		}
-		return limit - numberOfTasks > 0 && availableSpace(task, column.parent);
-	}
-
-
 
 	function doWork(columns) {
 		columns.forEach(function(column) {
@@ -361,5 +343,20 @@ function Column(name, capacity) {
 		if (nextColumn) {
 			nextColumn.tasks.push(task);
 		}
+	}
+	
+	this.availableSpace = function(task) {
+		var limit = this.limit;
+		var numberOfTasks = this.tasks.length;
+		if (this.children.length > 0) {
+			//checking for parent column of task
+			var indexOfTasksColumn = this.children.indexOf(task.column);
+			if (indexOfTasksColumn < 0) {
+				this.children.forEach(function(subColumn) {
+					numberOfTasks += subColumn.tasks.length;
+				});
+			}
+		}
+		return limit - numberOfTasks > 0 && (!this.parent || this.parent.availableSpace(task));
 	}
 }
