@@ -79,11 +79,7 @@ $(document).ready(function() {
 						var nextColumn = findNextColumn(task, columns);
 						if (nextColumn != column) {
 							changed = true;
-							column.tasks.splice(column.tasks.indexOf(task), 1);
-							task.column = nextColumn;
-							if (nextColumn) {
-								nextColumn.tasks.push(task);
-							}
+							column.moveTaskTo(task, nextColumn);
 						}
 
 					}
@@ -346,5 +342,13 @@ function Column(name, capacity) {
 	this.addTask = function(task) {
 		this.tasks.push(task);
 		task.column = this;
+	}
+	
+	this.moveTaskTo = function(task, nextColumn) {
+		this.tasks.splice(this.tasks.indexOf(task), 1);
+		task.column = nextColumn;
+		if (nextColumn) {
+			nextColumn.tasks.push(task);
+		}
 	}
 }
