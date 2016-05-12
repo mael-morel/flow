@@ -64,7 +64,7 @@ $(document).ready(function() {
 	function createTask(column) {
 		var task = new Task(taskCounter++, time);
 		tasks[task.id] = task;
-		task.setColumn(column);
+		column.addTask(task);
 		return task;
 	}
 
@@ -313,11 +313,6 @@ function Task(taskId, time) {
 	this.deploymentOriginal = 100;
 	this.column = null;
 	
-	this.setColumn = function (column) {
-		this.column = column;
-		column.tasks.push(this);
-	}
-	
 	this.finished = function (column) {
 		if (!column) {
 			column = this.column;
@@ -346,5 +341,10 @@ function Column(name, capacity) {
 	
 	this.resetCapacity = function() {
 		this.capacityLeft = this.capacity;
+	}
+	
+	this.addTask = function(task) {
+		this.tasks.push(task);
+		task.column = this;
 	}
 }
