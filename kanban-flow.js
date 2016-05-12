@@ -62,36 +62,10 @@ $(document).ready(function() {
 
 
 	function createTask(column) {
-		var task = new Task(taskCounter++);
+		var task = new Task(taskCounter++, time);
 		tasks[task.id] = task;
 		task.setColumn(column);
 		return task;
-	}
-	
-	function Task(taskId) {
-		this.id = "Task" + taskId;
-		this.created = time;
-		this.analysis = 200;
-		this.development = 700;
-		this.qa = 400;
-		this.deployment = 100;
-		this.analysisOriginal = 200;
-		this.developmentOriginal = 700;
-		this.qaOriginal = 400;
-		this.deploymentOriginal = 100;
-		this.column = null;
-		
-		this.setColumn = function (column) {
-			this.column = column;
-			column.tasks.push(this);
-		}
-		
-		this.finished = function (column) {
-			if (!column) {
-				column = this.column;
-			}
-			return this[column.name] <= 0 || !this[column.name];
-		}
 	}
 
 	function moveTasks(columns) {
@@ -332,4 +306,31 @@ Array.prototype.average = function(){
 		total += this[i];
 	}
 	return total / this.length;
+}
+
+
+function Task(taskId, time) {
+	this.id = "Task" + taskId;
+	this.created = time;
+	this.analysis = 200;
+	this.development = 700;
+	this.qa = 400;
+	this.deployment = 100;
+	this.analysisOriginal = 200;
+	this.developmentOriginal = 700;
+	this.qaOriginal = 400;
+	this.deploymentOriginal = 100;
+	this.column = null;
+	
+	this.setColumn = function (column) {
+		this.column = column;
+		column.tasks.push(this);
+	}
+	
+	this.finished = function (column) {
+		if (!column) {
+			column = this.column;
+		}
+		return this[column.name] <= 0 || !this[column.name];
+	}
 }
