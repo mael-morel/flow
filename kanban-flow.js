@@ -26,7 +26,7 @@ $(document).ready(function() {
 
 	function hourPassed() {
 		updateColumnsLimits(board.columns);
-		resetColumnsCapacity(board.columns);
+		board.resetColumnsCapacity();
 		addNewTasks(board);
 		doWork(board.columns);
 		moveTasks(board.columns);
@@ -109,12 +109,6 @@ $(document).ready(function() {
 				var actuallyWorked = task.workOn(column.name, amountOfWorkPerTask);
 				column.capacityLeft -= actuallyWorked;
 			}
-		});
-	}
-
-	function resetColumnsCapacity(columns) {
-		columns.forEach(function(column) {
-			column.resetCapacity();
 		});
 	}
 
@@ -265,6 +259,12 @@ function Board() {
 			delete tasks[task.id];
 		})
 		lastColumn.tasks = [];
+	}
+	
+	this.resetColumnsCapacity = function(columns) {
+		this.columns.forEach(function(column) {
+			column.resetCapacity();
+		});
 	}
 	
 	function createColumns(board) {
