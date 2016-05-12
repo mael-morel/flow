@@ -3,34 +3,35 @@ $(document).ready(function() {
 	var hourLengthInSeconds = 1;
 	var time;
 	var taskCounter;
-	var columns;
+	
 	var tasks;
 	var timeoutHandler = setTimeout(hourPassed, hourLengthInSeconds * 1000);
 	var dataPoints;
 	var dataPointsToRemember = 4 * 20;
 	var gui = new GUI();
+	var board;
 	initBasics();
 
 	function initBasics() {
 		time = 0;
 		taskCounter = 1;
-		columns = createColumns();
+		board = new Board()
 		tasks = {};
 		dataPoints = {};
 		dataPoints['leadTimes'] = [];
 		dataPoints['wipCount'] = [];
 		dataPoints['tasksFinished'] = [];
-		gui.update(columns, tasks);
+		gui.update(board.columns, tasks);
 	}
 
 	function hourPassed() {
-		updateColumnsLimits(columns);
-		resetColumnsCapacity(columns);
-		addNewTasks(columns[0]);
-		doWork(columns);
-		moveTasks(columns);
+		updateColumnsLimits(board.columns);
+		resetColumnsCapacity(board.columns);
+		addNewTasks(board.columns[0]);
+		doWork(board.columns);
+		moveTasks(board.columns);
 		recalculateStats();
-		gui.update(columns, tasks);
+		gui.update(board.columns, tasks);
 		timeoutHandler = setTimeout(hourPassed, hourLengthInSeconds * 1000);
 		time++;
 	}
@@ -147,27 +148,6 @@ $(document).ready(function() {
 		});
 	}
 
-	function createColumns() {
-		var columns = [];
-		columns.push(new Column("input"));
-		Array.prototype.push.apply(columns, createColumnWithChildren("analysis", 200).children);
-		Array.prototype.push.apply(columns, createColumnWithChildren("development", 500).children);
-		Array.prototype.push.apply(columns, createColumnWithChildren("qa", 300).children);
-		Array.prototype.push.apply(columns, createColumnWithChildren("deployment", 100).children);
-		return columns;
-	}
-
-	function createColumnWithChildren(name, capacity) {
-		var parentColumn = new Column(name + "WithQueue");
-		var column = new Column(name, capacity);
-		column.parent = parentColumn;
-		var done = new Column(name + "Done");
-		done.parent = parentColumn;
-		parentColumn.children.push(column);
-		parentColumn.children.push(done);
-		return parentColumn;
-	}
-
 	function updateColumnsLimits(columns) {
 		var updateColumnLimit = function(column) {
 			if (!column) return;
@@ -183,7 +163,7 @@ $(document).ready(function() {
 
 	function recalculateStats() {
 		var position = time % dataPointsToRemember;
-		var lastColumn = columns[columns.length - 1];
+		var lastColumn = board.lastColumn();
 		var leadTimes = [];
 		dataPoints['leadTimes'][position] = leadTimes;
 		lastColumn.tasks.forEach(function(task) {
@@ -295,6 +275,36 @@ Array.prototype.average = function(){
 	return total / this.length;
 }
 
+function Board() {
+	this.columns = null;
+	
+	createColumns(this);
+	
+	this.lastColumn = function() {
+		return this.columns[this.columns.length - 1];
+	}
+	
+	function createColumns(board) {
+		board.columns = [];
+		var columns = board.columns;
+		columns.push(new Column("input"));
+		Array.prototype.push.apply(columns, createColumnWithChildren("analysis", 200).children);
+		Array.prototype.push.apply(columns, createColumnWithChildren("development", 500).children);
+		Array.prototype.push.apply(columns, createColumnWithChildren("qa", 300).children);
+		Array.prototype.push.apply(columns, createColumnWithChildren("deployment", 100).children);
+	}
+
+	function createColumnWithChildren(name, capacity) {
+		var parentColumn = new Column(name + "WithQueue");
+		var column = new Column(name, capacity);
+		column.parent = parentColumn;
+		var done = new Column(name + "Done");
+		done.parent = parentColumn;
+		parentColumn.children.push(column);
+		parentColumn.children.push(done);
+		return parentColumn;
+	}
+}
 
 function Task(taskId, time) {
 	this.id = "Task" + taskId;
