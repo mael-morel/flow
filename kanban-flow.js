@@ -27,7 +27,7 @@ $(document).ready(function() {
 	function hourPassed() {
 		updateColumnsLimits(board.columns);
 		resetColumnsCapacity(board.columns);
-		addNewTasks(board.columns[0]);
+		addNewTasks(board);
 		doWork(board.columns);
 		moveTasks(board.columns);
 		recalculateStats();
@@ -36,36 +36,35 @@ $(document).ready(function() {
 		time++;
 	}
 
-	function addNewTasks(column) {
-		var scrumStrategy = function() {
+	function addNewTasks(board) {
+		var scrumStrategy = function(board) {
 			if (time / 8 % 10 == 0) {
 				for (var i = 0; i < 55; i++) {
-					createTask(column);
+					board.addTask(createTask());
 				}
 			}
 		}
-		var stableFlow = function() {
+		var stableFlow = function(board) {
 			if (time % 2 == 0 || time % 3 == 0) {
-				createTask(column);
+				board.addTask(createTask());
 			}
 		}
-		var stableRandomFlow = function() {
+		var stableRandomFlow = function(board) {
 			if (Math.random() < 0.7) {
-				createTask(column);
+				board.addTask(createTask());
 			}
 		}
 
-		//stableFlow();
-		//stableRandomFlow();
-		scrumStrategy();
+		//stableFlow(board);
+		//stableRandomFlow(board);
+		scrumStrategy(board);
 	}
 
 
 
-	function createTask(column) {
+	function createTask() {
 		var task = new Task(taskCounter++, time);
 		tasks[task.id] = task;
-		column.addTask(task);
 		return task;
 	}
 
@@ -282,6 +281,10 @@ function Board() {
 	
 	this.lastColumn = function() {
 		return this.columns[this.columns.length - 1];
+	}
+	
+	this.addTask = function(task) {
+		this.columns[0].addTask(task);
 	}
 	
 	function createColumns(board) {
