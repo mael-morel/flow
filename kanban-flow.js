@@ -139,10 +139,8 @@ $(document).ready(function() {
 			amountOfWorkPerTask = amountOfWorkPerTask > 200 ? 200 : amountOfWorkPerTask;
 			while (column.capacityLeft > 0 && i < column.tasks.length) {
 				var task = column.tasks[i++];
-				if (task[column.name] && task[column.name] > 0) {
-					task[column.name] = task[column.name] - amountOfWorkPerTask;
-					column.capacityLeft -= amountOfWorkPerTask;
-				}
+				var actuallyWorked = task.workOn(column.name, amountOfWorkPerTask);
+				column.capacityLeft -= actuallyWorked;
 			}
 		});
 	}
@@ -332,5 +330,13 @@ function Task(taskId, time) {
 			column = this.column;
 		}
 		return this[column.name] <= 0 || !this[column.name];
+	}
+	
+	this.workOn = function(workType, amount) {
+		if (this[workType] && this[workType] > 0) {
+			this[workType] -= amount;
+			return amount;
+		}
+		return 0;
 	}
 }
