@@ -1,7 +1,7 @@
 $(document).ready(function() {
 
 	var hourLengthInSeconds = 1;
-	var hour;
+	var time;
 	var taskCounter;
 	var columns;
 	var tasks;
@@ -12,7 +12,7 @@ $(document).ready(function() {
 	initBasics();
 
 	function initBasics() {
-		hour = 0;
+		time = 0;
 		taskCounter = 1;
 		columns = createColumns();
 		tasks = {};
@@ -32,19 +32,19 @@ $(document).ready(function() {
 		recalculateStats();
 		gui.update(columns, tasks);
 		timeoutHandler = setTimeout(hourPassed, hourLengthInSeconds * 1000);
-		hour++;
+		time++;
 	}
 
 	function addNewTasks(column) {
 		var scrumStrategy = function() {
-			if (hour / 8 % 10 == 0) {
+			if (time / 8 % 10 == 0) {
 				for (var i = 0; i < 55; i++) {
 					createTask(column);
 				}
 			}
 		}
 		var stableFlow = function() {
-			if (hour % 2 == 0 || hour % 3 == 0) {
+			if (time % 2 == 0 || time % 3 == 0) {
 				createTask(column);
 			}
 		}
@@ -70,7 +70,7 @@ $(document).ready(function() {
 	
 	function Task(taskId) {
 		this.id = "Task" + taskId;
-		this.created = hour;
+		this.created = time;
 		this.analysis = 200;
 		this.development = 700;
 		this.qa = 400;
@@ -230,12 +230,12 @@ $(document).ready(function() {
 	}
 
 	function recalculateStats() {
-		var position = hour % dataPointsToRemember;
+		var position = time % dataPointsToRemember;
 		var lastColumn = columns[columns.length - 1];
 		var leadTimes = [];
 		dataPoints['leadTimes'][position] = leadTimes;
 		lastColumn.tasks.forEach(function(task) {
-			leadTimes.push(hour - task.created);
+			leadTimes.push(time - task.created);
 		});
 		dataPoints['tasksFinished'][position] = lastColumn.tasks.length;
 		dataPoints['wipCount'][position] = Object.keys(tasks).length - lastColumn.tasks.length;
@@ -269,15 +269,15 @@ $(document).ready(function() {
 		});
 		
 		this.update = function(columns, tasks) {
-			if (hourLengthInSeconds < 0.01 && hour % 4 != 0) return;
-			updateTime(hour);
+			if (hourLengthInSeconds < 0.01 && time % 4 != 0) return;
+			updateTime(time);
 			updateStats(columns);
 			updateBoard();
 		}
 
-		function updateTime(hour) {
-			$("#day").text(Math.floor(hour / 8) + 1);
-			$("#hour").text((hour % 8 + 9) + ":00");
+		function updateTime(time) {
+			$("#day").text(Math.floor(time / 8) + 1);
+			$("#hour").text((time % 8 + 9) + ":00");
 		}
 		
 		function updateStats(columns) {
