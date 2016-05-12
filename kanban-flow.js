@@ -67,7 +67,7 @@ $(document).ready(function() {
 	}
 
 	function moveTasks(columns) {
-		removeDoneTasks(board);
+		board.removeDoneTasks(tasks);
 		var changed = true;
 		while (changed) {
 			changed = false;
@@ -84,10 +84,6 @@ $(document).ready(function() {
 				});
 			});
 		}
-	}
-
-	function removeDoneTasks(board) {
-		board.removeDoneTasks(tasks);
 	}
 
 	function findNextColumn(task, columns) {
