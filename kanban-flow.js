@@ -67,7 +67,7 @@ $(document).ready(function() {
 	}
 
 	function moveTasks(columns) {
-		removeDoneTasks(columns);
+		removeDoneTasks(board);
 		var changed = true;
 		while (changed) {
 			changed = false;
@@ -86,13 +86,8 @@ $(document).ready(function() {
 		}
 	}
 
-	function removeDoneTasks(columns) {
-		var lastColumn = columns[columns.length - 1];
-		lastColumn.tasks.forEach(function(task) {
-			task.column = null;
-			delete tasks[task.id];
-		})
-		lastColumn.tasks = [];
+	function removeDoneTasks(board) {
+		board.removeDoneTasks(tasks);
 	}
 
 	function findNextColumn(task, columns) {
@@ -283,6 +278,15 @@ function Board() {
 	
 	this.addTask = function(task) {
 		this.columns[0].addTask(task);
+	}
+	
+	this.removeDoneTasks = function(tasks) { //parameter to be removed when 'tasks' object moved to Board class
+		var lastColumn = this.columns[this.columns.length - 1];
+		lastColumn.tasks.forEach(function(task) {
+			task.column = null;
+			delete tasks[task.id];
+		})
+		lastColumn.tasks = [];
 	}
 	
 	function createColumns(board) {
