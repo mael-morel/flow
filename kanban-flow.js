@@ -175,10 +175,7 @@ $(document).ready(function() {
 	function updateColumnsLimits(columns) {
 		var updateColumnLimit = function(column) {
 			if (!column) return;
-			var input = $("#" + column.name + "Header input");
-			if (input.length) {
-				column.limit = !parseInt(input.val()) ? Number.POSITIVE_INFINITY : Math.abs(parseInt(input.val()));
-			}
+			column.limit = gui.getLimitForColumn(column.name);
 		}
 
 		columns.forEach(function(column) {
@@ -226,6 +223,15 @@ $(document).ready(function() {
 			if (!timeoutHandler)
 				timeoutHandler = setTimeout(hourPassed, hourLengthInSeconds * 1000);
 		});
+		
+		this.getLimitForColumn = function (columnName) {
+			var input = $("#" + columnName + "Header input");
+			var result = Number.POSITIVE_INFINITY;
+			if (input.length) {
+				result = !parseInt(input.val()) ? Number.POSITIVE_INFINITY : Math.abs(parseInt(input.val()));
+			}
+			return result;
+		}
 		
 		this.update = function(columns, tasks) {
 			if (hourLengthInSeconds < 0.01 && time % 4 != 0) return;
