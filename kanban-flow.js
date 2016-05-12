@@ -37,6 +37,12 @@ $(document).ready(function() {
 	}
 
 	function addNewTasks(board) {
+		var createTask = function() {
+			var task = new Task(taskCounter++, time);
+			tasks[task.id] = task;
+			return task;
+		}
+		
 		var scrumStrategy = function(board) {
 			if (time / 8 % 10 == 0) {
 				for (var i = 0; i < 55; i++) {
@@ -58,14 +64,6 @@ $(document).ready(function() {
 		//stableFlow(board);
 		//stableRandomFlow(board);
 		scrumStrategy(board);
-	}
-
-
-
-	function createTask() {
-		var task = new Task(taskCounter++, time);
-		tasks[task.id] = task;
-		return task;
 	}
 
 	function moveTasks(columns) {
