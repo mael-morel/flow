@@ -261,7 +261,7 @@ function Board() {
 		lastColumn.tasks = [];
 	}
 	
-	this.resetColumnsCapacity = function(columns) {
+	this.resetColumnsCapacity = function() {
 		this.columns.forEach(function(column) {
 			column.resetCapacity();
 		});
