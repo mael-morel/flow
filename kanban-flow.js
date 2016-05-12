@@ -147,7 +147,7 @@ $(document).ready(function() {
 
 	function resetColumnsCapacity(columns) {
 		columns.forEach(function(column) {
-			column.capacityLeft = column.capacity;
+			column.resetCapacity();
 		});
 	}
 
@@ -337,4 +337,8 @@ function Column(name, capacity) {
 	this.tasks = [];
 	this.children = [];
 	this.parent = null;
+	
+	this.resetCapacity = function() {
+		this.capacityLeft = this.capacity;
+	}
 }
