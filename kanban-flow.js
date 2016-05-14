@@ -4,7 +4,7 @@ $(document).ready(function() {
 
 function Simulation() {
 	this.hourLengthInSeconds = 1;
-	this.ticksPerHour = 10;
+	this.ticksPerHour = 60;
 	this.time;
 	this.taskCounter;
 	this.timeoutHandler;
@@ -127,6 +127,9 @@ function Simulation() {
 function GUI(simulation) {
 	this.simulation = simulation;
 	
+	this.fps = 10;
+	this.lastUpdated = Date.now();
+	
 	$('#timescale').slider({
 		min: 50,
 		max: 100000,
@@ -159,15 +162,20 @@ function GUI(simulation) {
 	}
 	
 	this.update = function(board, stats) {
-		if (this.simulation.hourLengthInSeconds < 0.01 && this.simulation.time % (4 * 60) != 0) return;
+		var now = Date.now();
+		if (now - this.lastUpdated < 1000/this.fps) return;
+		this.lastUpdated = now;
 		updateTime(this.simulation.time);
 		updateStats(stats);
 		updateBoard(board);
 	}
 
 	function updateTime(time) {
-		$("#day").text(Math.floor(time / (8 * 60)) + 1);
-		$("#hour").text((Math.floor(time/60) % 8  + 9) + ":" + (time % 60));
+		function pad(n) {
+		    return (n < 10) ? ("0" + n) : n;
+		}
+		$("#day").text(pad(Math.floor(time / (8 * 60)) + 1));
+		$("#hour").text(pad(Math.floor(time/60) % 8  + 9) + ":" + pad(time % 60));
 	}
 	
 	function updateStats(stats) {
