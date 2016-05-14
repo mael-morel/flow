@@ -288,6 +288,7 @@ function Board(ticksPerHour) {
 		Array.prototype.push.apply(columns, createColumnWithChildren("development", 5*60).children);
 		Array.prototype.push.apply(columns, createColumnWithChildren("qa", 3*60).children);
 		Array.prototype.push.apply(columns, createColumnWithChildren("deployment", 60).children);
+		board.columns[board.columns.length - 1].ignoreLimit = true;
 	}
 
 	function createColumnWithChildren(name, capacity) {
@@ -340,6 +341,7 @@ function Column(name, capacity) {
 	this.tasks = [];
 	this.children = [];
 	this.parent = null;
+	this.ignoreLimit = false;
 	
 	this.resetCapacity = function(ticksPerHour) {
 		this.capacityLeft = this.capacity / ticksPerHour;
@@ -359,6 +361,7 @@ function Column(name, capacity) {
 	}
 	
 	this.availableSpace = function(task) {
+		if (this.ignoreLimit) return true;
 		var limit = this.limit;
 		var numberOfTasks = this.tasks.length;
 		if (this.children.length > 0) {
@@ -366,7 +369,8 @@ function Column(name, capacity) {
 			var indexOfTasksColumn = this.children.indexOf(task.column);
 			if (indexOfTasksColumn < 0) {
 				this.children.forEach(function(subColumn) {
-					numberOfTasks += subColumn.tasks.length;
+					if (!subColumn.ignoreLimit)
+						numberOfTasks += subColumn.tasks.length;
 				});
 			}
 		}
