@@ -4,6 +4,7 @@ $(document).ready(function() {
 
 function Simulation() {
 	this.hourLengthInSeconds = 1;
+	this.ticksPerHour = 10;
 	this.time;
 	this.taskCounter;
 	this.timeoutHandler;
@@ -14,7 +15,7 @@ function Simulation() {
 	this.initBasics = function() {
 		this.time = 0;
 		this.taskCounter = 1;
-		this.board = new Board();
+		this.board = new Board(this.ticksPerHour);
 		this.stats = new Stats();
 		this.gui.update(this.board, this.stats);
 	}
@@ -22,7 +23,7 @@ function Simulation() {
 
 	this.play = function() {
 		if (!this.timeoutHandler)
-			this.timeoutHandler = setTimeout(this.hourPassed.bind(this), this.hourLengthInSeconds * 1000);
+			this.timeoutHandler = setTimeout(this.tick.bind(this), this.hourLengthInSeconds * 1000 / this.ticksPerHour);
 	}
 	
 	this.stop = function() {
@@ -36,7 +37,7 @@ function Simulation() {
 		this.timeoutHandler = null;
 	}
 
-	this.hourPassed = function() {
+	this.tick = function() {
 		this.timeoutHandler = null;
 		this.board.updateColumnsLimitsFrom(this.gui);
 		this.board.resetColumnsCapacity();
@@ -44,26 +45,27 @@ function Simulation() {
 		this.doWork(this.board.columns);
 		this.moveTasks(this.board.columns);
 		this.stats.recalculateStats(this.board, this.time);
+		this.removeDoneTasks();
 		this.gui.update(this.board, this.stats);
 		this.play();
-		this.time++;
+		this.time += 60/this.ticksPerHour;
 	}
 
 	this.addNewTasks = function() {
 		var scrumStrategy = function() {
-			if (this.time / 8 % 10 == 0) {
+			if (this.time / (60 * 8) % 10 == 0) {
 				for (var i = 0; i < 55; i++) {
 					this.board.addTask(new Task(this.taskCounter++, this.time));
 				}
 			}
 		}.bind(this);
 		var stableFlow = function() {
-			if (this.time % 2 == 0 || this.time % 3 == 0) {
+			if (this.time % 120 == 0 || this.time % 180 == 0) {
 				this.board.addTask(new Task(this.taskCounter++, this.time));
 			}
 		}.bind(this);
 		var stableRandomFlow = function() {
-			if (Math.random() < 0.7) {
+			if (this.time % 60 == 0 && Math.random() < 0.7) {
 				this.board.addTask(new Task(this.taskCounter++, this.time));
 			}
 		}.bind(this);
@@ -74,7 +76,6 @@ function Simulation() {
 	}
 
 	this.moveTasks = function(columns) {
-		this.board.removeDoneTasks();
 		var changed = true;
 		while (changed) {
 			changed = false;
@@ -90,6 +91,10 @@ function Simulation() {
 				}.bind(this));
 			}.bind(this));
 		}
+	}
+	
+	this.removeDoneTasks = function() {
+		if (this.time % 60 == 0) this.board.removeDoneTasks();
 	}
 
 	this.findNextColumn = function(task, columns) {
@@ -108,14 +113,14 @@ function Simulation() {
 	this.doWork = function(columns) {
 		columns.forEach(function(column) {
 			var i = 0;
-			var amountOfWorkPerTask = column.tasks.length > 0 ? Math.ceil(column.capacityLeft / column.tasks.length) : 0;
-			amountOfWorkPerTask = amountOfWorkPerTask > 200 ? 200 : amountOfWorkPerTask;
+			var amountOfWorkPerTask = column.tasks.length > 0 ? column.capacityLeft / column.tasks.length : 0;
+			amountOfWorkPerTask = amountOfWorkPerTask > (120/this.ticksPerHour) ? (120/this.ticksPerHour) : amountOfWorkPerTask;
 			while (column.capacityLeft > 0 && i < column.tasks.length) {
 				var task = column.tasks[i++];
 				var actuallyWorked = task.workOn(column.name, amountOfWorkPerTask);
 				column.capacityLeft -= actuallyWorked;
 			}
-		});
+		}.bind(this));
 	}
 }
 
@@ -154,15 +159,15 @@ function GUI(simulation) {
 	}
 	
 	this.update = function(board, stats) {
-		if (this.simulation.hourLengthInSeconds < 0.01 && this.simulation.time % 4 != 0) return;
+		if (this.simulation.hourLengthInSeconds < 0.01 && this.simulation.time % (4 * 60) != 0) return;
 		updateTime(this.simulation.time);
 		updateStats(stats);
 		updateBoard(board);
 	}
 
 	function updateTime(time) {
-		$("#day").text(Math.floor(time / 8) + 1);
-		$("#hour").text((time % 8 + 9) + ":00");
+		$("#day").text(Math.floor(time / (8 * 60)) + 1);
+		$("#hour").text((Math.floor(time/60) % 8  + 9) + ":" + (time % 60));
 	}
 	
 	function updateStats(stats) {
@@ -215,9 +220,10 @@ Array.prototype.average = function(){
 	return total / this.length;
 }
 
-function Board() {
+function Board(ticksPerHour) {
 	this.columns = null;
 	this.tasks = {};
+	this.ticksPerHour = ticksPerHour;
 	
 	createColumns(this);
 	
@@ -241,8 +247,8 @@ function Board() {
 	
 	this.resetColumnsCapacity = function() {
 		this.columns.forEach(function(column) {
-			column.resetCapacity();
-		});
+			column.resetCapacity(this.ticksPerHour);
+		}.bind(this));
 	}
 	
 	this.getCurrentWip = function() {
@@ -270,10 +276,10 @@ function Board() {
 		board.columns = [];
 		var columns = board.columns;
 		columns.push(new Column("input"));
-		Array.prototype.push.apply(columns, createColumnWithChildren("analysis", 200).children);
-		Array.prototype.push.apply(columns, createColumnWithChildren("development", 500).children);
-		Array.prototype.push.apply(columns, createColumnWithChildren("qa", 300).children);
-		Array.prototype.push.apply(columns, createColumnWithChildren("deployment", 100).children);
+		Array.prototype.push.apply(columns, createColumnWithChildren("analysis", 2*60).children);
+		Array.prototype.push.apply(columns, createColumnWithChildren("development", 5*60).children);
+		Array.prototype.push.apply(columns, createColumnWithChildren("qa", 3*60).children);
+		Array.prototype.push.apply(columns, createColumnWithChildren("deployment", 60).children);
 	}
 
 	function createColumnWithChildren(name, capacity) {
@@ -291,14 +297,14 @@ function Board() {
 function Task(taskId, time) {
 	this.id = "Task" + taskId;
 	this.created = time;
-	this.analysis = 200;
-	this.development = 700;
-	this.qa = 400;
-	this.deployment = 100;
-	this.analysisOriginal = 200;
-	this.developmentOriginal = 700;
-	this.qaOriginal = 400;
-	this.deploymentOriginal = 100;
+	this.analysis = 2*60;
+	this.development = 7*60;
+	this.qa = 4*60;
+	this.deployment = 60;
+	this.analysisOriginal = 2*60;
+	this.developmentOriginal = 7*60;
+	this.qaOriginal = 4*60;
+	this.deploymentOriginal = 60;
 	this.column = null;
 	
 	this.finished = function (column) {
@@ -327,8 +333,8 @@ function Column(name, capacity) {
 	this.children = [];
 	this.parent = null;
 	
-	this.resetCapacity = function() {
-		this.capacityLeft = this.capacity;
+	this.resetCapacity = function(ticksPerHour) {
+		this.capacityLeft = this.capacity / ticksPerHour;
 	}
 	
 	this.addTask = function(task) {
@@ -364,7 +370,7 @@ function Stats() {
 	this.leadTimes = [];
 	this.wipCount = [];
 	this.tasksFinished = [];
-	this.dataPointsToRemember = 4 * 20;
+	this.dataPointsToRemember = 8  * 20; // hours * days
 	
 	this.getWipAvg = function() {
 		return this.wipCount.average();
@@ -375,11 +381,12 @@ function Stats() {
 	}
 	
 	this.getLeadTimeAvg = function() {
-		return ([].concat.apply([], this.leadTimes)).average() / 8;
+		return ([].concat.apply([], this.leadTimes)).average() / (8 * 60);
 	}
 	
 	this.recalculateStats = function(board, time) {
-		var position = time % this.dataPointsToRemember;
+		if (time % 60 != 0) return;
+		var position = (time / 60) % this.dataPointsToRemember;
 		var lastColumn = board.lastColumn();
 		var leadTimes = [];
 		this.leadTimes[position] = leadTimes;
