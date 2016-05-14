@@ -4,7 +4,7 @@ $(document).ready(function() {
 
 function Simulation() {
 	this.hourLengthInSeconds = 1;
-	this.ticksPerHour = 60;
+	this.ticksPerHour = 12;
 	this.time;
 	this.taskCounter;
 	this.timeoutHandler;
