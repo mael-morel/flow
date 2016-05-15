@@ -147,3 +147,10 @@ span.deployment, .deployment .task .person {
 .board-overlay .person {
 	text-shadow: 1px 1px 2px #000000;
 }
+
+.headcount td {
+    width: 17pt;
+    height: 14pt;
+	text-align: center;
+    padding: 2pt;
+}
