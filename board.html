@@ -26,32 +26,32 @@
 	
 		<tr>
 			<th rowspan="2">Backlog </th>
-			<th colspan="2" id="analysisWithQueueHeader">Analysis <input type="text" class="wiplimit" maxlength="2" value="5"/></th>
-			<th colspan="2" id="developmentWithQueueHeader">Development <input type="text" class="wiplimit" maxlength="2" value="5"/></th>
-			<th colspan="2" id="qaWithQueueHeader">QA <input type="text" class="wiplimit" maxlength="2" value="3"/></th>
-			<th colspan="2" id="deploymentWithQueueHeader">Deployment <input type="text" class="wiplimit" maxlength="2" value="5"/></th>
+			<th colspan="2" id="analysisWithQueueHeader" class="analysis">Analysis <input type="text" class="wiplimit" maxlength="2" value="5"/></th>
+			<th colspan="2" id="developmentWithQueueHeader" class="development">Development <input type="text" class="wiplimit" maxlength="2" value="5"/></th>
+			<th colspan="2" id="qaWithQueueHeader" class="qa">QA <input type="text" class="wiplimit" maxlength="2" value="3"/></th>
+			<th colspan="2" id="deploymentWithQueueHeader" class="deployment">Deployment <input type="text" class="wiplimit" maxlength="2" value="5"/></th>
 		</tr>
 		<tr>
-			<th>Doing</th>
-			<th>Done</th>
-			<th>Doing</th>
-			<th>Done</th>
-			<th>Doing</th>
-			<th>Done</th>
-			<th>Doing</th>
-			<th>Done</th>
+			<th class="analysis">Doing</th>
+			<th class="analysis">Done</th>
+			<th class="development">Doing</th>
+			<th class="development">Done</th>
+			<th class="qa">Doing</th>
+			<th class="qa">Done</th>
+			<th class="deployment">Doing</th>
+			<th class="deployment">Done</th>
 		</tr>
 	
 		<tr class="tasks">
 			<td id="input"></td>
-			<td id="analysis"></td>
-			<td id="analysisDone"></td>
-			<td id="development"></td>
-			<td id="developmentDone"></td>
-			<td id="qa"></td>
-			<td id="qaDone"></td>
-			<td id="deployment"></td>
-			<td id="deploymentDone"></td>
+			<td id="analysis" class="analysis"></td>
+			<td id="analysisDone" class="analysis"></td>
+			<td id="development" class="development"></td>
+			<td id="developmentDone" class="development"></td>
+			<td id="qa" class="qa"></td>
+			<td id="qaDone" class="qa"></td>
+			<td id="deployment" class="deployment"></td>
+			<td id="deploymentDone" class="deployment"></td>
 		</tr>
 
 	</table>

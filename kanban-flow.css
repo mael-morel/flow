@@ -85,3 +85,31 @@
 .stats td {
 	padding: 1pt;
 }
+
+th.analysis {
+	background: #cce;
+}
+td.analysis {
+	background: #aac;
+}
+
+th.development {
+	background: #cec;
+}
+td.development {
+	background: #aca;
+}
+
+th.qa {
+	background: #eec;
+}
+td.qa {
+	background: #cca;
+}
+
+th.deployment {
+	background: #cee;
+}
+td.deployment {
+	background: #acc;
+}
