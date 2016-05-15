@@ -404,21 +404,30 @@ function Stats() {
 	this.wipCount = [];
 	this.tasksFinished = [];
 	this.dataPointsToRemember = 8  * 20; // hours * days
+	this.wipAvg = null;
+	this.throughputAvg = null;
+	this.leadTimeAvg = null;
 	
 	this.getWipAvg = function() {
-		return this.wipCount.average();
+		this.wipAvg = this.wipAvg || this.wipCount.average();
+		return this.wipAvg;
 	}
 	
 	this.getThroughputAvg = function() {
-		return this.tasksFinished.average() * 8;
+		this.throughputAvg = this.throughputAvg || this.tasksFinished.average() * 8;
+		return this.throughputAvg;
 	}
 	
 	this.getLeadTimeAvg = function() {
-		return ([].concat.apply([], this.leadTimes)).average() / (8 * 60);
+		this.leadTimeAvg = this.leadTimeAvg ||  ([].concat.apply([], this.leadTimes)).average() / (8 * 60);
+		return this.leadTimeAvg;
 	}
 	
 	this.recalculateStats = function(board, time) {
 		if (time % 60 != 0) return;
+		this.wipAvg = null;
+		this.throughputAvg = null;
+		this.leadTimeAvg = null;
 		var position = (time / 60) % this.dataPointsToRemember;
 		var lastColumn = board.lastColumn();
 		var leadTimes = [];
