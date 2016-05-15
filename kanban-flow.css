@@ -34,6 +34,7 @@
 	     -webkit-animation-duration: .2s; /* Chrome, Safari, Opera */
 	     animation-name: taskAnimation;
 	     animation-duration: .2s;
+		 position:relative;
 	}
 .task .progress {
     height: 6px;
@@ -86,11 +87,22 @@
 	padding: 1pt;
 }
 
+.stats {
+	display: inline-block;
+}
+
+.headcount {
+	display: inline-block;
+}
+
 th.analysis {
 	background: #cce;
 }
 td.analysis {
 	background: #aac;
+}
+span.analysis, .analysis .task .person {
+	color: #00f;
 }
 
 th.development {
@@ -99,12 +111,18 @@ th.development {
 td.development {
 	background: #aca;
 }
+span.development, .development .task .person {
+	color: #0c0;
+}
 
 th.qa {
-	background: #eec;
+	background: #ece;
 }
 td.qa {
-	background: #cca;
+	background: #cac;
+}
+span.qa, .qa .task .person{
+	color: #f0f;
 }
 
 th.deployment {
@@ -112,4 +130,16 @@ th.deployment {
 }
 td.deployment {
 	background: #acc;
+}
+span.deployment, .deployment .task .person {
+	color: #0bb;
+}
+
+.board .person {
+	text-shadow: 1px 1px 2px #000000;
+	letter-spacing: -6pt;
+}
+
+.board-overlay .person {
+	text-shadow: 1px 1px 2px #000000;
 }

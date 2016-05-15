@@ -17,7 +17,7 @@ function Simulation() {
 		this.taskCounter = 1;
 		this.board = new Board(this.ticksPerHour);
 		this.stats = new Stats();
-		this.gui.update(this.board, this.stats);
+		this.gui.update(this.board, this.stats, true);
 	}
 	this.initBasics();
 
@@ -33,6 +33,7 @@ function Simulation() {
 	}
 	
 	this.pause = function() {
+		this.gui.update(this.board, this.stats, true);
 		clearTimeout(this.timeoutHandler);
 		this.timeoutHandler = null;
 	}
@@ -161,9 +162,9 @@ function GUI(simulation) {
 		return result;
 	}
 	
-	this.update = function(board, stats) {
+	this.update = function(board, stats, force) {
 		var now = Date.now();
-		if (now - this.lastUpdated < 1000/this.fps) return;
+		if (!force && now - this.lastUpdated < 1000/this.fps) return;
 		this.lastUpdated = now;
 		updateTime(this.simulation.time);
 		updateStats(stats);
@@ -193,15 +194,16 @@ function GUI(simulation) {
 			var id = columnVisual.attr("id");
 			columnVisual.children().each(function() {
 				var taskVisual = $(this);
-				var taskId = taskVisual.attr("id");
-				var task = board.tasks[taskId];
-				if (task) {
+				var task = taskVisual.data("taskReference");
+				if (task.column) {
 					taskVisual.find('.progress-bar').width((100 * task[task.column.name] / task[task.column.name + 'Original']).toFixed(1) + '%');
 				}
-				if (!task) {
+				if (!board.tasks[task.id]) {
 					taskVisual.remove();
 				} else if (task.column && task.column.name != id) {
-					taskVisual.detach().appendTo(task.column.name);
+					taskVisual.remove();
+					var newTaskInstance = createTaskDiv(task, [1]);
+					$("#" + task.column.name).append(newTaskInstance);
 				}
 
 			});
@@ -211,11 +213,22 @@ function GUI(simulation) {
 				continue;
 			}
 			var task = board.tasks[key];
-			if ($("#" + task.id).length == 0) {
-				var newTask = $("<div class='task' id='" + task.id + "'><div>" + task.id + "</div><div class='progress'><div class='progress-bar progress-bar-info' style='width:100%'/></div></div>");
+			if ($("." + task.id).length == 0) {
+				var newTask = createTaskDiv(task, []);
 				$('#' + task.column.name).append(newTask);
 			}
 		}
+	}
+	
+	function createTaskDiv(task, people) {
+		function createStatusSpan(people) {
+			if (people.length == 0) {
+				return "<span class='glyphicon glyphicon-hourglass person'/>";
+			}
+			return "<span class='glyphicon glyphicon-user person'/>";
+		}
+		var html = "<div class='task " + task.id + "'>" + createStatusSpan(people)+ "<div>" + task.id + "</div><div class='progress'><div class='progress-bar progress-bar-info' style='width:100%'/></div></div>";
+		return $(html).data("taskReference", task);
 	}
 }
 

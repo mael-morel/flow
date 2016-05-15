@@ -32,13 +32,13 @@
 			<th colspan="2" id="deploymentWithQueueHeader" class="deployment">Deployment <input type="text" class="wiplimit" maxlength="2" value="5"/></th>
 		</tr>
 		<tr>
-			<th class="analysis">Doing</th>
+			<th class="analysis">Doing <span class="glyphicon glyphicon-user analysis person"></span></th>
 			<th class="analysis">Done</th>
-			<th class="development">Doing</th>
+			<th class="development">Doing <span class="glyphicon glyphicon-user development person"></span></th>
 			<th class="development">Done</th>
-			<th class="qa">Doing</th>
+			<th class="qa">Doing <span class="glyphicon glyphicon-user qa person"></span></th>
 			<th class="qa">Done</th>
-			<th class="deployment">Doing</th>
+			<th class="deployment">Doing <span class="glyphicon glyphicon-user deployment person"></span></th>
 			<th class="deployment">Done</th>
 		</tr>
 	
@@ -74,6 +74,45 @@
 				<td>WIP/Lead Time:</td>
 				<td><span id="stats-wip-lead-time"></span></td>
 			</tr>			
+		</table>
+	</div>
+	<div class="headcount">
+		<table>
+			<tr>
+				<td></td>
+				<td>An</td>
+				<td>Dev</td>
+				<td>QA</td>
+				<td>Depl</td>
+			</tr>
+			<tr>
+				<td><span class="glyphicon glyphicon-user analysis person"></span></td>
+				<td><input type="checkbox"/></td>
+				<td><input type="checkbox"/></td>
+				<td><input type="checkbox"/></td>
+				<td><input type="checkbox"/></td>
+			</tr>
+			<tr>
+				<td><span class="glyphicon glyphicon-user development person"></span></td>
+				<td><input type="checkbox"/></td>
+				<td><input type="checkbox"/></td>
+				<td><input type="checkbox"/></td>
+				<td><input type="checkbox"/></td>
+			</tr>
+			<tr>
+				<td><span class="glyphicon glyphicon-user qa person"></span></td>
+				<td><input type="checkbox"/></td>
+				<td><input type="checkbox"/></td>
+				<td><input type="checkbox"/></td>
+				<td><input type="checkbox"/></td>
+			</tr>
+			<tr>
+				<td><span class="glyphicon glyphicon-user deployment person"></span></td>
+				<td><input type="checkbox"/></td>
+				<td><input type="checkbox"/></td>
+				<td><input type="checkbox"/></td>
+				<td><input type="checkbox"/></td>
+			</tr>
 		</table>
 	</div>
 	</div>
