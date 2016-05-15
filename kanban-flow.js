@@ -202,7 +202,7 @@ function GUI(simulation) {
 					taskVisual.remove();
 				} else if (task.column && task.column.name != id) {
 					taskVisual.remove();
-					var newTaskInstance = createTaskDiv(task, [1]);
+					var newTaskInstance = createTaskDiv(task);
 					$("#" + task.column.name).append(newTaskInstance);
 				}
 
@@ -214,20 +214,24 @@ function GUI(simulation) {
 			}
 			var task = board.tasks[key];
 			if ($("." + task.id).length == 0) {
-				var newTask = createTaskDiv(task, []);
+				var newTask = createTaskDiv(task);
 				$('#' + task.column.name).append(newTask);
 			}
 		}
 	}
 	
-	function createTaskDiv(task, people) {
-		function createStatusSpan(people) {
-			if (people.length == 0) {
-				return "<span class='glyphicon glyphicon-hourglass person'/>";
+	function createTaskDiv(task) {
+		function createStatusSpan(peopleWorkingOn) {
+			if (peopleWorkingOn.length == 0) {
+				return "<span class='glyphicon glyphicon-hourglass waiting'/>";
 			}
 			return "<span class='glyphicon glyphicon-user person'/>";
 		}
-		var html = "<div class='task " + task.id + "'>" + createStatusSpan(people)+ "<div>" + task.id + "</div><div class='progress'><div class='progress-bar progress-bar-info' style='width:100%'/></div></div>";
+		var peopleWorkingOn = [];
+		if (!task.column.isQueue()) {
+			peopleWorkingOn.push(task.column.name);
+		}
+		var html = "<div class='task " + task.id + "'>" + createStatusSpan(peopleWorkingOn)+ "<div>" + task.id + "</div><div class='progress'><div class='progress-bar progress-bar-info' style='width:100%'/></div></div>";
 		return $(html).data("taskReference", task);
 	}
 }
@@ -355,6 +359,10 @@ function Column(name, capacity) {
 	this.children = [];
 	this.parent = null;
 	this.ignoreLimit = false;
+	
+	this.isQueue = function() {
+		return capacity == Number.POSITIVE_INFINITY;
+	}
 	
 	this.resetCapacity = function(ticksPerHour) {
 		this.capacityLeft = this.capacity / ticksPerHour;
