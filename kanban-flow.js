@@ -125,8 +125,14 @@ function Simulation() {
 			var column = columns[columnIndex];
 			var notWorkingPpl = this.team.getNotWorking(column.name);
 			var tasksWithNoAssignee = column.getNotAssignedTasks();
-			for (var i=0; i<notWorkingPpl.length && i<tasksWithNoAssignee.length; i++) {
+			var i;
+			for (i=0; i<notWorkingPpl.length && i<tasksWithNoAssignee.length; i++) {
 				notWorkingPpl[i].assignTo(tasksWithNoAssignee[i]);
+			}
+			var workingPpl = this.team.getSpecialistsWorkingInColumnOrderedByTaskCount(column);
+			var j = 0;
+			for (; i < tasksWithNoAssignee.length && workingPpl.length > 0; i++) {
+				workingPpl[j % workingPpl.length].assignTo(tasksWithNoAssignee[i]); //this to be changed when workingPpl is sorted
 			}
 		}
 	}
@@ -159,6 +165,23 @@ function Team() {
 			if (person.tasksWorkingOn.length == 0 && person.specialisation == specialisation) {
 				result.push(person);
 			}
+		});
+		return result;
+	}
+	
+	this.getSpecialistsWorkingInColumnOrderedByTaskCount = function(column) {
+		var result = [];
+		column.tasks.forEach(function(task) {
+			task.peopleAssigned.forEach(function(person) {
+				if (person.specialisation == column.name) {
+					if (result.indexOf(person) == -1) {
+						result.push(person);
+					}
+				}
+			});
+		});
+		result.sort(function(a, b) {
+			return a.tasksWorkingOn.length > b.tasksWorkingOn.length;
 		});
 		return result;
 	}
