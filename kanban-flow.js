@@ -132,7 +132,10 @@ function Simulation() {
 			var workingPpl = this.team.getSpecialistsWorkingInColumnOrderedByTaskCount(column);
 			var j = 0;
 			for (; i < tasksWithNoAssignee.length && workingPpl.length > 0; i++) {
-				workingPpl[j % workingPpl.length].assignTo(tasksWithNoAssignee[i]); //this to be changed when workingPpl is sorted
+				if (workingPpl[j].tasksWorkingOn.length > workingPpl[(j + 1) % workingPpl.length].tasksWorkingOn.length) {
+					j = (j + 1) % workingPpl.length;
+				}
+				workingPpl[j].assignTo(tasksWithNoAssignee[i]); //this to be changed when workingPpl is sorted
 			}
 		}
 	}
@@ -147,17 +150,17 @@ function Simulation() {
 function Team() {
 	this.members = [];
 	
-	this.members.push(new Person("analysis"));
-	this.members.push(new Person("analysis"));
-	this.members.push(new Person("development"));
-	this.members.push(new Person("development"));
-	this.members.push(new Person("development"));
-	this.members.push(new Person("development"));
-	this.members.push(new Person("development"));
-	this.members.push(new Person("qa"));
-	this.members.push(new Person("qa"));
-	this.members.push(new Person("qa"));
-	this.members.push(new Person("deployment"));
+	this.members.push(new Person("analysis", 1));
+	this.members.push(new Person("analysis", 2));
+	this.members.push(new Person("development", 1));
+	this.members.push(new Person("development", 2));
+	this.members.push(new Person("development", 3));
+	this.members.push(new Person("development", 4));
+	this.members.push(new Person("development", 5));
+	this.members.push(new Person("qa", 1));
+	this.members.push(new Person("qa", 2));
+	this.members.push(new Person("qa", 3));
+	this.members.push(new Person("deployment", 1));
 	
 	this.getNotWorking = function(specialisation) {
 		var result = [];
@@ -187,10 +190,11 @@ function Team() {
 	}
 }
 
-function Person(specialisation) {
+function Person(specialisation, id) {
 	this.specialisation = specialisation;
 	this.tasksWorkingOn = [];
 	this.productivityPerHour = 60;
+	this.id = id;
 	
 	this.assignTo = function(task) {
 		this.tasksWorkingOn.push(task);
@@ -535,7 +539,7 @@ function GUI(simulation) {
 		}
 		var html = "";
 		peopleWorkingOn.forEach(function (person) {
-			html += "<span class='glyphicon glyphicon-user person " +person.specialisation + "'/>"
+			html += "<span class='glyphicon glyphicon-user person " +person.specialisation + "'/>";
 		});
 		return html;
 	}
