@@ -478,6 +478,7 @@ function GUI(simulation) {
 				var task = taskVisual.data("taskReference");
 				if (task.column) {
 					taskVisual.find('.progress-bar').width((100 * task[task.column.name] / task[task.column.name + 'Original']).toFixed(1) + '%');
+					taskVisual.find('.task-status').html(createStatusSpan(task.peopleAssigned));
 				}
 				if (!board.tasks[task.id]) {
 					taskVisual.remove();
@@ -485,8 +486,8 @@ function GUI(simulation) {
 					taskVisual.remove();
 					var newTaskInstance = createTaskDiv(task);
 					$("#" + task.column.name).append(newTaskInstance);
+					taskVisual = newTaskInstance;
 				}
-
 			});
 		});
 		for (var key in board.tasks) {
@@ -502,18 +503,14 @@ function GUI(simulation) {
 	}
 	
 	function createTaskDiv(task) {
-		function createStatusSpan(peopleWorkingOn) {
-			if (peopleWorkingOn.length == 0) {
-				return "<span class='glyphicon glyphicon-hourglass waiting'/>";
-			}
-			return "<span class='glyphicon glyphicon-user person'/>";
-		}
-		var peopleWorkingOn = [];
-		if (!task.column.isQueue()) {
-			peopleWorkingOn.push(task.column.name);
-		}
-		var html = "<div class='task " + task.id + "'>" + createStatusSpan(peopleWorkingOn)+ "<div>" + task.id + "</div><div class='progress'><div class='progress-bar progress-bar-info' style='width:100%'/></div></div>";
+		var html = "<div class='task " + task.id + "'><div class='task-status'>" + createStatusSpan(task.peopleAssigned)+ "</div><div>" + task.id + "</div><div class='progress'><div class='progress-bar progress-bar-info' style='width:100%'/></div></div>";
 		return $(html).data("taskReference", task);
+	}
+	function createStatusSpan(peopleWorkingOn) {
+		if (peopleWorkingOn.length == 0) {
+			return "<span class='glyphicon glyphicon-hourglass waiting'/>";
+		}
+		return "<span class='glyphicon glyphicon-user person'/>";
 	}
 }
 
