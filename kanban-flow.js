@@ -138,126 +138,6 @@ function Simulation() {
 	}
 }
 
-function GUI(simulation) {
-	this.simulation = simulation;
-	
-	this.fps = 10;
-	this.lastUpdated = Date.now();
-	
-	$('#timescale').slider({
-		min: 50,
-		max: 100000,
-		scale: 'logarithmic',
-		step: 5,
-		value: 100
-	}).on("slide", function(event) {
-		simulation.hourLengthInSeconds = 100 / event.value;
-	}).on("slideStop", function(event) {
-		simulation.hourLengthInSeconds = 100 / event.value;
-	});
-
-	$(".stop").click(function() {
-		simulation.stop();
-	});
-	$(".pause").click(function() {
-		simulation.pause();
-	});
-	$(".play").click(function() {
-		simulation.play();
-	});
-	
-	this.getLimitForColumn = function (columnName) {
-		var input = $("#" + columnName + "Header input");
-		var result = Number.POSITIVE_INFINITY;
-		if (input.length) {
-			result = !parseInt(input.val()) ? Number.POSITIVE_INFINITY : Math.abs(parseInt(input.val()));
-		}
-		return result;
-	}
-	
-	this.update = function(board, stats, force) {
-		var now = Date.now();
-		if (!force && now - this.lastUpdated < 1000/this.fps) return;
-		this.lastUpdated = now;
-		updateTime(this.simulation.time);
-		updateStats(stats);
-		updateBoard(board);
-	}
-
-	function updateTime(time) {
-		function pad(n) {
-		    return (n < 10) ? ("0" + n) : n;
-		}
-		$("#day").text(pad(Math.floor(time / (8 * 60)) + 1));
-		$("#hour").text(pad(Math.floor(time/60) % 8  + 9) + ":" + pad(time % 60));
-	}
-	
-	function updateStats(stats) {
-		var wipAvg = stats.getWipAvg();
-		var leadTimeAvg = stats.getLeadTimeAvg();
-		$('#stats-wip').text(wipAvg.toFixed(1));
-		$('#stats-throughput').text(stats.getThroughputAvg().toFixed(1));
-		$('#stats-lead-time').text(leadTimeAvg.toFixed(1));
-		$('#stats-wip-lead-time').text((wipAvg / leadTimeAvg).toFixed(1));
-	}
-
-	function updateBoard(board) {
-		$($('.tasks td').get().reverse()).each(function() {
-			var columnVisual = $(this);
-			var id = columnVisual.attr("id");
-			columnVisual.children().each(function() {
-				var taskVisual = $(this);
-				var task = taskVisual.data("taskReference");
-				if (task.column) {
-					taskVisual.find('.progress-bar').width((100 * task[task.column.name] / task[task.column.name + 'Original']).toFixed(1) + '%');
-				}
-				if (!board.tasks[task.id]) {
-					taskVisual.remove();
-				} else if (task.column && task.column.name != id) {
-					taskVisual.remove();
-					var newTaskInstance = createTaskDiv(task);
-					$("#" + task.column.name).append(newTaskInstance);
-				}
-
-			});
-		});
-		for (var key in board.tasks) {
-			if (!board.tasks.hasOwnProperty(key)) {
-				continue;
-			}
-			var task = board.tasks[key];
-			if ($("." + task.id).length == 0) {
-				var newTask = createTaskDiv(task);
-				$('#' + task.column.name).append(newTask);
-			}
-		}
-	}
-	
-	function createTaskDiv(task) {
-		function createStatusSpan(peopleWorkingOn) {
-			if (peopleWorkingOn.length == 0) {
-				return "<span class='glyphicon glyphicon-hourglass waiting'/>";
-			}
-			return "<span class='glyphicon glyphicon-user person'/>";
-		}
-		var peopleWorkingOn = [];
-		if (!task.column.isQueue()) {
-			peopleWorkingOn.push(task.column.name);
-		}
-		var html = "<div class='task " + task.id + "'>" + createStatusSpan(peopleWorkingOn)+ "<div>" + task.id + "</div><div class='progress'><div class='progress-bar progress-bar-info' style='width:100%'/></div></div>";
-		return $(html).data("taskReference", task);
-	}
-}
-
-
-Array.prototype.average = function(){
-	var total = 0;
-	for (var i = 0; i < this.length; i++) {
-		total += this[i];
-	}
-	return total / this.length;
-}
-
 function Team() {
 	this.members = [];
 	
@@ -526,3 +406,122 @@ function Stats() {
 	}
 }
 
+function GUI(simulation) {
+	this.simulation = simulation;
+	
+	this.fps = 10;
+	this.lastUpdated = Date.now();
+	
+	$('#timescale').slider({
+		min: 50,
+		max: 100000,
+		scale: 'logarithmic',
+		step: 5,
+		value: 100
+	}).on("slide", function(event) {
+		simulation.hourLengthInSeconds = 100 / event.value;
+	}).on("slideStop", function(event) {
+		simulation.hourLengthInSeconds = 100 / event.value;
+	});
+
+	$(".stop").click(function() {
+		simulation.stop();
+	});
+	$(".pause").click(function() {
+		simulation.pause();
+	});
+	$(".play").click(function() {
+		simulation.play();
+	});
+	
+	this.getLimitForColumn = function (columnName) {
+		var input = $("#" + columnName + "Header input");
+		var result = Number.POSITIVE_INFINITY;
+		if (input.length) {
+			result = !parseInt(input.val()) ? Number.POSITIVE_INFINITY : Math.abs(parseInt(input.val()));
+		}
+		return result;
+	}
+	
+	this.update = function(board, stats, force) {
+		var now = Date.now();
+		if (!force && now - this.lastUpdated < 1000/this.fps) return;
+		this.lastUpdated = now;
+		updateTime(this.simulation.time);
+		updateStats(stats);
+		updateBoard(board);
+	}
+
+	function updateTime(time) {
+		function pad(n) {
+		    return (n < 10) ? ("0" + n) : n;
+		}
+		$("#day").text(pad(Math.floor(time / (8 * 60)) + 1));
+		$("#hour").text(pad(Math.floor(time/60) % 8  + 9) + ":" + pad(time % 60));
+	}
+	
+	function updateStats(stats) {
+		var wipAvg = stats.getWipAvg();
+		var leadTimeAvg = stats.getLeadTimeAvg();
+		$('#stats-wip').text(wipAvg.toFixed(1));
+		$('#stats-throughput').text(stats.getThroughputAvg().toFixed(1));
+		$('#stats-lead-time').text(leadTimeAvg.toFixed(1));
+		$('#stats-wip-lead-time').text((wipAvg / leadTimeAvg).toFixed(1));
+	}
+
+	function updateBoard(board) {
+		$($('.tasks td').get().reverse()).each(function() {
+			var columnVisual = $(this);
+			var id = columnVisual.attr("id");
+			columnVisual.children().each(function() {
+				var taskVisual = $(this);
+				var task = taskVisual.data("taskReference");
+				if (task.column) {
+					taskVisual.find('.progress-bar').width((100 * task[task.column.name] / task[task.column.name + 'Original']).toFixed(1) + '%');
+				}
+				if (!board.tasks[task.id]) {
+					taskVisual.remove();
+				} else if (task.column && task.column.name != id) {
+					taskVisual.remove();
+					var newTaskInstance = createTaskDiv(task);
+					$("#" + task.column.name).append(newTaskInstance);
+				}
+
+			});
+		});
+		for (var key in board.tasks) {
+			if (!board.tasks.hasOwnProperty(key)) {
+				continue;
+			}
+			var task = board.tasks[key];
+			if ($("." + task.id).length == 0) {
+				var newTask = createTaskDiv(task);
+				$('#' + task.column.name).append(newTask);
+			}
+		}
+	}
+	
+	function createTaskDiv(task) {
+		function createStatusSpan(peopleWorkingOn) {
+			if (peopleWorkingOn.length == 0) {
+				return "<span class='glyphicon glyphicon-hourglass waiting'/>";
+			}
+			return "<span class='glyphicon glyphicon-user person'/>";
+		}
+		var peopleWorkingOn = [];
+		if (!task.column.isQueue()) {
+			peopleWorkingOn.push(task.column.name);
+		}
+		var html = "<div class='task " + task.id + "'>" + createStatusSpan(peopleWorkingOn)+ "<div>" + task.id + "</div><div class='progress'><div class='progress-bar progress-bar-info' style='width:100%'/></div></div>";
+		return $(html).data("taskReference", task);
+	}
+}
+
+
+Array.prototype.average = function(){
+	var total = 0;
+	for (var i = 0; i < this.length; i++) {
+		total += this[i];
+	}
+	return total / this.length;
+}
