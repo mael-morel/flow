@@ -11,10 +11,12 @@ function Simulation() {
 	this.gui = new GUI(this);
 	this.board;
 	this.stats;
+	this.team;
 	
 	this.initBasics = function() {
 		this.time = 0;
 		this.taskCounter = 1;
+		this.team = new Team();
 		this.board = new Board(this.ticksPerHour);
 		this.stats = new Stats();
 		this.gui.update(this.board, this.stats, true);
@@ -41,9 +43,9 @@ function Simulation() {
 	this.tick = function() {
 		this.timeoutHandler = null;
 		this.board.updateColumnsLimitsFrom(this.gui);
-		this.board.resetColumnsCapacity();
 		this.addNewTasks(this.board);
-		this.doWork(this.board.columns);
+		this.assignTeamMembersToTasks(this.team, this.board);
+		this.doWork();
 		this.moveTasks(this.board.columns);
 		this.stats.recalculateStats(this.board, this.time);
 		this.removeDoneTasks();
@@ -110,17 +112,28 @@ function Simulation() {
 		}
 		return column;
 	}
-
-	this.doWork = function(columns) {
-		columns.forEach(function(column) {
-			var i = 0;
-			var amountOfWorkPerTask = column.tasks.length > 0 ? column.capacityLeft / column.tasks.length : 0;
-			amountOfWorkPerTask = amountOfWorkPerTask > (120/this.ticksPerHour) ? (120/this.ticksPerHour) : amountOfWorkPerTask;
-			while (column.capacityLeft > 0 && i < column.tasks.length) {
-				var task = column.tasks[i++];
-				var actuallyWorked = task.workOn(column.name, amountOfWorkPerTask);
-				column.capacityLeft -= actuallyWorked;
+		/*
+		1. Najpierw szukamy zadan do pracy exlusive w kolumnie specjalizacji (zaczynajac od prawej)
+		2. Jesli zostaly zadania do pracy w tej kolumnie, szukamy osob nie pracujacych z innymi nad innym zadaniem w kolumnie, wybierajac tych z najmniejsza liczba zadan w toku
+		3. Jesli zostali ludzie do pracy w specjalizacji, probojemy ich dodawac do juz pracujacych, wybierajac zadania z najmniejsza liczba ludzi
+		4. Jesli zostali ludzie do pracy, bierzemy sie za nastepna specjalizacje i powtarzamy kroki
+		5. Po przejsciu wszystkich kolumn, jesli zostali ludzie do pracy (ktorzy nie pracuja nad zadnym zadaniem), probojemy dopasowac ich do innych kolumn zgodnie z pow. algorytmem
+		*/
+	this.assignTeamMembersToTasks = function(team, board) {
+		var columns = this.board.columns;
+		for (var columnIndex = columns.length - 1; columnIndex>=0; columnIndex--) {
+			var column = columns[columnIndex];
+			var notWorkingPpl = this.team.getNotWorking(column.name);
+			var tasksWithNoAssignee = column.getNotAssignedTasks();
+			for (var i=0; i<notWorkingPpl.length && i<tasksWithNoAssignee.length; i++) {
+				notWorkingPpl[i].assignTo(tasksWithNoAssignee[i]);
 			}
+		}
+	}
+
+	this.doWork = function() {	
+		this.team.members.forEach(function(person) {
+			person.work(this.ticksPerHour);
 		}.bind(this));
 	}
 }
@@ -245,12 +258,83 @@ Array.prototype.average = function(){
 	return total / this.length;
 }
 
+function Team() {
+	this.members = [];
+	
+	this.members.push(new Person("analysis"));
+	this.members.push(new Person("analysis"));
+	this.members.push(new Person("development"));
+	this.members.push(new Person("development"));
+	this.members.push(new Person("development"));
+	this.members.push(new Person("development"));
+	this.members.push(new Person("development"));
+	this.members.push(new Person("qa"));
+	this.members.push(new Person("qa"));
+	this.members.push(new Person("qa"));
+	this.members.push(new Person("deployment"));
+	
+	this.getNotWorking = function(specialisation) {
+		var result = [];
+		this.members.forEach(function(person) {
+			if (person.tasksWorkingOn.length == 0 && person.specialisation == specialisation) {
+				result.push(person);
+			}
+		});
+		return result;
+	}
+}
+
+function Person(specialisation) {
+	this.specialisation = specialisation;
+	this.tasksWorkingOn = [];
+	this.productivityPerHour = 60;
+	
+	this.assignTo = function(task) {
+		this.tasksWorkingOn.push(task);
+		task.peopleAssigned.push(this);
+	}
+	
+	this.work = function(ticksPerHour) {
+		if (this.tasksWorkingOn.length == 0) return;
+		var workPerTask = this.productivityPerHour / this.tasksWorkingOn.length / ticksPerHour;
+		this.tasksWorkingOn.forEach(function(task) {
+			if (task.column.name != specialisation) {
+				task.work(workPerTask / 2);
+			} else {
+				task.work(workPerTask);
+			}
+			if (task.finished()) {
+				task.unassignPeople();
+			}
+		});
+	}
+} 
+
 function Board(ticksPerHour) {
 	this.columns = null;
 	this.tasks = {};
 	this.ticksPerHour = ticksPerHour;
 	
 	createColumns(this);
+	
+	this.getTasksAvailableForWork = function(person, limitForOnePerson, howManyPeopleOnOneTask) {
+		var tasksToWorkOn = [];
+		var alreadyWorkingOn = person.tasksWorkingOn.length;
+		if (alreadyWorkinOn >= limitForOnePerson) {
+			return [];
+		}
+		this.columns[person.specialisation].tasks.forEach(function(task) {
+			if (task.peopleAssigned.indexOf(person) > -1) {
+				return;
+			}
+			if (alreadyWorkinOn == 0 && task.peopleAssigned.length == 0) {
+				tasksToWorkOn.push(task);
+			} else if (alreadyWorkinOn > 0 && task.peopleAssigned.length < howManyPeopleOnOneTask) {
+				tasksToWorkOn.push(task);
+			}
+		});
+		return tasksToWorkOn;
+	}
 	
 	this.lastColumn = function() {
 		return this.columns[this.columns.length - 1];
@@ -268,12 +352,6 @@ function Board(ticksPerHour) {
 			delete this.tasks[task.id];
 		}.bind(this));
 		lastColumn.tasks = [];
-	}
-	
-	this.resetColumnsCapacity = function() {
-		this.columns.forEach(function(column) {
-			column.resetCapacity(this.ticksPerHour);
-		}.bind(this));
 	}
 	
 	this.getCurrentWip = function() {
@@ -301,18 +379,18 @@ function Board(ticksPerHour) {
 		board.columns = [];
 		var columns = board.columns;
 		columns.push(new Column("input"));
-		Array.prototype.push.apply(columns, createColumnWithChildren("analysis", 2*60).children);
-		Array.prototype.push.apply(columns, createColumnWithChildren("development", 5*60).children);
-		Array.prototype.push.apply(columns, createColumnWithChildren("qa", 3*60).children);
-		Array.prototype.push.apply(columns, createColumnWithChildren("deployment", 60).children);
+		Array.prototype.push.apply(columns, createColumnWithChildren("analysis").children);
+		Array.prototype.push.apply(columns, createColumnWithChildren("development").children);
+		Array.prototype.push.apply(columns, createColumnWithChildren("qa").children);
+		Array.prototype.push.apply(columns, createColumnWithChildren("deployment").children);
 		board.columns[board.columns.length - 1].ignoreLimit = true;
 	}
 
 	function createColumnWithChildren(name, capacity) {
 		var parentColumn = new Column(name + "WithQueue");
-		var column = new Column(name, capacity);
+		var column = new Column(name, false);
 		column.parent = parentColumn;
-		var done = new Column(name + "Done");
+		var done = new Column(name + "Done", true);
 		done.parent = parentColumn;
 		parentColumn.children.push(column);
 		parentColumn.children.push(done);
@@ -332,6 +410,7 @@ function Task(taskId, time) {
 	this.qaOriginal = 4*60;
 	this.deploymentOriginal = 60;
 	this.column = null;
+	this.peopleAssigned = [];
 	
 	this.finished = function (column) {
 		if (!column) {
@@ -340,32 +419,39 @@ function Task(taskId, time) {
 		return this[column.name] <= 0 || !this[column.name];
 	}
 	
-	this.workOn = function(workType, amount) {
-		if (this[workType] && this[workType] > 0) {
-			this[workType] -= amount;
-			return amount;
-		}
-		return 0;
+	this.work = function(amount) {
+		this[this.column.name] -= amount;
+	}
+	
+	this.unassignPeople = function() {
+		this.peopleAssigned.forEach(function(person) {
+			person.tasksWorkingOn.splice(person.tasksWorkingOn.indexOf(this), 1);
+		}.bind(this));
+		this.peopleAssigned = [];
 	}
 }
 
-function Column(name, capacity) {
-	if (!capacity) capacity = Number.POSITIVE_INFINITY;
+function Column(name, queue) {
 	this.name = name;
 	this.limit = Number.POSITIVE_INFINITY;
-	this.capacity = capacity;
-	this.capacityLeft = capacity;
 	this.tasks = [];
 	this.children = [];
 	this.parent = null;
 	this.ignoreLimit = false;
+	this.queue = queue;
 	
-	this.isQueue = function() {
-		return capacity == Number.POSITIVE_INFINITY;
+	this.getNotAssignedTasks = function() {
+		var result = [];
+		this.tasks.forEach(function(task) {
+			if(task.peopleAssigned.length == 0) {
+				result.push(task);
+			}
+		});
+		return result;
 	}
 	
-	this.resetCapacity = function(ticksPerHour) {
-		this.capacityLeft = this.capacity / ticksPerHour;
+	this.isQueue = function() {
+		return queue;
 	}
 	
 	this.addTask = function(task) {
