@@ -131,20 +131,16 @@ function Simulation() {
 			for (i=0; i<notWorkingPpl.length && i<tasksWithNoAssignee.length; i++) {
 				notWorkingPpl[i].assignTo(tasksWithNoAssignee[i]);
 			}
+			
 			var workingPpl = this.team.getSpecialistsWorkingInColumnOrderedByTaskCount(column);
 			var j = 0;
-			var filterPpl = function() {
-				return workingPpl.filter(function(person) {
-					return person.tasksWorkingOn.length < this.maxTasksOnOnePerson;
-				}.bind(this));
-			}.bind(this);
-			workingPpl = filterPpl();
-			for (; i < tasksWithNoAssignee.length && workingPpl.length > 0; i++) {
+			for (; i < tasksWithNoAssignee.length && workingPpl.length > 0 && workingPpl[j].tasksWorkingOn.length < this.maxTasksOnOnePerson; i++) {
+				workingPpl[j].assignTo(tasksWithNoAssignee[i]);
 				if (workingPpl[j].tasksWorkingOn.length > workingPpl[(j + 1) % workingPpl.length].tasksWorkingOn.length) {
 					j = (j + 1) % workingPpl.length;
+				} else {
+					j = 0;
 				}
-				workingPpl[j].assignTo(tasksWithNoAssignee[i]);
-				workingPpl = filterPpl();
 			}
 		}
 	}
