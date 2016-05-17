@@ -104,7 +104,7 @@ th.analysis {
 td.analysis {
 	background: #aac;
 }
-span.analysis, .analysis .task .person {
+span.analysis {
 	color: #00f;
 }
 
@@ -114,7 +114,7 @@ th.development {
 td.development {
 	background: #aca;
 }
-span.development, .development .task .person {
+span.development {
 	color: #0c0;
 }
 
@@ -124,7 +124,7 @@ th.qa {
 td.qa {
 	background: #cac;
 }
-span.qa, .qa .task .person{
+span.qa {
 	color: #f0f;
 }
 
@@ -134,7 +134,7 @@ th.deployment {
 td.deployment {
 	background: #acc;
 }
-span.deployment, .deployment .task .person {
+span.deployment {
 	color: #0bb;
 }
 

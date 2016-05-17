@@ -510,7 +510,11 @@ function GUI(simulation) {
 		if (peopleWorkingOn.length == 0) {
 			return "<span class='glyphicon glyphicon-hourglass waiting'/>";
 		}
-		return "<span class='glyphicon glyphicon-user person'/>";
+		var html = "";
+		peopleWorkingOn.forEach(function (person) {
+			html += "<span class='glyphicon glyphicon-user person " +person.specialisation + "'/>"
+		});
+		return html;
 	}
 }
 
