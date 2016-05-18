@@ -553,7 +553,7 @@ function GUI(simulation) {
 		}
 		var html = "";
 		peopleWorkingOn.forEach(function (person) {
-			html += person.id;// + "<span class='glyphicon glyphicon-user person " +person.specialisation + "'/>";
+			html += "<span class='glyphicon glyphicon-user person " +person.specialisation + "'/>";
 		});
 		return html;
 	}
