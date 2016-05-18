@@ -179,6 +179,10 @@ function Simulation() {
 			person.work(this.ticksPerHour);
 		}.bind(this));
 	}
+	
+	this.updateColumnsAvailabilityForSpecialisation = function(specialisation, column, checked) {
+		this.team.updateColumnsAvailabilityForSpecialisation(specialisation, column, checked);
+	}
 }
 
 function Team() {
@@ -221,6 +225,14 @@ function Team() {
 		});
 		return result;
 	}
+	
+	this.updateColumnsAvailabilityForSpecialisation = function(specialisation, column, checked) {
+		this.members.forEach(function(person) {
+			if (person.specialisation == specialisation) {
+				person.allowToWorkIn(column, checked);
+			}
+		});
+	}
 }
 
 function Person(specialisation, id) {
@@ -252,6 +264,13 @@ function Person(specialisation, id) {
 	
 	this.isAllowedToWorkIn = function(columnName) {
 		return this.collumnsAllowedToWorkIn.includes(columnName);
+	}
+	this.allowToWorkIn = function(column, allowFlag) {
+		if (allowFlag) {
+			this.collumnsAllowedToWorkIn.push(column);
+		} else {
+			this.collumnsAllowedToWorkIn.splice(this.collumnsAllowedToWorkIn.indexOf(column), 1);
+		}
 	}
 } 
 
@@ -493,6 +512,13 @@ function GUI(simulation) {
 	});
 	$(".play").click(function() {
 		simulation.play();
+	});
+	$(".headcount input[type=checkbox]").change(function(event){
+		var checkbox = event.target;
+		var checked = event.target.checked;
+		var column = checkbox.parentElement.classList[0];
+		var specialisation = checkbox.parentElement.parentElement.classList[0];
+		simulation.updateColumnsAvailabilityForSpecialisation(specialisation, column, checked);
 	});
 	
 	this.getLimitForColumn = function (columnName) {
