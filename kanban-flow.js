@@ -175,30 +175,45 @@ function Simulation() {
 	}
 
 	this.doWork = function() {	
-		this.team.members.forEach(function(person) {
-			person.work(this.ticksPerHour);
-		}.bind(this));
+		this.team.doWork(this.ticksPerHour);
 	}
 	
 	this.updateColumnsAvailabilityForSpecialisation = function(specialisation, column, checked) {
 		this.team.updateColumnsAvailabilityForSpecialisation(specialisation, column, checked);
 	}
+	
+	this.updateHeadcount = function(specialisation, newHeadcount) {
+		this.team.updateHeadcount(specialisation, newHeadcount);
+	}
 }
 
 function Team() {
 	this.members = [];
+	this.removedButWorking = [];
 	
-	this.members.push(new Person("analysis", 1));
-	this.members.push(new Person("analysis", 2));
-	this.members.push(new Person("development", 1));
-	this.members.push(new Person("development", 2));
-	this.members.push(new Person("development", 3));
-	this.members.push(new Person("development", 4));
-	this.members.push(new Person("development", 5));
-	this.members.push(new Person("qa", 1));
-	this.members.push(new Person("qa", 2));
-	this.members.push(new Person("qa", 3));
-	this.members.push(new Person("deployment", 1));
+	this.members.push(new Person("analysis"));
+	this.members.push(new Person("analysis"));
+	this.members.push(new Person("development"));
+	this.members.push(new Person("development"));
+	this.members.push(new Person("development"));
+	this.members.push(new Person("development"));
+	this.members.push(new Person("development"));
+	this.members.push(new Person("qa"));
+	this.members.push(new Person("qa"));
+	this.members.push(new Person("qa"));
+	this.members.push(new Person("deployment"));
+	
+	this.doWork = function(ticksPerHour) {
+		this.members.forEach(function(person) {
+			person.work(ticksPerHour);
+		});
+		this.removedButWorking = this.removedButWorking.filter(function (person) {
+			return person.tasksWorkingOn.length != 0;
+		})
+		this.removedButWorking.forEach(function(person) {
+			person.work(ticksPerHour);
+		});
+	}
 	
 	this.getNotWorking = function(column, specialisation) {
 		var result = [];
@@ -215,7 +230,7 @@ function Team() {
 		column.tasks.forEach(function(task) {
 			if (task.peopleAssigned.length == 1 && (!specialisation || task.peopleAssigned[0].specialisation == specialisation)) {
 				var person = task.peopleAssigned[0];
-				if (!result.includes(person) && person.isAllowedToWorkIn(column.name)) {
+				if (!result.includes(person) && person.isAllowedToWorkIn(column.name) && !person.markedAsRemoved) {
 					result.push(person);
 				}
 			}
@@ -233,14 +248,33 @@ function Team() {
 			}
 		});
 	}
+	
+	this.updateHeadcount = function(specialisation, newHeadcount) {
+		var specialists = this.members.filter(function (person) {
+			return person.specialisation == specialisation;
+		});
+		if (specialists.length < newHeadcount) {
+			for (var i = 0; i < newHeadcount - specialists.length; i++) {
+				this.members.push(new Person(specialisation));
+			}
+		} else if (specialists.length > newHeadcount) {
+			for (var i = 0; i < specialists.length - newHeadcount; i++) {
+				this.members.splice(this.members.indexOf(specialists[i]), 1);
+				if (specialists[i].tasksWorkingOn.length > 0) {
+					this.removedButWorking.push(specialists[i]);
+					specialists[i].markedAsRemoved = true;
+				}
+			}
+		}
+	}
 }
 
-function Person(specialisation, id) {
+function Person(specialisation) {
 	this.specialisation = specialisation;
 	this.tasksWorkingOn = [];
 	this.productivityPerHour = 60;
-	this.id = id;
 	this.collumnsAllowedToWorkIn = [specialisation];
+	this.markedAsRemoved = false;
 	
 	this.assignTo = function(task) {
 		this.tasksWorkingOn.push(task);
@@ -516,9 +550,14 @@ function GUI(simulation) {
 	$(".headcount input[type=checkbox]").change(function(event){
 		var checkbox = event.target;
 		var checked = event.target.checked;
-		var column = checkbox.parentElement.classList[0];
-		var specialisation = checkbox.parentElement.parentElement.classList[0];
+		var column = checkbox.parentElement.className;
+		var specialisation = checkbox.parentElement.parentElement.className;
 		simulation.updateColumnsAvailabilityForSpecialisation(specialisation, column, checked);
+	});
+	$(".headcount input[type=text]").change(function(event){
+		var specialisation = event.target.parentElement.parentElement.className
+		var newHeadcount = event.target.value;
+		simulation.updateHeadcount(specialisation, newHeadcount);
 	});
 	
 	this.getLimitForColumn = function (columnName) {
