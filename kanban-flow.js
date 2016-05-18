@@ -193,6 +193,12 @@ function Simulation() {
 function Team() {
 	this.members = [];
 	this.removedButWorking = [];
+	this.allowedToWorkIn = {
+		'analysis': ['analysis'],
+		'development': ['development'],
+		'qa': ['qa'],
+		'deployment': ['deployment']
+	};
 	
 	this.doWork = function(ticksPerHour) {
 		this.members.forEach(function(person) {
@@ -232,12 +238,13 @@ function Team() {
 		return result;
 	}
 	
-	this.updateColumnsAvailabilityForSpecialisation = function(specialisation, column, checked) {
-		this.members.forEach(function(person) {
-			if (person.specialisation == specialisation) {
-				person.allowToWorkIn(column, checked);
-			}
-		});
+	this.updateColumnsAvailabilityForSpecialisation = function(specialisation, column, allowFlag) {
+		var collumnsAllowedToWorkIn = this.allowedToWorkIn[specialisation];
+		if (allowFlag) {
+			collumnsAllowedToWorkIn.push(column);
+		} else {
+			collumnsAllowedToWorkIn.splice(collumnsAllowedToWorkIn.indexOf(column), 1);
+		}
 	}
 	
 	this.updateHeadcount = function(specialisation, newHeadcount) {
@@ -246,7 +253,7 @@ function Team() {
 		});
 		if (specialists.length < newHeadcount) {
 			for (var i = 0; i < newHeadcount - specialists.length; i++) {
-				this.members.push(new Person(specialisation));
+				this.members.push(new Person(specialisation, this));
 			}
 		} else if (specialists.length > newHeadcount) {
 			for (var i = 0; i < specialists.length - newHeadcount; i++) {
@@ -260,11 +267,11 @@ function Team() {
 	}
 }
 
-function Person(specialisation) {
+function Person(specialisation, team) {
 	this.specialisation = specialisation;
 	this.tasksWorkingOn = [];
 	this.productivityPerHour = 60;
-	this.collumnsAllowedToWorkIn = [specialisation];
+	this.team = team;
 	this.markedAsRemoved = false;
 	
 	this.assignTo = function(task) {
@@ -288,14 +295,7 @@ function Person(specialisation) {
 	}
 	
 	this.isAllowedToWorkIn = function(columnName) {
-		return this.collumnsAllowedToWorkIn.includes(columnName);
-	}
-	this.allowToWorkIn = function(column, allowFlag) {
-		if (allowFlag) {
-			this.collumnsAllowedToWorkIn.push(column);
-		} else {
-			this.collumnsAllowedToWorkIn.splice(this.collumnsAllowedToWorkIn.indexOf(column), 1);
-		}
+		return this.team.allowedToWorkIn[this.specialisation].includes(columnName);
 	}
 } 
 
