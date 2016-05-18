@@ -46,9 +46,9 @@ function Simulation() {
 		this.timeoutHandler = null;
 		this.board.updateColumnsLimitsFrom(this.gui);
 		this.addNewTasks(this.board);
-		this.assignTeamMembersToTasks(this.team, this.board);
 		this.doWork();
 		this.moveTasks(this.board.columns);
+		this.assignTeamMembersToTasks(this.team, this.board);
 		this.stats.recalculateStats(this.board, this.time);
 		this.removeDoneTasks();
 		this.gui.update(this.board, this.stats);
