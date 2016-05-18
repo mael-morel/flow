@@ -128,36 +128,47 @@ function Simulation() {
 			if (column.isQueue()) {
 				continue;
 			}
-			var notWorkingPpl = this.team.getNotWorking(column.name);
-			var tasksWithNoAssignee = column.getNotAssignedTasks();
-			var i;
-			for (i=0; i<notWorkingPpl.length && i<tasksWithNoAssignee.length; i++) {
-				notWorkingPpl[i].assignTo(tasksWithNoAssignee[i]);
+			this.assignTeamMembersToTasksBySpecialisation(column, column.name);
+		}
+		for (var columnIndex = columns.length - 1; columnIndex>=0; columnIndex--) {
+			var column = columns[columnIndex];
+			if (column.isQueue()) {
+				continue;
 			}
-			var stoppedAtIndex = i;
-			if (stoppedAtIndex < tasksWithNoAssignee.length) {
-				var workingPpl = this.team.getSpecialistsWorkingInColumnOrderedByTaskCount(column);
-				var j = 0;
-				for (; i < tasksWithNoAssignee.length && workingPpl.length > 0 &&workingPpl[j].tasksWorkingOn.length < this.maxTasksOnOnePerson; i++) {
-					workingPpl[j].assignTo(tasksWithNoAssignee[i]);
-					if (workingPpl[j].tasksWorkingOn.length > workingPpl[(j + 1) % workingPpl.length].tasksWorkingOn.length) {
-						j = (j + 1) % workingPpl.length;
-					} else {
-						j = 0;
-					}
+			this.assignTeamMembersToTasksBySpecialisation(column);
+		}
+	}
+	
+	this.assignTeamMembersToTasksBySpecialisation = function(column, specialisation) {
+		var notWorkingPpl = this.team.getNotWorking(column, specialisation);
+		var tasksWithNoAssignee = column.getNotAssignedTasks();
+		var i;
+		for (i=0; i<notWorkingPpl.length && i<tasksWithNoAssignee.length; i++) {
+			notWorkingPpl[i].assignTo(tasksWithNoAssignee[i]);
+		}
+		var stoppedAtIndex = i;
+		if (stoppedAtIndex < tasksWithNoAssignee.length) {
+			var workingPpl = this.team.getSpecialistsWorkingInColumnOrderedByTaskCount(column, specialisation);
+			var j = 0;
+			for (; i < tasksWithNoAssignee.length && workingPpl.length > 0 &&workingPpl[j].tasksWorkingOn.length < this.maxTasksOnOnePerson; i++) {
+				workingPpl[j].assignTo(tasksWithNoAssignee[i]);
+				if (workingPpl[j].tasksWorkingOn.length > workingPpl[(j + 1) % workingPpl.length].tasksWorkingOn.length) {
+					j = (j + 1) % workingPpl.length;
+				} else {
+					j = 0;
 				}
-			} 
-			if (stoppedAtIndex < notWorkingPpl.length) {
-				i = stoppedAtIndex;
-				var tasks = column.getTasksAssignedToOneOrMoreOrderedByNumberOfPeople();
-				var j=0;
-				for (; i< notWorkingPpl.length && tasks.length > 0 && tasks[j].peopleAssigned.length < this.maxPeopleOnOneTask; i++) {
-					notWorkingPpl[i].assignTo(tasks[j]);
-					if (tasks[j].peopleAssigned.length > tasks[(j + 1) % tasks.length].peopleAssigned.length) {
-						j = (j + 1) % tasks.length;
-					} else {
-						j = 0;
-					}
+			}
+		} 
+		if (stoppedAtIndex < notWorkingPpl.length) {
+			i = stoppedAtIndex;
+			var tasks = column.getTasksAssignedToOneOrMoreOrderedByNumberOfPeople();
+			var j=0;
+			for (; i< notWorkingPpl.length && tasks.length > 0 && tasks[j].peopleAssigned.length < this.maxPeopleOnOneTask; i++) {
+				notWorkingPpl[i].assignTo(tasks[j]);
+				if (tasks[j].peopleAssigned.length > tasks[(j + 1) % tasks.length].peopleAssigned.length) {
+					j = (j + 1) % tasks.length;
+				} else {
+					j = 0;
 				}
 			}
 		}
@@ -185,22 +196,23 @@ function Team() {
 	this.members.push(new Person("qa", 3));
 	this.members.push(new Person("deployment", 1));
 	
-	this.getNotWorking = function(specialisation) {
+	this.getNotWorking = function(column, specialisation) {
 		var result = [];
 		this.members.forEach(function(person) {
-			if (person.tasksWorkingOn.length == 0 && person.specialisation == specialisation) {
+			if (person.tasksWorkingOn.length == 0 && (!specialisation || person.specialisation == specialisation) && person.isAllowedToWorkIn(column.name)) {
 				result.push(person);
 			}
 		});
 		return result;
 	}
 	
-	this.getSpecialistsWorkingInColumnOrderedByTaskCount = function(column) {
+	this.getSpecialistsWorkingInColumnOrderedByTaskCount = function(column, specialisation) {
 		var result = [];
 		column.tasks.forEach(function(task) {
-			if (task.peopleAssigned.length == 1 && task.peopleAssigned[0].specialisation == column.name) {
-				if (result.indexOf(task.peopleAssigned[0]) == -1) {
-					result.push(task.peopleAssigned[0]);
+			if (task.peopleAssigned.length == 1 && (!specialisation || task.peopleAssigned[0].specialisation == specialisation)) {
+				var person = task.peopleAssigned[0];
+				if (!result.includes(person) && person.isAllowedToWorkIn(column.name)) {
+					result.push(person);
 				}
 			}
 		});
@@ -216,6 +228,7 @@ function Person(specialisation, id) {
 	this.tasksWorkingOn = [];
 	this.productivityPerHour = 60;
 	this.id = id;
+	this.collumnsAllowedToWorkIn = [specialisation];
 	
 	this.assignTo = function(task) {
 		this.tasksWorkingOn.push(task);
@@ -235,6 +248,10 @@ function Person(specialisation, id) {
 				task.unassignPeople();
 			}
 		});
+	}
+	
+	this.isAllowedToWorkIn = function(columnName) {
+		return this.collumnsAllowedToWorkIn.includes(columnName);
 	}
 } 
 
@@ -287,7 +304,7 @@ function Board(ticksPerHour) {
 	function createColumns(board) {
 		board.columns = [];
 		var columns = board.columns;
-		columns.push(new Column("input"));
+		columns.push(new Column("input", true));
 		Array.prototype.push.apply(columns, createColumnWithChildren("analysis").children);
 		Array.prototype.push.apply(columns, createColumnWithChildren("development").children);
 		Array.prototype.push.apply(columns, createColumnWithChildren("qa").children);
