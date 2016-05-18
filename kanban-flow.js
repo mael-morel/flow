@@ -22,6 +22,9 @@ function Simulation() {
 		this.board = new Board(this.ticksPerHour);
 		this.stats = new Stats();
 		this.gui.update(this.board, this.stats, true);
+		this.gui.getHeadcount().forEach(function (newHeadcount) {
+			this.team.updateHeadcount(newHeadcount[0], newHeadcount[1]);
+		}.bind(this));
 	}
 	this.initBasics();
 
@@ -190,18 +193,6 @@ function Simulation() {
 function Team() {
 	this.members = [];
 	this.removedButWorking = [];
-	
-	this.members.push(new Person("analysis"));
-	this.members.push(new Person("analysis"));
-	this.members.push(new Person("development"));
-	this.members.push(new Person("development"));
-	this.members.push(new Person("development"));
-	this.members.push(new Person("development"));
-	this.members.push(new Person("development"));
-	this.members.push(new Person("qa"));
-	this.members.push(new Person("qa"));
-	this.members.push(new Person("qa"));
-	this.members.push(new Person("deployment"));
 	
 	this.doWork = function(ticksPerHour) {
 		this.members.forEach(function(person) {
@@ -566,6 +557,14 @@ function GUI(simulation) {
 		if (input.length) {
 			result = !parseInt(input.val()) ? Number.POSITIVE_INFINITY : Math.abs(parseInt(input.val()));
 		}
+		return result;
+	}
+	
+	this.getHeadcount = function() {
+		var result = [];
+		$(".headcount input[type=text]").toArray().forEach(function(element) {
+			result.push([element.parentElement.parentElement.className, element.value]);
+		});
 		return result;
 	}
 	
