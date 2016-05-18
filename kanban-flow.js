@@ -131,15 +131,30 @@ function Simulation() {
 			for (i=0; i<notWorkingPpl.length && i<tasksWithNoAssignee.length; i++) {
 				notWorkingPpl[i].assignTo(tasksWithNoAssignee[i]);
 			}
-			
-			var workingPpl = this.team.getSpecialistsWorkingInColumnOrderedByTaskCount(column);
-			var j = 0;
-			for (; i < tasksWithNoAssignee.length && workingPpl.length > 0 && workingPpl[j].tasksWorkingOn.length < this.maxTasksOnOnePerson; i++) {
-				workingPpl[j].assignTo(tasksWithNoAssignee[i]);
-				if (workingPpl[j].tasksWorkingOn.length > workingPpl[(j + 1) % workingPpl.length].tasksWorkingOn.length) {
-					j = (j + 1) % workingPpl.length;
-				} else {
-					j = 0;
+			var stoppedAtIndex = i;
+			if (stoppedAtIndex < tasksWithNoAssignee.length) {
+				var workingPpl = this.team.getSpecialistsWorkingInColumnOrderedByTaskCount(column);
+				var j = 0;
+				for (; i < tasksWithNoAssignee.length && workingPpl.length > 0 &&workingPpl[j].tasksWorkingOn.length < this.maxTasksOnOnePerson; i++) {
+					workingPpl[j].assignTo(tasksWithNoAssignee[i]);
+					if (workingPpl[j].tasksWorkingOn.length > workingPpl[(j + 1) % workingPpl.length].tasksWorkingOn.length) {
+						j = (j + 1) % workingPpl.length;
+					} else {
+						j = 0;
+					}
+				}
+			} 
+			if (stoppedAtIndex < notWorkingPpl.length) {
+				i = stoppedAtIndex;
+				var tasks = column.getTasksAssignedToOneOrMoreOrderedByNumberOfPeople();
+				var j=0;
+				for (; i< notWorkingPpl.length && tasks.length > 0 && tasks[j].peopleAssigned.length < this.maxPeopleOnOneTask; i++) {
+					notWorkingPpl[i].assignTo(tasks[j]);
+					if (tasks[j].peopleAssigned.length > tasks[(j + 1) % tasks.length].peopleAssigned.length) {
+						j = (j + 1) % tasks.length;
+					} else {
+						j = 0;
+					}
 				}
 			}
 		}
@@ -180,13 +195,11 @@ function Team() {
 	this.getSpecialistsWorkingInColumnOrderedByTaskCount = function(column) {
 		var result = [];
 		column.tasks.forEach(function(task) {
-			task.peopleAssigned.forEach(function(person) {
-				if (person.specialisation == column.name) {
-					if (result.indexOf(person) == -1) {
-						result.push(person);
-					}
+			if (task.peopleAssigned.length == 1 && task.peopleAssigned[0].specialisation == column.name) {
+				if (result.indexOf(task.peopleAssigned[0]) == -1) {
+					result.push(task.peopleAssigned[0]);
 				}
-			});
+			}
 		});
 		result.sort(function(a, b) {
 			return a.tasksWorkingOn.length > b.tasksWorkingOn.length;
@@ -332,6 +345,21 @@ function Column(name, queue) {
 	this.parent = null;
 	this.ignoreLimit = false;
 	this.queue = queue;
+	
+	this.getTasksAssignedToOneOrMoreOrderedByNumberOfPeople = function() {
+		var result = [];
+		this.tasks.forEach(function(task) {
+			if (task.peopleAssigned.every(function(person) {
+				return person.tasksWorkingOn.length == 1;
+				})) {
+					result.push(task);
+				}
+		});
+		result.sort(function(a, b) {
+			return a.peopleAssigned.length > b.peopleAssigned.length;
+		});
+		return result;
+	}
 	
 	this.getNotAssignedTasks = function() {
 		var result = [];
@@ -525,7 +553,7 @@ function GUI(simulation) {
 		}
 		var html = "";
 		peopleWorkingOn.forEach(function (person) {
-			html += "<span class='glyphicon glyphicon-user person " +person.specialisation + "'/>";
+			html += person.id;// + "<span class='glyphicon glyphicon-user person " +person.specialisation + "'/>";
 		});
 		return html;
 	}
