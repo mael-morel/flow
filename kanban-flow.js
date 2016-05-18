@@ -25,6 +25,7 @@ function Simulation() {
 		this.gui.getHeadcount().forEach(function (newHeadcount) {
 			this.team.updateHeadcount(newHeadcount[0], newHeadcount[1]);
 		}.bind(this));
+		this.team.allowedToWorkIn = this.gui.getColumnsAvailability();
 	}
 	this.initBasics();
 
@@ -564,6 +565,19 @@ function GUI(simulation) {
 		var result = [];
 		$(".headcount input[type=text]").toArray().forEach(function(element) {
 			result.push([element.parentElement.parentElement.className, element.value]);
+		});
+		return result;
+	}
+	
+	this.getColumnsAvailability = function() {
+		var checkboxes = $(".headcount input[type=checkbox]").toArray();
+		var result = {'development': [], 'analysis': [], 'qa': [], 'deployment': []};
+		checkboxes.forEach(function (checkbox) {
+			if(checkbox.checked) {
+				var column = checkbox.parentElement.className;
+				var specialisation = checkbox.parentElement.parentElement.className;
+				result[specialisation].push(column);
+			}	
 		});
 		return result;
 	}
