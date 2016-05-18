@@ -48,7 +48,7 @@ function Simulation() {
 		this.addNewTasks(this.board);
 		this.doWork();
 		this.moveTasks(this.board.columns);
-		this.assignTeamMembersToTasks(this.team, this.board);
+		this.assignTeamMembersToTasks();
 		this.stats.recalculateStats(this.board, this.time);
 		this.removeDoneTasks();
 		this.gui.update(this.board, this.stats);
@@ -121,10 +121,13 @@ function Simulation() {
 		4. Jesli zostali ludzie do pracy, bierzemy sie za nastepna specjalizacje i powtarzamy kroki
 		5. Po przejsciu wszystkich kolumn, jesli zostali ludzie do pracy (ktorzy nie pracuja nad zadnym zadaniem), probojemy dopasowac ich do innych kolumn zgodnie z pow. algorytmem
 		*/
-	this.assignTeamMembersToTasks = function(team, board) {
+	this.assignTeamMembersToTasks = function() {
 		var columns = this.board.columns;
 		for (var columnIndex = columns.length - 1; columnIndex>=0; columnIndex--) {
 			var column = columns[columnIndex];
+			if (column.isQueue()) {
+				continue;
+			}
 			var notWorkingPpl = this.team.getNotWorking(column.name);
 			var tasksWithNoAssignee = column.getNotAssignedTasks();
 			var i;
