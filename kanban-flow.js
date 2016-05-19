@@ -243,7 +243,7 @@ function Team() {
 		column.tasks.forEach(function(task) {
 			if (task.peopleAssigned.length == 1 && (!specialisation || task.peopleAssigned[0].specialisation == specialisation)) {
 				var person = task.peopleAssigned[0];
-				if (!result.includes(person) && person.isAllowedToWorkIn(column.name) && !person.markedAsRemoved) {
+				if (result.indexOf(person) == -1 && person.isAllowedToWorkIn(column.name) && !person.markedAsRemoved) {
 					result.push(person);
 				}
 			}
@@ -259,7 +259,7 @@ function Team() {
 		column.tasks.forEach(function(task) {
 			var person = task.peopleAssigned[0];
 			if (task.peopleAssigned.length == 1 && person.tasksWorkingOn.length > 1) {
-				if (!result.includes(person)) {
+				if (result.indexOf(person) == -1) {
 					result.push(person);
 				}
 			}	
@@ -336,7 +336,7 @@ function Person(specialisation, team) {
 	}
 	
 	this.isAllowedToWorkIn = function(columnName) {
-		return this.team.allowedToWorkIn[this.specialisation].includes(columnName);
+		return this.team.allowedToWorkIn[this.specialisation].indexOf(columnName) != -1;
 	}
 } 
 
