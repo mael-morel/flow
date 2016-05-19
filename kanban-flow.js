@@ -165,6 +165,21 @@ function Simulation() {
 		} 
 		if (stoppedAtIndex < notWorkingPpl.length) {
 			i = stoppedAtIndex;
+			var peopleWithMoreTasks = this.team.getPeopleAssignedToMoreThanOneTaskOrderderByTaskCountAndSpecialisation(column);
+			var j=0;
+			for (; i< notWorkingPpl.length && j < peopleWithMoreTasks.length; i++) {
+				var person = peopleWithMoreTasks[j];
+				var task = person.tasksWorkingOn[0];
+				task.unassignPeople();
+				notWorkingPpl[i].assignTo(task);
+				if (!peopleWithMoreTasks[j + 1] || person.tasksWorkingOn.length < peopleWithMoreTasks[j + 1].tasksWorkingOn.length || person.tasksWorkingOn.length == 1) {
+					j++;
+				}
+			}
+			stoppedAtIndex = i;
+		}
+		if (stoppedAtIndex < notWorkingPpl.length) {
+			i = stoppedAtIndex;
 			var tasks = column.getTasksAssignedToOneOrMoreOrderedByNumberOfPeople();
 			var j=0;
 			for (; i< notWorkingPpl.length && tasks.length > 0 && tasks[j].peopleAssigned.length < this.maxPeopleOnOneTask; i++) {
@@ -235,6 +250,31 @@ function Team() {
 		});
 		result.sort(function(a, b) {
 			return a.tasksWorkingOn.length > b.tasksWorkingOn.length;
+		});
+		return result;
+	}
+	
+	this.getPeopleAssignedToMoreThanOneTaskOrderderByTaskCountAndSpecialisation = function(column) {
+		var result = [];
+		column.tasks.forEach(function(task) {
+			var person = task.peopleAssigned[0];
+			if (task.peopleAssigned.length == 1 && person.tasksWorkingOn.length > 1) {
+				if (!result.includes(person)) {
+					result.push(person);
+				}
+			}	
+		});
+		result.sort(function(personA, personB) { //TODO: to be tested!
+			if (personA.specialisation == personB.specialisation) {
+				return personA.tasksWorkingOn.length < personB.tasksWorkingOn.length;
+			}
+			if (personA.specialisation == column.name) {
+				return true;
+			}
+			if (personB.specialisation == column.name) {
+				return false;
+			}
+			return personA.tasksWorkingOn.length < personB.tasksWorkingOn.length;
 		});
 		return result;
 	}
