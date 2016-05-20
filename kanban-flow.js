@@ -78,10 +78,16 @@ function Simulation() {
 				this.board.addTask(new Task(this.taskCounter++, this.time));
 			}
 		}.bind(this);
+		var alwaysOne = function() {
+			if (this.board.columns[0].tasks.length == 0)
+				this.board.addTask(new Task(this.taskCounter++, this.time));
+			
+		}.bind(this);
 
 		//stableFlow();
 		//stableRandomFlow();
-		scrumStrategy();
+		//scrumStrategy();
+		alwaysOne();
 	}
 
 	this.moveTasks = function(columns) {
