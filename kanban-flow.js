@@ -566,7 +566,7 @@ function GUI(simulation) {
 	this.cache = new Cache();
 	this.cache.put('allColumns', $($('.tasks td').get().reverse()).toArray());
 	
-	$('#timescale').slider({
+	$('.timescale').slider({
 		min: 50,
 		max: 100000,
 		scale: 'logarithmic',
