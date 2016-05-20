@@ -643,8 +643,8 @@ function GUI(simulation) {
 		function pad(n) {
 		    return (n < 10) ? ("0" + n) : n;
 		}
-		cache.get("#day").text(pad(Math.floor(time / (8 * 60)) + 1));
-		cache.get("#hour").text(pad(Math.floor(time/60) % 8  + 9) + ":" + pad(time % 60));
+		cache.get(".day").text(pad(Math.floor(time / (8 * 60)) + 1));
+		cache.get(".hour").text(pad(Math.floor(time/60) % 8  + 9) + ":" + pad(time % 60));
 	}
 	
 	function updateStats(stats, cache) {
