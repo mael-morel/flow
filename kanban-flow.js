@@ -709,7 +709,8 @@ function GUI(simulation) {
 function Cache() {
 	this.cache = {};
 	this.get = function(query) {
-		if (this.cache[query]) return this.cache[query];
+		var value = this.cache[query];
+		if (value) return value;
 		var jquery = $(query);
 		this.cache[query] = jquery;
 		return jquery;
