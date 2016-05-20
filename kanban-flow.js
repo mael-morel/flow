@@ -563,6 +563,8 @@ function GUI(simulation) {
 	
 	this.fps = 10;
 	this.lastUpdated = Date.now();
+	this.cache = new Cache();
+	this.cache.put('allColumns', $($('.tasks td').get().reverse()).toArray());
 	
 	$('#timescale').slider({
 		min: 50,
@@ -599,7 +601,7 @@ function GUI(simulation) {
 	});
 	
 	this.getLimitForColumn = function (columnName) {
-		var input = $("#" + columnName + "Header input");
+		var input = this.cache.get("#" + columnName + "Header input");
 		var result = Number.POSITIVE_INFINITY;
 		if (input.length) {
 			result = !parseInt(input.val()) ? Number.POSITIVE_INFINITY : Math.abs(parseInt(input.val()));
@@ -609,14 +611,14 @@ function GUI(simulation) {
 	
 	this.getHeadcount = function() {
 		var result = [];
-		$(".headcount input[type=text]").toArray().forEach(function(element) {
+		this.cache.get(".headcount input[type=text]").toArray().forEach(function(element) {
 			result.push([element.parentElement.parentElement.className, element.value]);
 		});
 		return result;
 	}
 	
 	this.getColumnsAvailability = function() {
-		var checkboxes = $(".headcount input[type=checkbox]").toArray();
+		var checkboxes = this.cache.get(".headcount input[type=checkbox]").toArray();
 		var result = {'development': [], 'analysis': [], 'qa': [], 'deployment': []};
 		checkboxes.forEach(function (checkbox) {
 			if(checkbox.checked) {
@@ -632,31 +634,32 @@ function GUI(simulation) {
 		var now = Date.now();
 		if (!force && now - this.lastUpdated < 1000/this.fps) return;
 		this.lastUpdated = now;
-		updateTime(this.simulation.time);
-		updateStats(stats);
-		updateBoard(board);
+		updateTime(this.simulation.time, this.cache);
+		updateStats(stats, this.cache);
+		updateBoard(board, this.cache);
 	}
 
-	function updateTime(time) {
+	function updateTime(time, cache) {
 		function pad(n) {
 		    return (n < 10) ? ("0" + n) : n;
 		}
-		$("#day").text(pad(Math.floor(time / (8 * 60)) + 1));
-		$("#hour").text(pad(Math.floor(time/60) % 8  + 9) + ":" + pad(time % 60));
+		cache.get("#day").text(pad(Math.floor(time / (8 * 60)) + 1));
+		cache.get("#hour").text(pad(Math.floor(time/60) % 8  + 9) + ":" + pad(time % 60));
 	}
 	
-	function updateStats(stats) {
+	function updateStats(stats, cache) {
 		var wipAvg = stats.getWipAvg();
 		var leadTimeAvg = stats.getLeadTimeAvg();
-		$('#stats-wip').text(wipAvg.toFixed(1));
-		$('#stats-throughput').text(stats.getThroughputAvg().toFixed(1));
-		$('#stats-lead-time').text(leadTimeAvg.toFixed(1));
-		$('#stats-wip-lead-time').text((wipAvg / leadTimeAvg).toFixed(1));
+		cache.get('#stats-wip').text(wipAvg.toFixed(1));
+		cache.get('#stats-throughput').text(stats.getThroughputAvg().toFixed(1));
+		cache.get('#stats-lead-time').text(leadTimeAvg.toFixed(1));
+		cache.get('#stats-wip-lead-time').text((wipAvg / leadTimeAvg).toFixed(1));
 	}
-
-	function updateBoard(board) {
-		$($('.tasks td').get().reverse()).each(function() {
-			var columnVisual = $(this);
+	
+	
+	function updateBoard(board, cache) {
+		cache.get('allColumns').forEach(function(columnVisual) {
+			columnVisual = $(columnVisual);
 			var id = columnVisual.attr("id");
 			columnVisual.children().each(function() {
 				var taskVisual = $(this);
@@ -670,7 +673,7 @@ function GUI(simulation) {
 				} else if (task.column && task.column.name != id) {
 					taskVisual.remove();
 					var newTaskInstance = createTaskDiv(task);
-					$("#" + task.column.name).append(newTaskInstance);
+					cache.get("#" + task.column.name).append(newTaskInstance);
 					taskVisual = newTaskInstance;
 				}
 			});
@@ -682,7 +685,7 @@ function GUI(simulation) {
 			var task = board.tasks[key];
 			if ($("." + task.id).length == 0) {
 				var newTask = createTaskDiv(task);
-				$('#' + task.column.name).append(newTask);
+				cache.get('#' + task.column.name).append(newTask);
 			}
 		}
 	}
@@ -700,6 +703,20 @@ function GUI(simulation) {
 			html += "<span class='glyphicon glyphicon-user person " +person.specialisation + "'/>";
 		});
 		return html;
+	}
+}
+
+function Cache() {
+	this.cache = {};
+	this.get = function(query) {
+		if (this.cache[query]) return this.cache[query];
+		var jquery = $(query);
+		this.cache[query] = jquery;
+		return jquery;
+	}
+	
+	this.put = function(query, value) {
+		this.cache[query] = value;
 	}
 }
 
