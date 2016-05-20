@@ -650,10 +650,10 @@ function GUI(simulation) {
 	function updateStats(stats, cache) {
 		var wipAvg = stats.getWipAvg();
 		var leadTimeAvg = stats.getLeadTimeAvg();
-		cache.get('#stats-wip').text(wipAvg.toFixed(1));
-		cache.get('#stats-throughput').text(stats.getThroughputAvg().toFixed(1));
-		cache.get('#stats-lead-time').text(leadTimeAvg.toFixed(1));
-		cache.get('#stats-wip-lead-time').text((wipAvg / leadTimeAvg).toFixed(1));
+		cache.get('.stats-wip').text(wipAvg.toFixed(1));
+		cache.get('.stats-throughput').text(stats.getThroughputAvg().toFixed(1));
+		cache.get('.stats-lead-time').text(leadTimeAvg.toFixed(1));
+		cache.get('.stats-wip-lead-time').text((wipAvg / leadTimeAvg).toFixed(1));
 	}
 	
 	
