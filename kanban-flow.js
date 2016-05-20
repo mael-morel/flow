@@ -659,8 +659,8 @@ function GUI(simulation) {
 	
 	function updateBoard(board, cache) {
 		cache.get('allColumns').forEach(function(columnVisual) {
+			var columnVisualId = columnVisual.className;
 			columnVisual = $(columnVisual);
-			var id = columnVisual.attr("id");
 			columnVisual.children().each(function() {
 				var taskVisual = $(this);
 				var task = taskVisual.data("taskReference");
@@ -670,10 +670,10 @@ function GUI(simulation) {
 				}
 				if (!board.tasks[task.id]) {
 					taskVisual.remove();
-				} else if (task.column && task.column.name != id) {
+				} else if (task.column && task.column.name != columnVisualId) {
 					taskVisual.remove();
 					var newTaskInstance = createTaskDiv(task);
-					cache.get("#" + task.column.name).append(newTaskInstance);
+					cache.get(".tasks td." + task.column.name).append(newTaskInstance);
 					taskVisual = newTaskInstance;
 				}
 			});
@@ -685,7 +685,7 @@ function GUI(simulation) {
 			var task = board.tasks[key];
 			if ($("." + task.id).length == 0) {
 				var newTask = createTaskDiv(task);
-				cache.get('#' + task.column.name).append(newTask);
+				cache.get('.tasks td.' + task.column.name).append(newTask);
 			}
 		}
 	}

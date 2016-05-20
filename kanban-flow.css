@@ -101,7 +101,7 @@
 th.analysis {
 	background: #cce;
 }
-td.analysis {
+td.analysis, td.analysisDone {
 	background: #aac;
 }
 span.analysis {
@@ -111,7 +111,7 @@ span.analysis {
 th.development {
 	background: #cec;
 }
-td.development {
+td.development, td.developmentDone {
 	background: #aca;
 }
 span.development {
@@ -121,7 +121,7 @@ span.development {
 th.qa {
 	background: #ece;
 }
-td.qa {
+td.qa, td.qaDone{
 	background: #cac;
 }
 span.qa {
@@ -131,7 +131,7 @@ span.qa {
 th.deployment {
 	background: #cee;
 }
-td.deployment {
+td.deployment, td.deploymentDone {
 	background: #acc;
 }
 span.deployment {
