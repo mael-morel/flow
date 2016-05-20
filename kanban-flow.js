@@ -601,7 +601,7 @@ function GUI(simulation) {
 	});
 	
 	this.getLimitForColumn = function (columnName) {
-		var input = this.cache.get("#" + columnName + "Header input");
+		var input = this.cache.get("." + columnName + "Header input");
 		var result = Number.POSITIVE_INFINITY;
 		if (input.length) {
 			result = !parseInt(input.val()) ? Number.POSITIVE_INFINITY : Math.abs(parseInt(input.val()));
