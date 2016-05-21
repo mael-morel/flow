@@ -82,6 +82,20 @@
     display: inline-block;
     vertical-align: top;
 }
+.title {
+	flex: 1;
+    font-weight: bold;
+    font-size: large;
+    text-align: center;
+}
+
+.title p:nth-child(2) {
+	font-size: x-large;
+}
+
+.title p {
+	margin: 0;
+}
 
 #timescaleSlider .slider-selection {
 	background: #BABABA;
