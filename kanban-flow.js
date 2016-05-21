@@ -1,14 +1,14 @@
 $(document).ready(function() {
-	new Simulation().play();
+	new Simulation(".kanban-board").play();
 });
 
-function Simulation() {
+function Simulation(hookSelector) {
 	this.hourLengthInSeconds = 1;
 	this.ticksPerHour = 12;
 	this.time;
 	this.taskCounter;
 	this.timeoutHandler;
-	this.gui = new GUI(this);
+	this.gui = new GUI(hookSelector, this, new Cache());
 	this.board;
 	this.stats;
 	this.team;
@@ -558,15 +558,20 @@ function Stats() {
 	}
 }
 
-function GUI(simulation) {
-	this.simulation = simulation;
+function GUI(hookSelector, simulation, cache) {
+	this.cache = cache;
+	this.hookSelector = hookSelector;
+	function $$(selector) {
+		return cache.get(hookSelector +" " + selector);
+	};
 	
+	this.simulation = simulation;
 	this.fps = 10;
 	this.lastUpdated = Date.now();
-	this.cache = new Cache();
-	this.cache.put('allColumns', $($('.tasks td').get().reverse()).toArray());
 	
-	$('.timescale').slider({
+	this.cache.put(hookSelector +' allColumns', $($$('.tasks td').get().reverse()).toArray());
+
+	$$('.timescale').slider({
 		min: 50,
 		max: 100000,
 		scale: 'logarithmic',
@@ -578,30 +583,30 @@ function GUI(simulation) {
 		simulation.hourLengthInSeconds = 100 / event.value;
 	});
 
-	$(".stop").click(function() {
+	$$(".stop").click(function() {
 		simulation.stop();
 	});
-	$(".pause").click(function() {
+	$$(".pause").click(function() {
 		simulation.pause();
 	});
-	$(".play").click(function() {
+	$$(".play").click(function() {
 		simulation.play();
 	});
-	$(".headcount input[type=checkbox]").change(function(event){
+	$$(".headcount input[type=checkbox]").change(function(event){
 		var checkbox = event.target;
 		var checked = event.target.checked;
 		var column = checkbox.parentElement.className;
 		var specialisation = checkbox.parentElement.parentElement.className;
 		simulation.updateColumnsAvailabilityForSpecialisation(specialisation, column, checked);
 	});
-	$(".headcount input[type=text]").change(function(event){
+	$$(".headcount input[type=text]").change(function(event){
 		var specialisation = event.target.parentElement.parentElement.className
 		var newHeadcount = event.target.value;
 		simulation.updateHeadcount(specialisation, newHeadcount);
 	});
 	
 	this.getLimitForColumn = function (columnName) {
-		var input = this.cache.get("." + columnName + "Header input");
+		var input = $$("." + columnName + "Header input");
 		var result = Number.POSITIVE_INFINITY;
 		if (input.length) {
 			result = !parseInt(input.val()) ? Number.POSITIVE_INFINITY : Math.abs(parseInt(input.val()));
@@ -611,14 +616,14 @@ function GUI(simulation) {
 	
 	this.getHeadcount = function() {
 		var result = [];
-		this.cache.get(".headcount input[type=text]").toArray().forEach(function(element) {
+		$$(".headcount input[type=text]").toArray().forEach(function(element) {
 			result.push([element.parentElement.parentElement.className, element.value]);
 		});
 		return result;
 	}
 	
 	this.getColumnsAvailability = function() {
-		var checkboxes = this.cache.get(".headcount input[type=checkbox]").toArray();
+		var checkboxes = $$(".headcount input[type=checkbox]").toArray();
 		var result = {'development': [], 'analysis': [], 'qa': [], 'deployment': []};
 		checkboxes.forEach(function (checkbox) {
 			if(checkbox.checked) {
@@ -643,22 +648,22 @@ function GUI(simulation) {
 		function pad(n) {
 		    return (n < 10) ? ("0" + n) : n;
 		}
-		cache.get(".day").text(pad(Math.floor(time / (8 * 60)) + 1));
-		cache.get(".hour").text(pad(Math.floor(time/60) % 8  + 9) + ":" + pad(time % 60));
+		$$(".day").text(pad(Math.floor(time / (8 * 60)) + 1));
+		$$(".hour").text(pad(Math.floor(time/60) % 8  + 9) + ":" + pad(time % 60));
 	}
 	
 	function updateStats(stats, cache) {
 		var wipAvg = stats.getWipAvg();
 		var leadTimeAvg = stats.getLeadTimeAvg();
-		cache.get('.stats-wip').text(wipAvg.toFixed(1));
-		cache.get('.stats-throughput').text(stats.getThroughputAvg().toFixed(1));
-		cache.get('.stats-lead-time').text(leadTimeAvg.toFixed(1));
-		cache.get('.stats-wip-lead-time').text((wipAvg / leadTimeAvg).toFixed(1));
+		$$('.stats-wip').text(wipAvg.toFixed(1));
+		$$('.stats-throughput').text(stats.getThroughputAvg().toFixed(1));
+		$$('.stats-lead-time').text(leadTimeAvg.toFixed(1));
+		$$('.stats-wip-lead-time').text((wipAvg / leadTimeAvg).toFixed(1));
 	}
 	
 	
 	function updateBoard(board, cache) {
-		cache.get('allColumns').forEach(function(columnVisual) {
+		$$('allColumns').forEach(function(columnVisual) {
 			var columnVisualId = columnVisual.className;
 			columnVisual = $(columnVisual);
 			columnVisual.children().each(function() {
@@ -673,7 +678,7 @@ function GUI(simulation) {
 				} else if (task.column && task.column.name != columnVisualId) {
 					taskVisual.remove();
 					var newTaskInstance = createTaskDiv(task);
-					cache.get(".tasks td." + task.column.name).append(newTaskInstance);
+					$$(".tasks td." + task.column.name).append(newTaskInstance);
 					taskVisual = newTaskInstance;
 				}
 			});
@@ -685,7 +690,7 @@ function GUI(simulation) {
 			var task = board.tasks[key];
 			if ($("." + task.id).length == 0) {
 				var newTask = createTaskDiv(task);
-				cache.get('.tasks td.' + task.column.name).append(newTask);
+				$$('.tasks td.' + task.column.name).append(newTask);
 			}
 		}
 	}
