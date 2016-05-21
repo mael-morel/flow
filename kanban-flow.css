@@ -63,6 +63,26 @@
     to {border-color: black;}
 }
 
+.top-toolbar {
+    display: -ms-flexbox;
+    display: -webkit-flex;	
+	display: flex;
+}
+
+.top-toolbar>div{
+    -webkit-flex-shrink: 1;
+    -ms-flex-shrink: 1;
+	flex-shrink: 1;
+    border: 1pt;
+    border-style: solid;
+    border-radius: 5pt;
+    padding: 3pt;
+    padding-left: 10pt;
+    padding-right: 10pt;
+    display: inline-block;
+    vertical-align: top;
+}
+
 #timescaleSlider .slider-selection {
 	background: #BABABA;
 }

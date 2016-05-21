@@ -13,14 +13,20 @@
 <body>
 <div class="kanban-board">	
 	<div class="board-overlay">
-		<div>
-			Day: <span class="day"></span>, time: <span class="hour"></span>
-		</div>
-		<div class=buttons> 
-			<button type="button" class="btn btn-success play"><span class="glyphicon glyphicon-play" aria-hidden="true"></span></button>
-			<button type="button" class="btn btn-info pause"><span class="glyphicon glyphicon-pause" aria-hidden="true"></span></button>
-			<button type="button" class="btn btn-danger stop"><span class="glyphicon glyphicon-stop" aria-hidden="true"></span></button>
-			<input class="timescale" data-slider-id='timescaleSlider' type="text" data-slider-min="1" data-slider-max="20" data-slider-step="1" data-slider-value="5"/>
+		<div class="top-toolbar">
+			<div class="time-and-buttons">
+				Day: <span class="day"></span>, time: <span class="hour"></span>
+				<div class=buttons> 
+					<button type="button" class="btn btn-success play"><span class="glyphicon glyphicon-play" aria-hidden="true"></span></button>
+					<button type="button" class="btn btn-info pause"><span class="glyphicon glyphicon-pause" aria-hidden="true"></span></button>
+					<button type="button" class="btn btn-danger stop"><span class="glyphicon glyphicon-stop" aria-hidden="true"></span></button>
+		
+				</div>
+			</div>
+			<div class="timescale-wrapper">
+				<div>Time speed:</div>
+				<input class="timescale" data-slider-id='timescaleSlider' type="text"/>
+			</div>
 		</div>
 	<div class="board-wrapper">
 	<table class="board">
