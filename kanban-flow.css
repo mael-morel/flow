@@ -67,9 +67,10 @@
     display: -ms-flexbox;
     display: -webkit-flex;	
 	display: flex;
-    border: 1pt;
+    border: 1px;
+	border-bottom: 0px;
     border-style: solid;
-    border-radius: 5pt;
+    border-radius: 6px 6px 0 0;
 }
 
 .top-toolbar>div{
@@ -81,8 +82,12 @@
     padding-right: 10pt;
     display: inline-block;
     vertical-align: top;
-    border-right: 1pt;
+    border: 0pt;
     border-style: solid;
+}
+.top-toolbar>div:not(:first-child) {
+	border-left: 1px;
+	border-style: solid;
 }
 .title {
 	flex: 1;

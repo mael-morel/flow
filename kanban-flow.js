@@ -1,5 +1,5 @@
 $(document).ready(function() {
-	new Simulation(".kanban-board").play();
+	new Simulation(".kanban-board");
 });
 
 function Simulation(hookSelector) {
