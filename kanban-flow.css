@@ -108,6 +108,10 @@
 	background: #BABABA;
 }
 
+.slider.slider-horizontal {
+	width: 140px;
+}
+
 .board-wrapper{ 
     border-width: 1pt;
     border-style: solid;
@@ -126,6 +130,7 @@ input[type="text"].wiplimit {
 }
 .stats td {
 	padding: 1pt;
+    line-height: 80%;
 }
 
 .stats {
