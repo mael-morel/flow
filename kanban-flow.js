@@ -610,11 +610,32 @@ function GUI(hookSelector, simulation, cache) {
 		var navElement = $(this);
 		if (navElement.hasClass('active')) return;
 		$$(".bottom-menu .nav li:nth-child(" + (currentlySelected +1) + ")").toggleClass("active", false);
-		$$(".bottom-menu .simulation-settings div:nth-child(" + (currentlySelected +1) + ")").hide();
+		$$(".bottom-menu div:nth-of-type(" + (currentlySelected +1) + ")").hide();
 		currentlySelected = navElement.index();
 		$$(".bottom-menu .nav li:nth-child(" + (currentlySelected +1) + ")").toggleClass("active", true);
-		$$(".bottom-menu .simulation-settings div:nth-child(" + (currentlySelected +1) + ")").show();
+		$$(".bottom-menu div:nth-of-type(" + (currentlySelected +1) + ")").show();
 	});
+	this.cfdChart = new Chart($$(".simulation-cfd"), {
+	    type: 'line',
+	    data: {
+	        labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+	        datasets: [{
+	            label: '# of Votes',
+	            data: [12, 19, 3, 5, 2, 3]
+	        }]
+	    },
+	    options: {
+			responsive: false,
+	        scales: {
+	            yAxes: [{
+	                ticks: {
+	                    beginAtZero:true
+	                }
+	            }]
+	        }
+	    }
+	});
+	$$(".bottom-menu div:not(:nth-of-type(1))").hide();
 	
 	this.getLimitForColumn = function (columnName) {
 		var input = $$("." + columnName + "Header input");
