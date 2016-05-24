@@ -604,7 +604,9 @@ function GUI(hookSelector, simulation, cache) {
 		var newHeadcount = event.target.value;
 		simulation.updateHeadcount(specialisation, newHeadcount);
 	});
-	
+	$$(".simulation-settings-switch").click(function(){
+    	$$('.simulation-settings-foldable').slideToggle('fast');
+	});	
 	this.getLimitForColumn = function (columnName) {
 		var input = $$("." + columnName + "Header input");
 		var result = Number.POSITIVE_INFINITY;
