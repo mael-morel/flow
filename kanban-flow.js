@@ -604,9 +604,18 @@ function GUI(hookSelector, simulation, cache) {
 		var newHeadcount = event.target.value;
 		simulation.updateHeadcount(specialisation, newHeadcount);
 	});
-	$$(".simulation-settings-switch").click(function(){
-    	$$('.simulation-settings-foldable').slideToggle('fast');
-	});	
+	
+	var currentlySelected = 0;
+	$$(".bottom-menu .nav li").click(function() {
+		var navElement = $(this);
+		if (navElement.hasClass('active')) return;
+		$$(".bottom-menu .nav li:nth-child(" + (currentlySelected +1) + ")").toggleClass("active", false);
+		$$(".bottom-menu .simulation-settings div:nth-child(" + (currentlySelected +1) + ")").hide();
+		currentlySelected = navElement.index();
+		$$(".bottom-menu .nav li:nth-child(" + (currentlySelected +1) + ")").toggleClass("active", true);
+		$$(".bottom-menu .simulation-settings div:nth-child(" + (currentlySelected +1) + ")").show();
+	});
+	
 	this.getLimitForColumn = function (columnName) {
 		var input = $$("." + columnName + "Header input");
 		var result = Number.POSITIVE_INFINITY;

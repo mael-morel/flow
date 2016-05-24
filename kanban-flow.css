@@ -93,23 +93,17 @@
 	border-style: solid;
 }
 
-.simulation-settings {
+.bottom-menu {
     border: 1px;
 	border-top: 0px;
     border-style: solid;
     border-radius: 0 0 10px 10px;
 }
 
-.simulation-settings-foldable {
-    display: -ms-flexbox;
-    display: -webkit-flex;	
-	display: flex;
+.simulation-settings {
 }
 
-.simulation-settings-foldable>div{
-    -webkit-flex-shrink: 1;
-    -ms-flex-shrink: 1;
-	flex-shrink: 1;
+.simulation-settings>div{
     padding: 3pt;
     padding-left: 10pt;
     padding-right: 10pt;
@@ -117,17 +111,6 @@
     vertical-align: top;
     border: 0pt;
     border-style: solid;
-}
-.simulation-settings-foldable>div:not(:first-child) {
-	border-left: 1px;
-	border-style: solid;
-}
-.simulation-settings-switch {
-    padding: 3pt;
-    padding-left: 10pt;
-    padding-right: 10pt;
-	font-weight: bold;
-	cursor: default;
 }
 
 .title {
@@ -249,4 +232,8 @@ span.deployment {
 .headcount input {
 	width: 20pt;
 	margin: 0;
+}
+
+.nav li {
+	cursor: pointer;
 }
