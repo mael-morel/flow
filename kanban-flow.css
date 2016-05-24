@@ -131,7 +131,6 @@
 }
 
 .title {
-	flex: 1;
     font-weight: bold;
     font-size: large;
     text-align: center;
@@ -175,7 +174,7 @@ input[type="text"].wiplimit {
 }
 
 .stats {
-	display: inline-block;
+	flex: 1;
 	vertical-align: top;
 	margin-right:10pt;
 }

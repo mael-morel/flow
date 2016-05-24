@@ -657,10 +657,10 @@ function GUI(hookSelector, simulation, cache) {
 	function updateStats(stats, cache) {
 		var wipAvg = stats.getWipAvg();
 		var leadTimeAvg = stats.getLeadTimeAvg();
-		$$('.stats-wip').text(wipAvg.toFixed(1));
-		$$('.stats-throughput').text(stats.getThroughputAvg().toFixed(1));
-		$$('.stats-lead-time').text(leadTimeAvg.toFixed(1));
-		$$('.stats-wip-lead-time').text((wipAvg / leadTimeAvg).toFixed(1));
+		$$('.stats-wip').text(wipAvg ? wipAvg.toFixed(1) : '-');
+		$$('.stats-throughput').text(stats.getThroughputAvg() ? stats.getThroughputAvg().toFixed(1) : '-');
+		$$('.stats-lead-time').text(leadTimeAvg ? leadTimeAvg.toFixed(1) : '-');
+		$$('.stats-wip-lead-time').text(wipAvg && leadTimeAvg ? (wipAvg / leadTimeAvg).toFixed(1) : '-');
 	}
 	
 	
