@@ -645,7 +645,7 @@ function GUI(hookSelector, simulation, cache) {
 	
 	$$(".simulation-cfd-tab").CanvasJSChart({
       title:{
-        text: "Control Flow Diagram (CFD)"  
+        text: "Cumulative Flow Diagram (CFD)"  
       },
 	  backgroundColor: null,
 	  zoomEnabled: true,
