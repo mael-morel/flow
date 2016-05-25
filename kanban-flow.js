@@ -562,10 +562,12 @@ function Stats() {
 	this.updateCfdData = function(board, time) {
 		if (time % (60 * 8) != 0) return;
 		var day = (time/60/8);
-		for (var i=0; i<board.columns.length; i+=2) {
-			var sum = board.columns[i].tasks.length + (board.columns[i+1] ? board.columns[i+1].tasks.length : 0);
+		for (var i=0; i<board.columns.length - 1; i+=2) {
+			var sum = board.columns[i].tasks.length + board.columns[i+1].tasks.length;
 			this.cfdData[i/2].push({x: day, y:sum});
 		}
+		var lastDoneCount = this.cfdData[4][this.cfdData[4].length - 1] ? this.cfdData[4][this.cfdData[4].length - 1].y : 0;
+		this.cfdData[4].push({x: day, y:(board.columns[board.columns.length - 1].tasks.length + lastDoneCount)});
 	}
 }
 
@@ -577,7 +579,7 @@ function GUI(hookSelector, simulation, cache) {
 	};
 	
 	this.simulation = simulation;
-	this.fps = 10;
+	this.fps = 4;
 	this.lastUpdated = Date.now();
 	
 	this.cache.put(hookSelector +' allColumns', $($$('.tasks td').get().reverse()).toArray());
@@ -639,29 +641,32 @@ function GUI(hookSelector, simulation, cache) {
 		$$(".simulation-settings-div").slideFadeToggle();
 	});
 	
-	this.cfdChart = new Chart($$(".simulation-cfd"), {
-	    type: 'line',
-	    data: {
-	        labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
-	        datasets: [{
-	            label: '# of Votes',
-	            data: [12, 19, 3, 5, 2, 3],
-				fill: true,
-				lineTension: 0.0,
-	        },{
-	            label: 'test',
-	            data: [2, 1, 22, 2, 1, 2],
-				fill: false,
-				lineTension: 0.0,
-	        }
-		]
-	    },
-	    options: {
-			responsive: false,
-			stacked: true
-	        
-	    }
-	});
+	
+	
+	$$(".simulation-cfd-tab").CanvasJSChart({
+      title:{
+        text: "Control Flow Diagram (CFD)"  
+      },
+	  backgroundColor: null,
+      data: [{        
+        type: "stackedArea", //or stackedColumn
+        dataPoints: []
+      },{        
+        type: "stackedArea", //or stackedColumn
+        dataPoints: []
+      },{        
+        type: "stackedArea", //or stackedColumn
+        dataPoints: []
+      },{        
+        type: "stackedArea", //or stackedColumn
+        dataPoints: []
+      },{        
+        type: "stackedArea", //or stackedColumn
+        dataPoints: []
+      }
+      ]
+    });
+	
 	$$(".bottom-menu div:not(:nth-of-type(1))").hide();
 	
 	this.getLimitForColumn = function (columnName) {
@@ -701,6 +706,7 @@ function GUI(hookSelector, simulation, cache) {
 		updateTime(this.simulation.time, this.cache);
 		updateStats(stats, this.cache);
 		updateBoard(board, this.cache);
+		updateCFD(this.simulation.time, stats);
 	}
 
 	function updateTime(time, cache) {
@@ -720,6 +726,16 @@ function GUI(hookSelector, simulation, cache) {
 		$$('.stats-wip-lead-time').text(wipAvg && leadTimeAvg ? (wipAvg / leadTimeAvg).toFixed(1) : '-');
 	}
 	
+	var lastUpdatedCFDDay = 0;
+	function updateCFD(time, stats) {
+		var currentDay = Math.floor(time / (60 * 8));
+		if (currentDay <= lastUpdatedCFDDay) return;
+		lastUpdatedCFDDay = currentDay;
+		for (var i=0; i<stats.cfdData.length; i++) {
+			$$(".simulation-cfd-tab").CanvasJSChart().options.data[stats.cfdData.length - i - 1].dataPoints = stats.cfdData[i];
+		}
+		$$(".simulation-cfd-tab").CanvasJSChart().render();
+	}
 	
 	function updateBoard(board, cache) {
 		$$('allColumns').forEach(function(columnVisual) {

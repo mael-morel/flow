@@ -244,3 +244,9 @@ span.deployment {
 .nav li {
 	cursor: pointer;
 }
+
+.simulation-cfd-tab {
+	height:350px;
+	width: 100%;
+	margin-bottom: 8pt;
+}
