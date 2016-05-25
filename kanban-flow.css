@@ -1,6 +1,7 @@
 .board-overlay {
 	display:inline-block;
 	font-family: arial;
+	position: relative;
 }
 .board-overlay>* {
     background: #eee; /* For browsers that do not support gradients */
@@ -100,10 +101,23 @@
     border-radius: 0 0 10px 10px;
 }
 
-.simulation-settings {
+.actions {
+	position: relative;
 }
 
-.simulation-settings>div{
+.simulation-settings-div {
+    position: absolute;
+    right: 17px;
+    z-index: 100;
+    background-color: #eee;
+    border-style: solid;
+    border-width: 1px;
+	border-radius: 6px 6px 6px 6px;
+	box-shadow: 10px 10px 5px #888888;
+	width: 360pt;
+}
+
+.simulation-settings-div>div{
     padding: 3pt;
     padding-left: 10pt;
     padding-right: 10pt;

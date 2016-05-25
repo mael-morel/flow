@@ -626,6 +626,11 @@ function GUI(hookSelector, simulation, cache) {
 		$$(".bottom-menu .nav li:nth-child(" + (currentlySelected +1) + ")").toggleClass("active", true);
 		$$(".bottom-menu div:nth-of-type(" + (currentlySelected +1) + ")").show();
 	});
+	
+	$$(".simulation-settings").click(function() {
+		$$(".simulation-settings-div").slideFadeToggle();
+	});
+	
 	this.cfdChart = new Chart($$(".simulation-cfd"), {
 	    type: 'line',
 	    data: {
@@ -780,3 +785,7 @@ Array.prototype.average = function(){
 	}
 	return total / this.length;
 }
+
+$.fn.slideFadeToggle = function(easing, callback) {
+  return this.animate({ opacity: 'toggle', height: 'toggle' }, 'fast', easing, callback);
+};

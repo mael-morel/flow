@@ -14,6 +14,7 @@
 <body>
 <div class="kanban-board">	
 	<div class="board-overlay">
+		
 		<div class="top-toolbar">
 			<div class="time-and-buttons">
 				Day: <span class="day"></span>, time: <span class="hour"></span>
@@ -33,7 +34,42 @@
 			</div>
 			<div class="actions">
 				<button type="button" class="btn simulation-help"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></button>
-				<button type="button" class="btn simulation-settings"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span></button><br>
+				<br/>
+				<button type="button" class="btn simulation-settings"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span></button>
+				<div class="simulation-settings-div" style="display: none">
+					<div class="headcount">
+						<table>
+							<tr class="analysis">
+								<td><span class="glyphicon glyphicon-user analysis person"></span><input type="text" maxlength="2" value="2"/></td>
+								<td class="analysis"><input type="checkbox" checked/></td>
+								<td class="development"><input type="checkbox"/></td>
+								<td class="qa"><input type="checkbox"/></td>
+								<td class="deployment"><input type="checkbox"/></td>
+							</tr>
+							<tr class="development">
+								<td><span class="glyphicon glyphicon-user development person"></span><input type="text" maxlength="2" value="5"/></td>
+								<td class="analysis"><input type="checkbox"/></td>
+								<td class="development"><input type="checkbox" checked/></td>
+								<td class="qa"><input type="checkbox"/></td>
+								<td class="deployment"><input type="checkbox"/></td>
+							</tr>
+							<tr class="qa">
+								<td><span class="glyphicon glyphicon-user qa person"></span><input type="text" maxlength="2" value="3"/></td>
+								<td class="analysis"><input type="checkbox"/></td>
+								<td class="development"><input type="checkbox"/></td>
+								<td class="qa"><input type="checkbox" checked/></td>
+								<td class="deployment"><input type="checkbox"/></td>
+							</tr>
+							<tr class="deployment">
+								<td><span class="glyphicon glyphicon-user deployment person"></span><input type="text" maxlength="2" value="1"/></td>
+								<td class="analysis"><input type="checkbox"/></td>
+								<td class="development"><input type="checkbox"/></td>
+								<td class="qa"><input type="checkbox"/></td>
+								<td class="deployment"><input type="checkbox" checked/></td>
+							</tr>
+						</table>
+					</div>
+				</div>
 			</div>
 		</div>
 	<div class="board-wrapper">
@@ -79,49 +115,13 @@
 	</div>
 	<div class="bottom-menu">
 		<ul class="nav nav-tabs">
-		  <li role="presentation" class="active"><a>Settings</a></li>
-		  <li role="presentation"><a>CFD</a></li>
+		  <li role="presentation" class="active"><a>CFD</a></li>
 		</ul>
-		<div class="simulation-settings">
-			<div class="headcount">
-				<table>
-					<tr class="analysis">
-						<td><span class="glyphicon glyphicon-user analysis person"></span><input type="text" maxlength="2" value="2"/></td>
-						<td class="analysis"><input type="checkbox" checked/></td>
-						<td class="development"><input type="checkbox"/></td>
-						<td class="qa"><input type="checkbox"/></td>
-						<td class="deployment"><input type="checkbox"/></td>
-					</tr>
-					<tr class="development">
-						<td><span class="glyphicon glyphicon-user development person"></span><input type="text" maxlength="2" value="5"/></td>
-						<td class="analysis"><input type="checkbox"/></td>
-						<td class="development"><input type="checkbox" checked/></td>
-						<td class="qa"><input type="checkbox"/></td>
-						<td class="deployment"><input type="checkbox"/></td>
-					</tr>
-					<tr class="qa">
-						<td><span class="glyphicon glyphicon-user qa person"></span><input type="text" maxlength="2" value="3"/></td>
-						<td class="analysis"><input type="checkbox"/></td>
-						<td class="development"><input type="checkbox"/></td>
-						<td class="qa"><input type="checkbox" checked/></td>
-						<td class="deployment"><input type="checkbox"/></td>
-					</tr>
-					<tr class="deployment">
-						<td><span class="glyphicon glyphicon-user deployment person"></span><input type="text" maxlength="2" value="1"/></td>
-						<td class="analysis"><input type="checkbox"/></td>
-						<td class="development"><input type="checkbox"/></td>
-						<td class="qa"><input type="checkbox"/></td>
-						<td class="deployment"><input type="checkbox" checked/></td>
-					</tr>
-				</table>
-			</div>
-		</div>
 		<div class="simulation-cfd-tab">
 			<canvas class="simulation-cfd" width="400" height="200"></canvas>
 		</div>
 	</div>
 	</div>
-	
 	</div>
 </div>
 </body>
