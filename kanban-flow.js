@@ -648,6 +648,12 @@ function GUI(hookSelector, simulation, cache) {
         text: "Control Flow Diagram (CFD)"  
       },
 	  backgroundColor: null,
+	  zoomEnabled: true,
+	  zoomType: "xy",
+	  axisX:{
+	    minimum: 0,
+   	    interval: 1,
+	  },
       data: [{        
         type: "stackedArea", //or stackedColumn
         dataPoints: []
