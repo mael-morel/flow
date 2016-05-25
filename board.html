@@ -28,26 +28,6 @@
 				<div>Simulation speed:</div>
 				<input class="timescale" data-slider-id='timescaleSlider' type="text"/>
 			</div>
-			<div class="stats">
-				<table>
-					<tr>
-						<td>WIP:</td>
-						<td><span class="stats-wip"></span></td>
-					</tr>
-					<tr>
-						<td>Avg. Lead Time:</td>
-						<td><span class="stats-lead-time"></span>d</td>
-					</tr>			
-					<tr>
-						<td>Throughput:</td>
-						<td><span class="stats-throughput"></span>/d</td>
-					</tr>
-					<tr>
-						<td>WIP/Lead Time:</td>
-						<td><span class="stats-wip-lead-time"></span></td>
-					</tr>			
-				</table>
-			</div>
 			<div class="title">
 				<p>Software Development Flow</p>
 				<p>Simulator</p>
@@ -87,6 +67,14 @@
 		</tr>
 
 	</table>
+	</div>
+	<div class="general-stats">
+		<div class="stats">
+			<strong>WIP:</strong> <span class="stats-wip"></span> |
+			<strong>Avg. Lead Time:</strong> <span class="stats-lead-time"></span>d |
+			<strong>Throughput:</strong> <span class="stats-throughput"></span>/d |
+			<strong>WIP/Lead Time:</strong> <span class="stats-wip-lead-time"></span>
+		</div>
 	</div>
 	<div class="bottom-menu">
 		<ul class="nav nav-tabs">

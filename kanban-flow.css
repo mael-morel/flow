@@ -147,19 +147,12 @@ input[type="text"].wiplimit {
 	width: 20pt;
 }
 
-.stats tr td:first-of-type {
-	 text-align: right;
-	 font-weight: bold;
-}
-.stats td {
-	padding: 1pt;
-    line-height: 80%;
-}
-
 .stats {
-	flex: 1;
-	vertical-align: top;
-	margin-right:10pt;
+}
+.general-stats {
+    border-width: 1pt;
+    border-style: solid;
+	padding: 5px;
 }
 
 .headcount {
