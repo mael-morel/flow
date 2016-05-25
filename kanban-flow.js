@@ -109,7 +109,7 @@ function Simulation(hookSelector) {
 	}
 	
 	this.removeDoneTasks = function() {
-		if (this.time % 60 == 0) this.board.removeDoneTasks();
+		if (this.time % (60 * 8) == 0) this.board.removeDoneTasks();
 	}
 
 	this.findNextColumn = function(task, columns) {
@@ -521,6 +521,7 @@ function Stats() {
 	this.leadTimes = [];
 	this.wipCount = [];
 	this.tasksFinished = [];
+	this.cfdData = [[],[],[],[],[]]; // [[{time, value},{time, value}][{time, value},{time, value}][]]
 	this.dataPointsToRemember = 8  * 20; // hours * days
 	this.wipAvg = null;
 	this.throughputAvg = null;
@@ -543,6 +544,7 @@ function Stats() {
 	
 	this.recalculateStats = function(board, time) {
 		if (time % 60 != 0) return;
+		this.updateCfdData(board, time);
 		this.wipAvg = null;
 		this.throughputAvg = null;
 		this.leadTimeAvg = null;
@@ -555,6 +557,15 @@ function Stats() {
 		});
 		this.tasksFinished[position] = board.getDoneTasksCount();
 		this.wipCount[position] = board.getCurrentWip();
+	}
+	
+	this.updateCfdData = function(board, time) {
+		if (time % (60 * 8) != 0) return;
+		var day = (time/60/8);
+		for (var i=0; i<board.columns.length; i+=2) {
+			var sum = board.columns[i].tasks.length + (board.columns[i+1] ? board.columns[i+1].tasks.length : 0);
+			this.cfdData[i/2].push({x: day, y:sum});
+		}
 	}
 }
 
@@ -621,18 +632,21 @@ function GUI(hookSelector, simulation, cache) {
 	        labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
 	        datasets: [{
 	            label: '# of Votes',
-	            data: [12, 19, 3, 5, 2, 3]
-	        }]
+	            data: [12, 19, 3, 5, 2, 3],
+				fill: true,
+				lineTension: 0.0,
+	        },{
+	            label: 'test',
+	            data: [2, 1, 22, 2, 1, 2],
+				fill: false,
+				lineTension: 0.0,
+	        }
+		]
 	    },
 	    options: {
 			responsive: false,
-	        scales: {
-	            yAxes: [{
-	                ticks: {
-	                    beginAtZero:true
-	                }
-	            }]
-	        }
+			stacked: true
+	        
 	    }
 	});
 	$$(".bottom-menu div:not(:nth-of-type(1))").hide();
