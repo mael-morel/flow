@@ -615,6 +615,14 @@ function GUI(hookSelector, simulation, cache) {
 		var newHeadcount = event.target.value;
 		simulation.updateHeadcount(specialisation, newHeadcount);
 	});
+	$$(".simulation-settings-general .settings-no-of-tasks").change(function(event) {
+		var newValue = event.target.value;
+		simulation.maxTasksOnOnePerson = newValue;
+	});
+	$$(".simulation-settings-general .settings-no-of-people").change(function(event) {
+		var newValue = event.target.value;
+		simulation.maxPeopleOnOneTask = newValue;
+	});	
 	
 	var currentlySelected = 0;
 	$$(".bottom-menu .nav li").click(function() {

@@ -114,7 +114,7 @@
     border-width: 1px;
 	border-radius: 6px 6px 6px 6px;
 	box-shadow: 10px 10px 5px rgba(150, 150, 150, 0.8);
-	width: 360pt;
+	width: 290pt;
 }
 
 .simulation-settings-div>div{
@@ -170,7 +170,8 @@ input[type="text"].wiplimit {
 	padding: 5px;
 }
 
-.headcount {
+.simulation-settings-general input[type="text"] {
+	width: 20pt;
 }
 
 th.analysis {
