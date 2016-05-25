@@ -123,8 +123,10 @@
     padding-right: 10pt;
     display: inline-block;
     vertical-align: top;
-    border: 0pt;
+    border: 1pt;
     border-style: solid;
+    margin: 3pt;
+    background-color: papayawhip;
 }
 
 .title {
@@ -169,8 +171,6 @@ input[type="text"].wiplimit {
 }
 
 .headcount {
-	display: inline-block;
-    vertical-align: top;
 }
 
 th.analysis {
