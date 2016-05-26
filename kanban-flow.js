@@ -19,7 +19,7 @@ function Simulation(hookSelector) {
 		this.time = 0;
 		this.taskCounter = 1;
 		this.team = new Team();
-		this.board = new Board(this.ticksPerHour);
+		this.board = new Board(this.ticksPerHour, this);
 		this.stats = new Stats();
 		this.gui.update(this.board, this.stats, true);
 		this.gui.getHeadcount().forEach(function (newHeadcount) {
@@ -346,12 +346,12 @@ function Person(specialisation, team) {
 	}
 } 
 
-function Board(ticksPerHour) {
+function Board(ticksPerHour, simulation) {
 	this.columns = null;
 	this.tasks = {};
 	this.ticksPerHour = ticksPerHour;
 	
-	createColumns(this);
+	createColumns(this, simulation);
 	
 	this.lastColumn = function() {
 		return this.columns[this.columns.length - 1];
@@ -375,8 +375,17 @@ function Board(ticksPerHour) {
 		return Object.keys(this.tasks).length - this.getDoneTasksCount();
 	}
 	
-	this.getDoneTasksCount = function() {
-		return this.lastColumn().tasks.length;
+	this.getDoneTasksCount = function(start, end) {
+		var tasks = this.lastColumn().tasks;
+		var colunName = this.lastColumn().name;
+		if (!start || !end)
+			return tasks.length;
+		var count = 0;
+		for (var i=0; i < tasks.length; i++) {
+			var timeFinished = tasks[i].arrivalTime[colunName];
+			if(timeFinished > start && timeFinished <= end) count++;
+		}
+		return count;
 	}
 	
 	this.updateColumnsLimitsFrom = function(gui) {
@@ -392,22 +401,22 @@ function Board(ticksPerHour) {
 
 	}
 	
-	function createColumns(board) {
+	function createColumns(board, simulation) {
 		board.columns = [];
 		var columns = board.columns;
-		columns.push(new Column("input", true));
-		Array.prototype.push.apply(columns, createColumnWithChildren("analysis").children);
-		Array.prototype.push.apply(columns, createColumnWithChildren("development").children);
-		Array.prototype.push.apply(columns, createColumnWithChildren("qa").children);
-		Array.prototype.push.apply(columns, createColumnWithChildren("deployment").children);
+		columns.push(new Column("input", true, simulation));
+		Array.prototype.push.apply(columns, createColumnWithChildren("analysis", simulation).children);
+		Array.prototype.push.apply(columns, createColumnWithChildren("development", simulation).children);
+		Array.prototype.push.apply(columns, createColumnWithChildren("qa", simulation).children);
+		Array.prototype.push.apply(columns, createColumnWithChildren("deployment", simulation).children);
 		board.columns[board.columns.length - 1].ignoreLimit = true;
 	}
 
-	function createColumnWithChildren(name, capacity) {
-		var parentColumn = new Column(name + "WithQueue");
-		var column = new Column(name, false);
+	function createColumnWithChildren(name, simulation) {
+		var parentColumn = new Column(name + "WithQueue", false, simulation);
+		var column = new Column(name, false, simulation);
 		column.parent = parentColumn;
-		var done = new Column(name + "Done", true);
+		var done = new Column(name + "Done", true, simulation);
 		done.parent = parentColumn;
 		parentColumn.children.push(column);
 		parentColumn.children.push(done);
@@ -428,6 +437,7 @@ function Task(taskId, time) {
 	this.deploymentOriginal = 60;
 	this.column = null;
 	this.peopleAssigned = [];
+	this.arrivalTime = {};
 	
 	this.finished = function (column) {
 		if (!column) {
@@ -448,7 +458,7 @@ function Task(taskId, time) {
 	}
 }
 
-function Column(name, queue) {
+function Column(name, queue, simulation) {
 	this.name = name;
 	this.limit = Number.POSITIVE_INFINITY;
 	this.tasks = [];
@@ -456,6 +466,7 @@ function Column(name, queue) {
 	this.parent = null;
 	this.ignoreLimit = false;
 	this.queue = queue;
+	this.simulation = simulation;
 	
 	this.getTasksAssignedToOneOrMoreOrderedByNumberOfPeople = function() {
 		var result = [];
@@ -489,6 +500,7 @@ function Column(name, queue) {
 	this.addTask = function(task) {
 		this.tasks.push(task);
 		task.column = this;
+		task.arrivalTime[this.name] = this.simulation.time;
 	}
 	
 	this.moveTaskTo = function(task, nextColumn) {
@@ -496,6 +508,7 @@ function Column(name, queue) {
 		task.column = nextColumn;
 		if (nextColumn) {
 			nextColumn.tasks.push(task);
+			task.arrivalTime[nextColumn.name] = this.simulation.time;
 		}
 	}
 	
@@ -555,7 +568,7 @@ function Stats() {
 		lastColumn.tasks.forEach(function(task) {
 			leadTimes.push(time - task.created);
 		});
-		this.tasksFinished[position] = board.getDoneTasksCount();
+		this.tasksFinished[position] = board.getDoneTasksCount(time - 60, time);
 		this.wipCount[position] = board.getCurrentWip();
 	}
 	
