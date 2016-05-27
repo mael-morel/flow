@@ -611,6 +611,7 @@ function GUI(hookSelector, simulation, cache) {
 
 	$$(".stop").click(function() {
 		simulation.stop();
+		lastUpdatedCFDDay = -1;
 	});
 	$$(".pause").click(function() {
 		simulation.pause();
@@ -675,24 +676,29 @@ function GUI(hookSelector, simulation, cache) {
 	    minimum: 0,
    	    interval: 1,
 	  },
+	  acisY:{
+		  minimum: 0,
+		  interval: 1,
+	  },
       data: [{        
         type: "stackedArea", //or stackedColumn
-        dataPoints: []
+		  dataPoints: [{y:1}]
       },{        
         type: "stackedArea", //or stackedColumn
-        dataPoints: []
+        dataPoints: [{y:1}]
       },{        
         type: "stackedArea", //or stackedColumn
-        dataPoints: []
+        dataPoints: [{y:1}]
       },{        
         type: "stackedArea", //or stackedColumn
-        dataPoints: []
+        dataPoints: [{y:1}]
       },{        
         type: "stackedArea", //or stackedColumn
-        dataPoints: []
+        dataPoints: [{y:1}]
       }
       ]
     });
+	$$(".simulation-cfd-tab").CanvasJSChart().render()
 	
 	$$(".bottom-menu div:not(:nth-of-type(1))").hide();
 	
