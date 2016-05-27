@@ -656,7 +656,9 @@ function GUI(hookSelector, simulation, cache) {
 		$$(".bottom-menu>div:nth-of-type(" + (currentlySelected +1) + ")").hide();
 		currentlySelected = navElement.index();
 		$$(".bottom-menu .nav li:nth-child(" + (currentlySelected +1) + ")").toggleClass("active", true);
-		$$(".bottom-menu>div:nth-of-type(" + (currentlySelected +1) + ")").show();
+		$$(".bottom-menu>div:nth-of-type(" + (currentlySelected +1) + ")").show(0, function(){
+    		$(this).trigger('isVisible');
+		});
 	});
 	
 	$$(".simulation-settings").click(function() {
@@ -698,7 +700,10 @@ function GUI(hookSelector, simulation, cache) {
       }
       ]
     });
-	$$(".simulation-cfd-tab").CanvasJSChart().render()
+	$$(".simulation-cfd-tab").bind('isVisible', function() {
+		$$(".simulation-cfd-tab").CanvasJSChart().render();
+	});
+	
 	
 	$$(".bottom-menu div:not(:nth-of-type(1))").hide();
 	
