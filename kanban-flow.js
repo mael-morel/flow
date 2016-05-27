@@ -653,10 +653,10 @@ function GUI(hookSelector, simulation, cache) {
 		var navElement = $(this);
 		if (navElement.hasClass('active')) return;
 		$$(".bottom-menu .nav li:nth-child(" + (currentlySelected +1) + ")").toggleClass("active", false);
-		$$(".bottom-menu div:nth-of-type(" + (currentlySelected +1) + ")").hide();
+		$$(".bottom-menu>div:nth-of-type(" + (currentlySelected +1) + ")").hide();
 		currentlySelected = navElement.index();
 		$$(".bottom-menu .nav li:nth-child(" + (currentlySelected +1) + ")").toggleClass("active", true);
-		$$(".bottom-menu div:nth-of-type(" + (currentlySelected +1) + ")").show();
+		$$(".bottom-menu>div:nth-of-type(" + (currentlySelected +1) + ")").show();
 	});
 	
 	$$(".simulation-settings").click(function() {
