@@ -49,62 +49,50 @@
 							</tr>
 						</table>
 					</div>
-					<div class="headcount" title="Change the headcount and rules of who can work in which columns. Keep in mind that working out of specialisation has a penalty 50% on productivity.">
-						<table>
-							<tr>
-								<th colspan="5">Headcount/column rules</th>
-							</tr>
-							<tr class="analysis">
-								<td><span class="glyphicon glyphicon-user analysis person"></span><input type="text" maxlength="2" value="2"/></td>
-								<td class="analysis"><input type="checkbox" checked/></td>
-								<td class="development"><input type="checkbox"/></td>
-								<td class="qa"><input type="checkbox"/></td>
-								<td class="deployment"><input type="checkbox"/></td>
-							</tr>
-							<tr class="development">
-								<td><span class="glyphicon glyphicon-user development person"></span><input type="text" maxlength="2" value="5"/></td>
-								<td class="analysis"><input type="checkbox"/></td>
-								<td class="development"><input type="checkbox" checked/></td>
-								<td class="qa"><input type="checkbox"/></td>
-								<td class="deployment"><input type="checkbox"/></td>
-							</tr>
-							<tr class="qa">
-								<td><span class="glyphicon glyphicon-user qa person"></span><input type="text" maxlength="2" value="3"/></td>
-								<td class="analysis"><input type="checkbox"/></td>
-								<td class="development"><input type="checkbox"/></td>
-								<td class="qa"><input type="checkbox" checked/></td>
-								<td class="deployment"><input type="checkbox"/></td>
-							</tr>
-							<tr class="deployment">
-								<td><span class="glyphicon glyphicon-user deployment person"></span><input type="text" maxlength="2" value="1"/></td>
-								<td class="analysis"><input type="checkbox"/></td>
-								<td class="development"><input type="checkbox"/></td>
-								<td class="qa"><input type="checkbox"/></td>
-								<td class="deployment"><input type="checkbox" checked/></td>
-							</tr>
-						</table>
-					</div>
 				</div>
 			</div>
 		</div>
 	<div class="board-wrapper">
 	<table class="board">
-	
 		<tr>
 			<th rowspan="2">Backlog </th>
-			<th colspan="2" class="analysis analysisWithQueueHeader">Analysis <input type="text" class="wiplimit" maxlength="2" value="5"/></th>
-			<th colspan="2" class="development developmentWithQueueHeader">Development <input type="text" class="wiplimit" maxlength="2" value="5"/></th>
-			<th colspan="2" class="qa qaWithQueueHeader">QA <input type="text" class="wiplimit" maxlength="2" value="3"/></th>
-			<th colspan="2" class="deployment deploymentWithQueueHeader">Deployment <input type="text" class="wiplimit" maxlength="2" value="5"/></th>
+			<th colspan="2" class="analysis analysisWithQueueHeader">Analysis <input type="text" class="wiplimit" maxlength="2" value="5"/><br/>
+			 	<span class="glyphicon glyphicon-user analysis"></span>X<input type="text" maxlength="2" value="2" class="headcount"/>
+				<span class="headcount analysis"><input type="checkbox" checked/></span><span 
+					class="headcount development"><input type="checkbox"/></span><span 
+					class="headcount qa"><input type="checkbox" class="qa"/></span><span 
+					class="headcount deployment"><input type="checkbox" class="deployment"/></span>
+			 	</th>
+			<th colspan="2" class="development developmentWithQueueHeader">Development <input type="text" class="wiplimit" maxlength="2" value="5"/><br/>
+			 	<span class="glyphicon glyphicon-user development"></span>X<input type="text" maxlength="2" value="5" class="headcount"/>
+				<span class="headcount analysis"><input type="checkbox"/></span><span 
+					class="headcount development"><input type="checkbox" checked/></span><span 
+					class="headcount qa"><input type="checkbox" class="qa"/></span><span 
+					class="headcount deployment"><input type="checkbox" class="deployment"/></span>
+			</th>
+			<th colspan="2" class="qa qaWithQueueHeader">QA <input type="text" class="wiplimit" maxlength="2" value="3"/><br/>
+		 	<span class="glyphicon glyphicon-user qa"></span>X<input type="text" maxlength="2" value="3" class="headcount"/>
+			<span class="headcount analysis"><input type="checkbox"/></span><span 
+				class="headcount development"><input type="checkbox"/></span><span 
+				class="headcount qa"><input type="checkbox" class="qa" checked/></span><span 
+				class="headcount deployment"><input type="checkbox" class="deployment"/></span>
+			</th>
+			<th colspan="2" class="deployment deploymentWithQueueHeader">Deployment <input type="text" class="wiplimit" maxlength="2" value="5"/><br/>
+		 	<span class="glyphicon glyphicon-user deployment"></span>X<input type="text" maxlength="2" value="1" class="headcount"/>
+			<span class="headcount analysis"><input type="checkbox"/></span><span 
+				class="headcount development"><input type="checkbox"/></span><span 
+				class="headcount qa"><input type="checkbox" class="qa"/></span><span 
+				class="headcount deployment"><input type="checkbox" class="deployment" checked/></span>
+			</th>
 		</tr>
 		<tr>
-			<th class="analysis">Doing <span class="glyphicon glyphicon-user analysis person"></span></th>
+			<th class="analysis">Doing</th>
 			<th class="analysis">Done</th>
-			<th class="development">Doing <span class="glyphicon glyphicon-user development person"></span></th>
+			<th class="development">Doing</th>
 			<th class="development">Done</th>
-			<th class="qa">Doing <span class="glyphicon glyphicon-user qa person"></span></th>
+			<th class="qa">Doing</th>
 			<th class="qa">Done</th>
-			<th class="deployment">Doing <span class="glyphicon glyphicon-user deployment person"></span></th>
+			<th class="deployment">Doing</th>
 			<th class="deployment">Done</th>
 		</tr>
 	

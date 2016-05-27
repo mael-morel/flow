@@ -618,15 +618,23 @@ function GUI(hookSelector, simulation, cache) {
 	$$(".play").click(function() {
 		simulation.play();
 	});
+	var specialisations = ["analysis", "development", "qa", "deployment"];
+	specialisations.findFromArray = function(otherArray) {
+		for (var i = 0; i < otherArray.length; i++) {
+			if (specialisations.indexOf(otherArray[i]) != -1) {
+				return otherArray[i];
+			}
+		}
+	}
 	$$(".headcount input[type=checkbox]").change(function(event){
 		var checkbox = event.target;
 		var checked = event.target.checked;
-		var column = checkbox.parentElement.className;
-		var specialisation = checkbox.parentElement.parentElement.className;
+		var column = specialisations.findFromArray(checkbox.parentElement.className.split(" "));
+		var specialisation = specialisations.findFromArray(checkbox.parentElement.parentElement.className.split(" "));
 		simulation.updateColumnsAvailabilityForSpecialisation(specialisation, column, checked);
 	});
-	$$(".headcount input[type=text]").change(function(event){
-		var specialisation = event.target.parentElement.parentElement.className
+	$$("input[type=text].headcount").change(function(event){
+		var specialisation = specialisations.findFromArray(event.target.parentElement.className.split(" "));
 		var newHeadcount = event.target.value;
 		simulation.updateHeadcount(specialisation, newHeadcount);
 	});
@@ -699,8 +707,8 @@ function GUI(hookSelector, simulation, cache) {
 	
 	this.getHeadcount = function() {
 		var result = [];
-		$$(".headcount input[type=text]").toArray().forEach(function(element) {
-			result.push([element.parentElement.parentElement.className, element.value]);
+		$$("input[type=text].headcount").toArray().forEach(function(element) {
+			result.push([specialisations.findFromArray(element.parentElement.className.split(" ")), element.value]);
 		});
 		return result;
 	}
@@ -710,8 +718,8 @@ function GUI(hookSelector, simulation, cache) {
 		var result = {'development': [], 'analysis': [], 'qa': [], 'deployment': []};
 		checkboxes.forEach(function (checkbox) {
 			if(checkbox.checked) {
-				var column = checkbox.parentElement.className;
-				var specialisation = checkbox.parentElement.parentElement.className;
+				var column = specialisations.findFromArray(checkbox.parentElement.className.split(" "));
+				var specialisation = specialisations.findFromArray(checkbox.parentElement.parentElement.className.split(" "));
 				result[specialisation].push(column);
 			}	
 		});

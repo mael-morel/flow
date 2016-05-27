@@ -160,7 +160,7 @@
     height: 300pt;
 }
 
-input[type="text"].wiplimit {
+.board input[type="text"] {
 	width: 20pt;
 }
 
@@ -174,10 +174,16 @@ input[type="text"].wiplimit {
 	width: 20pt;
 }
 
+.board th span.headcount {
+    padding: 2pt;
+    padding-left: 4pt;
+    padding-right: 4pt;
+}
+
 th.analysis {
 	background: #cce;
 }
-td.analysis, td.analysisDone {
+td.analysis, td.analysisDone, .board th span.headcount.analysis {
 	background: #aac;
 }
 span.analysis {
@@ -187,7 +193,7 @@ span.analysis {
 th.development {
 	background: #cec;
 }
-td.development, td.developmentDone {
+td.development, td.developmentDone, .board th span.headcount.development {
 	background: #aca;
 }
 span.development {
@@ -197,7 +203,7 @@ span.development {
 th.qa {
 	background: #ece;
 }
-td.qa, td.qaDone{
+td.qa, td.qaDone, .board th span.headcount.qa {
 	background: #cac;
 }
 span.qa {
@@ -207,7 +213,7 @@ span.qa {
 th.deployment {
 	background: #cee;
 }
-td.deployment, td.deploymentDone {
+td.deployment, td.deploymentDone, .board th span.headcount.deployment {
 	background: #acc;
 }
 span.deployment {
@@ -225,20 +231,6 @@ span.deployment {
 
 .board-overlay .person {
 	text-shadow: 1px 1px 2px #000000;
-}
-
-.headcount td {
-    width: 17pt;
-    height: 14pt;
-	text-align: center;
-    padding: 2pt;
-}
-.headcount tr > td {
-    width: inherit;
-}
-.headcount input {
-	width: 20pt;
-	margin: 0;
 }
 
 .nav li {
