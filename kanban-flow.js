@@ -635,6 +635,7 @@ function GUI(hookSelector, simulation, cache) {
 	$$(".stop").click(function() {
 		simulation.stop();
 		lastUpdatedCFDDay = -1;
+		lastUpdatedLittlesDay = -1;
 	});
 	$$(".pause").click(function() {
 		simulation.pause();
