@@ -696,28 +696,58 @@ function GUI(hookSelector, simulation, cache) {
 	  backgroundColor: null,
 	  zoomEnabled: true,
 	  zoomType: "xy",
+	  legend: {
+          horizontalAlign: "left", // "center" , "right"
+          verticalAlign: "top",  // "top" , "bottom"
+          fontSize: 15,
+		  dockInsidePlotArea: true
+      },
+	  toolTip: {
+     	shared: "true",
+		contentFormatter: function (e) {
+			var content = "Day: <strong>" + e.entries[0].dataPoint.x + "</strong><br/>";
+			for (var i = e.entries.length - 1; i >= 0; i--) {
+				content += e.entries[i].dataSeries.name + ": <strong>" + e.entries[i].dataPoint.y + "</strong><br/>";
+			}
+			return content;
+		},
+	  },
 	  axisX:{
 	    minimum: 0,
-   	    interval: 1,
 	  },
 	  axisY:{
 		  minimum: 0,
 	  },
       data: [{        
-        type: "stackedArea", //or stackedColumn
-		  dataPoints: [{y:1}]
+          type: "stackedArea", //or stackedColumn
+		  dataPoints: [],
+		  name: "Done",
+		  showInLegend: true,
+		  color: "gray",
       },{        
-        type: "stackedArea", //or stackedColumn
-        dataPoints: [{y:1}]
+          type: "stackedArea", //or stackedColumn
+          dataPoints: [],
+		  name: "Deployment",
+		  showInLegend: true,
+		  color: "#acc",
       },{        
-        type: "stackedArea", //or stackedColumn
-        dataPoints: [{y:1}]
+          type: "stackedArea", //or stackedColumn
+          dataPoints: [],
+		  name: "QA",
+		  showInLegend: true,
+		  color: "#cac",
       },{        
-        type: "stackedArea", //or stackedColumn
-        dataPoints: [{y:1}]
+          type: "stackedArea", //or stackedColumn
+          dataPoints: [],
+		  name: "Development",
+		  showInLegend: true,
+		  color: "#aca",
       },{        
-        type: "stackedArea", //or stackedColumn
-        dataPoints: [{y:1}]
+          type: "stackedArea", //or stackedColumn
+          dataPoints: [],
+		  name: "Analysis",
+		  showInLegend: true,
+		  color: "#aac",
       }
       ]
     });
@@ -740,6 +770,14 @@ function GUI(hookSelector, simulation, cache) {
 	  },
 	  toolTip: {
      	 shared: "true",
+  		contentFormatter: function (e) {
+  			var content = "Day: <strong>" + Math.floor(e.entries[0].dataPoint.x / 8) + "</strong>, hour: <strong>" + (e.entries[0].dataPoint.x % 8 + 1) + "</strong><br/>";
+  			for (var i = 0; i< e.entries.length; i++) {
+				if (!isNaN(e.entries[i].dataPoint.y))
+					content += e.entries[i].dataSeries.name + ": <strong>" + e.entries[i].dataPoint.y.toFixed(1) + "</strong><br/>";
+  			}
+  			return content;
+  		},
 	  },
 	  legend: {
           horizontalAlign: "left", // "center" , "right"
@@ -751,19 +789,16 @@ function GUI(hookSelector, simulation, cache) {
           type: "line",
 		  name: "WIP",
 		  dataPoints: [],
-		  yValueFormatString: "#.##",
 		  showInLegend: true,
       },{        
           type: "line",
     	  name: "Throghput",
           dataPoints: [],
-		  yValueFormatString: "#.##",
 		  showInLegend: true,
       },{        
           type: "line",
 		  name: "Lead Time",
           dataPoints: [],
-		  yValueFormatString: "#.##",
 		  showInLegend: true,
       },
       ]
