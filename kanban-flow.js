@@ -727,13 +727,13 @@ function GUI(hookSelector, simulation, cache) {
 		  minimum: 0
 	  },
       data: [{        
-        type: "line", //or stackedColumn
+        type: "line",
 		  dataPoints: []
       },{        
-        type: "line", //or stackedColumn
+        type: "line",
         dataPoints: []
       },{        
-        type: "line", //or stackedColumn
+        type: "line",
         dataPoints: []
       },
       ]
@@ -746,7 +746,12 @@ function GUI(hookSelector, simulation, cache) {
 	
 	$$(".tasks").click(function() {
 		this.renderTasks = !this.renderTasks;
-		if (!this.renderTasks) updateBoard(new Board());
+		$$(".board").toggleClass("board-max-height");
+		if (!this.renderTasks) {
+			updateBoard(new Board());
+		} else {
+			updateBoard(this.simulation.board);
+		}
 	}.bind(this));
 	
 	this.getLimitForColumn = function (columnName) {

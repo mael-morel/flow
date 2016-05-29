@@ -11,9 +11,13 @@
     background: linear-gradient(135deg, #fff, #eee); /* Standard syntax */
 }
 .board {
-    height: 100%;
+    min-height: 80pt;
 	background: #ccc;
 	border-collapse: collapse;
+}
+
+.board-max-height {
+    height: 100%;
 }
 
 .tasks {
@@ -157,7 +161,7 @@
     border-style: solid;
     overflow-y: hidden;
     overflow-x: hidden;
-    height: 300pt;
+    max-height: 300pt;
 }
 
 .board input[type="text"] {
