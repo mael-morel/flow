@@ -11,7 +11,6 @@
     background: linear-gradient(135deg, #fff, #eee); /* Standard syntax */
 }
 .board {
-    min-height: 80pt;
 	background: #ccc;
 	border-collapse: collapse;
 }

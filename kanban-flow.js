@@ -375,6 +375,14 @@ function Board(ticksPerHour, simulation) {
 		return Object.keys(this.tasks).length - this.getDoneTasksCount();
 	}
 	
+	this.getColumnByName = function(columnName) {
+		for (var i = 0; i < this.columns.length; i++) {
+			if (this.columns[i].name == columnName) {
+				return this.columns[i];
+			}
+		}
+	}
+	
 	this.getDoneTasksCount = function(start, end) {
 		var tasks = this.lastColumn().tasks;
 		var colunName = this.lastColumn().name;
@@ -597,8 +605,11 @@ function Stats() {
 function GUI(hookSelector, simulation, cache) {
 	this.cache = cache;
 	this.hookSelector = hookSelector;
-	function $$(selector) {
-		return cache.get(hookSelector +" " + selector);
+	function $$(selector, useCache) {
+		if (useCache == undefined || useCache) {
+			return cache.get(hookSelector +" " + selector);
+		}
+		return $(hookSelector +" " + selector);
 	};
 	
 	this.simulation = simulation;
@@ -746,12 +757,12 @@ function GUI(hookSelector, simulation, cache) {
 	
 	$$(".tasks").click(function() {
 		this.renderTasks = !this.renderTasks;
-		$$(".board").toggleClass("board-max-height");
-		if (!this.renderTasks) {
-			updateBoard(new Board());
-		} else {
-			updateBoard(this.simulation.board);
+		if (this.renderTasks) {
+			$$(".tasks-count", false).remove();
 		}
+		$$(".board").toggleClass("board-max-height");
+		updateBoard(this.simulation.board, this.renderTasks);
+
 	}.bind(this));
 	
 	this.getLimitForColumn = function (columnName) {
@@ -790,7 +801,7 @@ function GUI(hookSelector, simulation, cache) {
 		this.lastUpdated = now;
 		updateTime(this.simulation.time, this.cache);
 		updateStats(stats, this.cache);
-		if (this.renderTasks) updateBoard(board, this.cache);
+		updateBoard(board, this.renderTasks);
 		updateCFD(this.simulation.time, stats);
 		updateLittles(this.simulation.time, stats);
 	}
@@ -836,35 +847,41 @@ function GUI(hookSelector, simulation, cache) {
 		$$(".simulation-littles-tab").CanvasJSChart().render();
 	}
 	
-	function updateBoard(board, cache) {
+	function updateBoard(board, renderTasks) {
 		$$('allColumns').forEach(function(columnVisual) {
 			var columnVisualId = columnVisual.className;
 			columnVisual = $(columnVisual);
-			columnVisual.children().each(function() {
-				var taskVisual = $(this);
-				var task = taskVisual.data("taskReference");
-				if (task.column) {
-					taskVisual.find('.progress-bar').width((100 * task[task.column.name] / task[task.column.name + 'Original']).toFixed(1) + '%');
-					taskVisual.find('.task-status').html(createStatusSpan(task.peopleAssigned));
-				}
-				if (!board.tasks[task.id]) {
-					taskVisual.remove();
-				} else if (task.column && task.column.name != columnVisualId) {
-					taskVisual.remove();
-					var newTaskInstance = createTaskDiv(task);
-					$$(".tasks td." + task.column.name).append(newTaskInstance);
-					taskVisual = newTaskInstance;
-				}
-			});
-		});
-		for (var key in board.tasks) {
-			if (!board.tasks.hasOwnProperty(key)) {
-				continue;
+			if (!renderTasks) {
+				columnVisual.html("<span class='tasks-count'>" + board.getColumnByName(columnVisualId).tasks.length + "</span>");
+			} else {
+				columnVisual.children().each(function() {
+					var taskVisual = $(this);
+					var task = taskVisual.data("taskReference");
+					if (task.column) {
+						taskVisual.find('.progress-bar').width((100 * task[task.column.name] / task[task.column.name + 'Original']).toFixed(1) + '%');
+						taskVisual.find('.task-status').html(createStatusSpan(task.peopleAssigned));
+					}
+					if (!board.tasks[task.id]) {
+						taskVisual.remove();
+					} else if (task.column && task.column.name != columnVisualId) {
+						taskVisual.remove();
+						var newTaskInstance = createTaskDiv(task);
+						$$(".tasks td." + task.column.name).append(newTaskInstance);
+						taskVisual = newTaskInstance;
+					}
+				});
 			}
-			var task = board.tasks[key];
-			if ($("." + task.id).length == 0) {
-				var newTask = createTaskDiv(task);
-				$$('.tasks td.' + task.column.name).append(newTask);
+		});
+		if (renderTasks) {
+			for (var key in board.tasks) {
+				if (!board.tasks.hasOwnProperty(key)) {
+					continue;
+				}
+				var task = board.tasks[key];
+				if ($$("." + task.id, false).length == 0) {
+					var newTask = createTaskDiv(task);
+					$$('.tasks td.' + task.column.name).append(newTask);
+				}
 			}
 		}
 	};
