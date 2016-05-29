@@ -606,6 +606,7 @@ function GUI(hookSelector, simulation, cache) {
 	this.lastUpdated = Date.now();
 	
 	this.cache.put(hookSelector +' allColumns', $($$('.tasks td').get().reverse()).toArray());
+	this.renderTasks = true;
 
 	$$('.timescale').slider({
 		min: 50,
@@ -743,6 +744,11 @@ function GUI(hookSelector, simulation, cache) {
 	
 	$$(".bottom-menu div:not(:nth-of-type(1))").hide();
 	
+	$$(".tasks").click(function() {
+		this.renderTasks = !this.renderTasks;
+		if (!this.renderTasks) updateBoard(new Board());
+	}.bind(this));
+	
 	this.getLimitForColumn = function (columnName) {
 		var input = $$("." + columnName + "Header input");
 		var result = Number.POSITIVE_INFINITY;
@@ -779,7 +785,7 @@ function GUI(hookSelector, simulation, cache) {
 		this.lastUpdated = now;
 		updateTime(this.simulation.time, this.cache);
 		updateStats(stats, this.cache);
-		updateBoard(board, this.cache);
+		if (this.renderTasks) updateBoard(board, this.cache);
 		updateCFD(this.simulation.time, stats);
 		updateLittles(this.simulation.time, stats);
 	}
@@ -856,7 +862,7 @@ function GUI(hookSelector, simulation, cache) {
 				$$('.tasks td.' + task.column.name).append(newTask);
 			}
 		}
-	}
+	};
 	
 	function createTaskDiv(task) {
 		var html = "<div class='task " + task.id + "'><div class='task-status'>" + createStatusSpan(task.peopleAssigned)+ "</div><div>" + task.id + "</div><div class='progress'><div class='progress-bar progress-bar-info' style='width:100%'/></div></div>";
