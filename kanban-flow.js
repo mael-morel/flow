@@ -677,7 +677,9 @@ function GUI(hookSelector, simulation, cache) {
 		var navElement = $(this);
 		if (navElement.hasClass('active')) return;
 		$$(".bottom-menu .nav li:nth-child(" + (currentlySelected +1) + ")").toggleClass("active", false);
-		$$(".bottom-menu>div:nth-of-type(" + (currentlySelected +1) + ")").hide();
+		$$(".bottom-menu>div:nth-of-type(" + (currentlySelected +1) + ")").hide(0, function(){
+    		$(this).trigger('isHidden');
+		});
 		currentlySelected = navElement.index();
 		$$(".bottom-menu .nav li:nth-child(" + (currentlySelected +1) + ")").toggleClass("active", true);
 		$$(".bottom-menu>div:nth-of-type(" + (currentlySelected +1) + ")").show(0, function(){
@@ -752,8 +754,8 @@ function GUI(hookSelector, simulation, cache) {
       ]
     });
 	$$(".simulation-cfd-tab").bind('isVisible', function() {
-		$$(".simulation-cfd-tab").CanvasJSChart().render();
-	});
+		updateCFD(this.simulation.time, this.simulation.stats)
+	}.bind(this));
 	
 	$$(".simulation-littles-tab").CanvasJSChart({
       title:{
@@ -804,8 +806,8 @@ function GUI(hookSelector, simulation, cache) {
       ]
     });
 	$$(".simulation-littles-tab").bind('isVisible', function() {
-		$$(".simulation-cfd-tab").CanvasJSChart().render();
-	});
+		updateLittles(this.simulation.time, this.simulation.stats)
+	}.bind(this));
 	
 	$$(".bottom-menu div:not(:nth-of-type(1))").hide();
 	
@@ -879,26 +881,34 @@ function GUI(hookSelector, simulation, cache) {
 	
 	var lastUpdatedCFDDay = 0;
 	function updateCFD(time, stats) {
+		var tab = $$(".simulation-cfd-tab:visible", false);
+		if (tab.length == 0) {
+			return;
+		}
 		var currentDay = Math.floor(time / (60 * 8));
 		if (currentDay <= lastUpdatedCFDDay) return;
 		lastUpdatedCFDDay = currentDay;
 		for (var i=0; i<stats.cfdData.length; i++) {
-			$$(".simulation-cfd-tab").CanvasJSChart().options.data[stats.cfdData.length - i - 1].dataPoints = stats.cfdData[i];
+			tab.CanvasJSChart().options.data[stats.cfdData.length - i - 1].dataPoints = stats.cfdData[i];
 		}
-		$$(".simulation-cfd-tab").CanvasJSChart().render();
+		tab.CanvasJSChart().render();
 	}
 	
 	
 	var lastUpdatedLittlesDay = 0;
 	function updateLittles(time, stats) {
+		var tab = $$(".simulation-littles-tab:visible", false);
+		if (tab.length == 0) {
+			return;
+		}
 		var currentDay = Math.floor(time / (60 * 8));
 		if (currentDay <= lastUpdatedLittlesDay) return;
 		lastUpdatedLittlesDay = currentDay;
-		var diagramData = $$(".simulation-littles-tab").CanvasJSChart().options.data;
+		var diagramData = tab.CanvasJSChart().options.data;
 		diagramData[0].dataPoints = stats.wipAvgHistory;
 		diagramData[1].dataPoints = stats.throughputAvgHistory;
 		diagramData[2].dataPoints = stats.leadTimeAvgHistory;
-		$$(".simulation-littles-tab").CanvasJSChart().render();
+		tab.CanvasJSChart().render();
 	}
 	
 	function updateBoard(board, renderTasks) {
