@@ -577,9 +577,9 @@ function Stats() {
 	}
 	
 	this.updateHistory = function(time) {
-		this.wipAvgHistory.push({x: time, y: this.getWipAvg()});
-		this.throughputAvgHistory.push({x: time, y: this.getThroughputAvg()});
-		this.leadTimeAvgHistory.push({x: time, y: this.getLeadTimeAvg()});
+		this.wipAvgHistory.push({x: time / 60, y: this.getWipAvg()});
+		this.throughputAvgHistory.push({x: time / 60, y: this.getThroughputAvg()});
+		this.leadTimeAvgHistory.push({x: time / 60, y: this.getLeadTimeAvg()});
 	}
 	
 	this.updateCfdData = function(board, time) {
