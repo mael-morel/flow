@@ -738,15 +738,33 @@ function GUI(hookSelector, simulation, cache) {
 	  axisY:{
 		  minimum: 0
 	  },
+	  toolTip: {
+     	 shared: "true",
+	  },
+	  legend: {
+          horizontalAlign: "left", // "center" , "right"
+          verticalAlign: "top",  // "top" , "bottom"
+          fontSize: 15,
+		  dockInsidePlotArea: true
+      },
       data: [{        
-        type: "line",
-		  dataPoints: []
+          type: "line",
+		  name: "WIP",
+		  dataPoints: [],
+		  yValueFormatString: "#.##",
+		  showInLegend: true,
       },{        
-        type: "line",
-        dataPoints: []
+          type: "line",
+    	  name: "Throghput",
+          dataPoints: [],
+		  yValueFormatString: "#.##",
+		  showInLegend: true,
       },{        
-        type: "line",
-        dataPoints: []
+          type: "line",
+		  name: "Lead Time",
+          dataPoints: [],
+		  yValueFormatString: "#.##",
+		  showInLegend: true,
       },
       ]
     });
