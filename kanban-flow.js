@@ -612,7 +612,8 @@ function GUI(hookSelector, simulation, cache) {
 		max: 100000,
 		scale: 'logarithmic',
 		step: 5,
-		value: 100
+		value: 100,
+		tooltip: 'hide',
 	}).on("slide", function(event) {
 		simulation.hourLengthInSeconds = 100 / event.value;
 	}).on("slideStop", function(event) {
