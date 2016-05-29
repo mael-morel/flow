@@ -237,7 +237,7 @@ span.deployment {
 	cursor: pointer;
 }
 
-.simulation-cfd-tab {
+.simulation-cfd-tab, .simulation-littles-tab {
 	height:350px;
 	width: 100%;
 	margin-bottom: 8pt;

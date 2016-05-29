@@ -537,8 +537,11 @@ function Stats() {
 	this.cfdData = [[],[],[],[],[]]; // [[{time, value},{time, value}][{time, value},{time, value}][]]
 	this.dataPointsToRemember = 8  * 20; // hours * days
 	this.wipAvg = null;
+	this.wipAvgHistory = [];
 	this.throughputAvg = null;
+	this.throughputAvgHistory = [];
 	this.leadTimeAvg = null;
+	this.leadTimeAvgHistory = [];
 	
 	this.getWipAvg = function() {
 		this.wipAvg = this.wipAvg || this.wipCount.average();
@@ -570,6 +573,13 @@ function Stats() {
 		});
 		this.tasksFinished[position] = board.getDoneTasksCount(time - 60, time);
 		this.wipCount[position] = board.getCurrentWip();
+		this.updateHistory(time);
+	}
+	
+	this.updateHistory = function(time) {
+		this.wipAvgHistory.push({x: time, y: this.getWipAvg()});
+		this.throughputAvgHistory.push({x: time, y: this.getThroughputAvg()});
+		this.leadTimeAvgHistory.push({x: time, y: this.getLeadTimeAvg()});
 	}
 	
 	this.updateCfdData = function(board, time) {
@@ -664,9 +674,7 @@ function GUI(hookSelector, simulation, cache) {
 	$$(".simulation-settings").click(function() {
 		$$(".simulation-settings-div").slideFadeToggle();
 	});
-	
-	
-	
+
 	$$(".simulation-cfd-tab").CanvasJSChart({
       title:{
         text: "Cumulative Flow Diagram (CFD)"  
@@ -678,9 +686,8 @@ function GUI(hookSelector, simulation, cache) {
 	    minimum: 0,
    	    interval: 1,
 	  },
-	  acisY:{
+	  axisY:{
 		  minimum: 0,
-		  interval: 1,
 	  },
       data: [{        
         type: "stackedArea", //or stackedColumn
@@ -704,6 +711,34 @@ function GUI(hookSelector, simulation, cache) {
 		$$(".simulation-cfd-tab").CanvasJSChart().render();
 	});
 	
+	$$(".simulation-littles-tab").CanvasJSChart({
+      title:{
+        text: "WIP & Throghput & Lead Time (AVG)"  
+      },
+	  backgroundColor: null,
+	  zoomEnabled: true,
+	  zoomType: "x",
+	  axisX:{
+	    minimum: 0,
+	  },
+	  axisY:{
+		  minimum: 0
+	  },
+      data: [{        
+        type: "line", //or stackedColumn
+		  dataPoints: []
+      },{        
+        type: "line", //or stackedColumn
+        dataPoints: []
+      },{        
+        type: "line", //or stackedColumn
+        dataPoints: []
+      },
+      ]
+    });
+	$$(".simulation-littles-tab").bind('isVisible', function() {
+		$$(".simulation-cfd-tab").CanvasJSChart().render();
+	});
 	
 	$$(".bottom-menu div:not(:nth-of-type(1))").hide();
 	
@@ -745,6 +780,7 @@ function GUI(hookSelector, simulation, cache) {
 		updateStats(stats, this.cache);
 		updateBoard(board, this.cache);
 		updateCFD(this.simulation.time, stats);
+		updateLittles(this.simulation.time, stats);
 	}
 
 	function updateTime(time, cache) {
@@ -773,6 +809,19 @@ function GUI(hookSelector, simulation, cache) {
 			$$(".simulation-cfd-tab").CanvasJSChart().options.data[stats.cfdData.length - i - 1].dataPoints = stats.cfdData[i];
 		}
 		$$(".simulation-cfd-tab").CanvasJSChart().render();
+	}
+	
+	
+	var lastUpdatedLittlesDay = 0;
+	function updateLittles(time, stats) {
+		var currentDay = Math.floor(time / (60 * 8));
+		if (currentDay <= lastUpdatedLittlesDay) return;
+		lastUpdatedLittlesDay = currentDay;
+		var diagramData = $$(".simulation-littles-tab").CanvasJSChart().options.data;
+		diagramData[0].dataPoints = stats.wipAvgHistory;
+		diagramData[1].dataPoints = stats.throughputAvgHistory;
+		diagramData[2].dataPoints = stats.leadTimeAvgHistory;
+		$$(".simulation-littles-tab").CanvasJSChart().render();
 	}
 	
 	function updateBoard(board, cache) {
