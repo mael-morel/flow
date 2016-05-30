@@ -577,7 +577,7 @@ function Stats() {
 		var leadTimes = [];
 		this.leadTimes[position] = leadTimes;
 		lastColumn.tasks.forEach(function(task) {
-			leadTimes.push(time - task.created);
+			leadTimes.push(task.arrivalTime[lastColumn.name] - task.created);
 		});
 		this.tasksFinished[position] = board.getDoneTasksCount(time - 60, time);
 		this.wipCount[position] = board.getCurrentWip();
