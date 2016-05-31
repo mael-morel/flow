@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
 	<link rel="stylesheet" href="libs/bootstrap.min.css">
@@ -8,11 +9,12 @@
 	<script src="libs/bootstrap.min.js"></script>
 	<script src="libs/bootstrap-slider.min.js"></script>
 	<script src="libs/jquery.canvasjs.min.js"></script>
+	<script src="libs/iframeResizer.contentWindow.min.js"></script>
 	<script src="kanban-flow.js"></script>
 
 </head>
 <body>
-<div class="kanban-board" style="display:inline-block">	
+<div class="kanban-board" style="display:inline-block; width: 850px">	
 	<div class="board-overlay">
 		
 		<div class="top-toolbar">
@@ -52,8 +54,8 @@
 				</div>
 			</div>
 		</div>
-	<div class="board-wrapper">
-	<table class="board board-max-height">
+	<div class="board-wrapper board-wrapper-max-height">
+	<table class="board">
 		<tr>
 			<th rowspan="2">Backlog </th>
 			<th colspan="2" class="analysis analysisWithQueueHeader">Analysis <input type="text" class="wiplimit" maxlength="2" value="5"/><br/>

@@ -816,7 +816,7 @@ function GUI(hookSelector, simulation, cache) {
 		if (this.renderTasks) {
 			$$(".tasks-count", false).remove();
 		}
-		$$(".board").toggleClass("board-max-height");
+		$$(".board-wrapper").toggleClass("board-wrapper-max-height");
 		updateBoard(this.simulation.board, this.renderTasks);
 
 	}.bind(this));
