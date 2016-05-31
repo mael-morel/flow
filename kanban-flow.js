@@ -697,7 +697,7 @@ function GUI(hookSelector, simulation, cache) {
       },
 	  backgroundColor: null,
 	  zoomEnabled: true,
-	  zoomType: "xy",
+	  zoomType: "x",
 	  legend: {
           horizontalAlign: "left", // "center" , "right"
           verticalAlign: "top",  // "top" , "bottom"
@@ -719,7 +719,13 @@ function GUI(hookSelector, simulation, cache) {
 	  },
 	  axisY:{
 		  minimum: 0,
+		  includeZero: false,
 	  },
+	  rangeChanged: function(e){
+		 var indexOfLowestElement = Math.floor(e.axisX.viewportMinimum);
+		 e.chart.options.axisY.minimum=e.chart.options.data[0].dataPoints[indexOfLowestElement].y;
+		 e.chart.render();
+	 },
       data: [{        
           type: "stackedArea", //or stackedColumn
 		  dataPoints: [],
