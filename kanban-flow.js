@@ -725,7 +725,7 @@ function GUI(hookSelector, simulation, cache) {
 		 var indexOfLowestElement = Math.floor(e.axisX.viewportMinimum);
 		 e.chart.options.axisY.minimum=e.chart.options.data[0].dataPoints[indexOfLowestElement].y;
 		 e.chart.render();
-	 },
+	  },
       data: [{        
           type: "stackedArea", //or stackedColumn
 		  dataPoints: [],
@@ -817,7 +817,9 @@ function GUI(hookSelector, simulation, cache) {
 	
 	$$(".bottom-menu div:not(:nth-of-type(1))").hide();
 	
-	$$(".tasks").click(function() {
+	$$(".tasksDivOverlay").click(function() {
+        var divOverlay = $$('.tasksDivOverlay');
+        divOverlay.hide();
 		this.renderTasks = !this.renderTasks;
 		if (this.renderTasks) {
 			$$(".tasks-count", false).remove();
@@ -826,6 +828,27 @@ function GUI(hookSelector, simulation, cache) {
 		updateBoard(this.simulation.board, this.renderTasks);
 
 	}.bind(this));
+	
+	$(".tasks").mouseover(function() {
+        var divOverlay = $$('.tasksDivOverlay');
+        var bottomWidth = $(this).css('width');
+        var bottomHeight = $(this).css('height');
+        var rowPos = $(this).position();
+        bottomTop = rowPos.top;
+        bottomLeft = rowPos.left;
+        divOverlay.css({
+            position: 'absolute',
+            top: bottomTop,
+            right: '0px',
+            width: '100%',
+            height: bottomHeight
+        });
+		divOverlay.show();
+	});
+    $('.tasksDivOverlay').mouseleave(function() {
+        var divOverlay = $$('.tasksDivOverlay');
+        divOverlay.hide();
+    });
 	
 	this.getLimitForColumn = function (columnName) {
 		var input = $$("." + columnName + "Header input");

@@ -244,3 +244,11 @@ span.deployment {
 	width: 100%;
 	margin-bottom: 8pt;
 }
+
+.tasksDivOverlay { 
+	display: none; 
+	background-color:rgba(255, 255, 255, 0.1); 
+	text-align:center;
+	position:absolute; 
+	z-index:10000; 
+} 
