@@ -59,11 +59,16 @@
 		<tr>
 			<th rowspan="2">Backlog <button type="button" class="btn backlog-settings"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span></button>
 				<div class="backlog-settings-div" style="display: none">
-					<div class="backlog-settings-general">
+					<div class="backlog-settings-temporal">
 						<table>
 							<tr>
-								<td>Max WIP for a single person</td>
-								<td><input type="text" maxlength="2" value="2" class=""/></td>
+								<td>Task creation strategy</td>
+								<td><select class="backlog-settings-temporal-strategy">
+								  <option value="demand-equals-throughput">Demand = Throughput</option>
+								  <option value="constant-push">Constant Push</option>
+								  <option value="random-push">Random Push</option>
+								  <option value="scrum">Scrum</option>
+								</select></td>
 							</tr>
 							<tr>
 								<td>Max no. of people working on a single task</td>
