@@ -78,16 +78,44 @@ function Simulation(hookSelector) {
 				this.board.addTask(new Task(this.taskCounter++, this.time));
 			}
 		}.bind(this);
-		var alwaysOne = function() {
+		var alwaysOne = function(taskCreationStrategy) {
+			taskCreationStrategy = taskCreationStrategy || createSimpleTask;
 			if (this.board.columns[0].tasks.length == 0)
-				this.board.addTask(new Task(this.taskCounter++, this.time));
+				this.board.addTask(taskCreationStrategy(this.taskCounter++, this.time));
 			
 		}.bind(this);
-
+		var alwaysOneNormalDistribution = function() {
+			return alwaysOne(createNormallyDistributedTask);
+		}
+		
+		var createSimpleTask = function(id, time) {
+			return new Task(id, time, 2, 7, 4, 1);
+		}
+		var createNormallyDistributedTask = function(id, time) {
+			return new Task(id, time, Math.abs(normal_random(2, 2)), Math.abs(normal_random(7, 4)), Math.abs(normal_random(4, 3)), Math.abs(normal_random(1, 2)));
+		}
+		function normal_random(mean, variance) {
+		  if (mean == undefined)
+		    mean = 0.0;
+		  if (variance == undefined)
+		    variance = 1.0;
+		  var V1, V2, S;
+		  do {
+		    var U1 = Math.random();
+		    var U2 = Math.random();
+		    V1 = 2 * U1 - 1;
+		    V2 = 2 * U2 - 1;
+		    S = V1 * V1 + V2 * V2;
+		  } while (S > 1);
+		  var X = Math.sqrt(-2 * Math.log(S) / S) * V1;
+		  X = mean + Math.sqrt(variance) * X;
+		  return X;
+		}
 		//stableFlow();
 		//stableRandomFlow();
 		//scrumStrategy();
-		alwaysOne();
+		//alwaysOne();
+		alwaysOneNormalDistribution();
 	}
 
 	this.moveTasks = function(columns) {
@@ -432,17 +460,17 @@ function Board(ticksPerHour, simulation) {
 	}
 }
 
-function Task(taskId, time) {
+function Task(taskId, time, analysis, development, qa, deployment) {
 	this.id = "Task" + taskId;
 	this.created = time;
-	this.analysis = 2*60;
-	this.development = 7*60;
-	this.qa = 4*60;
-	this.deployment = 60;
-	this.analysisOriginal = 2*60;
-	this.developmentOriginal = 7*60;
-	this.qaOriginal = 4*60;
-	this.deploymentOriginal = 60;
+	this.analysis = analysis*60;
+	this.development = development*60;
+	this.qa = qa*60;
+	this.deployment = deployment*60;
+	this.analysisOriginal = this.analysis;
+	this.developmentOriginal = this.development;
+	this.qaOriginal = this.qa;
+	this.deploymentOriginal = this.deployment;
 	this.column = null;
 	this.peopleAssigned = [];
 	this.arrivalTime = {};

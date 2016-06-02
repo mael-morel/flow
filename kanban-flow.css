@@ -164,6 +164,7 @@
 
 .board input[type="text"] {
 	width: 20pt;
+	border-width: 0;
 }
 
 .general-stats {
