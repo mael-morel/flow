@@ -59,15 +59,26 @@ function Simulation(hookSelector) {
 		this.play();
 		this.time += 60/this.ticksPerHour;
 	}
-
-	this.addNewTasks = function() {
-		var scrumStrategy = function() {
+	
+	this.temporalTaskStrategies = {
+		"scrum": function(createTaskFunction) {
 			if (this.time / (60 * 8) % 10 == 0) {
 				for (var i = 0; i < 55; i++) {
-					this.board.addTask(new Task(this.taskCounter++, this.time));
+					this.board.addTask(createTaskFunction(this.taskCounter++, this.time));
 				}
 			}
-		}.bind(this);
+		}.bind(this), 
+		"demand-equals-throughput": function(createTaskFunction) {
+			if (this.board.columns[0].tasks.length == 0)
+				this.board.addTask(createTaskFunction(this.taskCounter++, this.time));
+		}.bind(this)};
+	this.temporalTaskStrategy = "demand-equals-throughput";
+	
+	this.temporalTaskStrategyChanged = function(newStrategy) {
+		this.temporalTaskStrategy = newStrategy;
+	}
+
+	this.addNewTasks = function() {
 		var stableFlow = function() {
 			if (this.time % 120 == 0 || this.time % 180 == 0) {
 				this.board.addTask(new Task(this.taskCounter++, this.time));
@@ -117,7 +128,8 @@ function Simulation(hookSelector) {
 		//stableRandomFlow();
 		//scrumStrategy();
 		//alwaysOne();
-		alwaysOneNormalDistribution();
+		//alwaysOneNormalDistribution();
+		this.temporalTaskStrategies[this.temporalTaskStrategy](createNormallyDistributedTask);
 	}
 
 	this.moveTasks = function(columns) {

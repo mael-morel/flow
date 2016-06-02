@@ -68,6 +68,11 @@ function GUI(hookSelector, simulation, cache) {
 		simulation.maxPeopleOnOneTask = newValue;
 	});	
 	
+	$$(".backlog-settings-temporal .backlog-settings-temporal-strategy").change(function(event) {
+		var newValue = event.target.value;
+		simulation.temporalTaskStrategyChanged(newValue);
+	});	
+	
 	var currentlySelected = 0;
 	$$(".bottom-menu .nav li").click(function() {
 		var navElement = $(this);
