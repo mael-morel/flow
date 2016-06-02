@@ -92,23 +92,25 @@ function Simulation(hookSelector) {
 			return new Task(id, time, 2, 7, 4, 1);
 		}
 		var createNormallyDistributedTask = function(id, time) {
-			return new Task(id, time, Math.abs(normal_random(2, 2)), Math.abs(normal_random(7, 4)), Math.abs(normal_random(4, 3)), Math.abs(normal_random(1, 2)));
+			return new Task(id, time, normal_random(2, 2), normal_random(7, 4), normal_random(4, 3), normal_random(1, 2));
 		}
 		function normal_random(mean, variance) {
 		  if (mean == undefined)
 		    mean = 0.0;
 		  if (variance == undefined)
 		    variance = 1.0;
-		  var V1, V2, S;
+		  var V1, V2, S, X;
 		  do {
-		    var U1 = Math.random();
-		    var U2 = Math.random();
-		    V1 = 2 * U1 - 1;
-		    V2 = 2 * U2 - 1;
-		    S = V1 * V1 + V2 * V2;
-		  } while (S > 1);
-		  var X = Math.sqrt(-2 * Math.log(S) / S) * V1;
-		  X = mean + Math.sqrt(variance) * X;
+			  do {
+			    var U1 = Math.random();
+			    var U2 = Math.random();
+			    V1 = 2 * U1 - 1;
+			    V2 = 2 * U2 - 1;
+			    S = V1 * V1 + V2 * V2;
+			  } while (S > 1);
+			  X = Math.sqrt(-2 * Math.log(S) / S) * V1;
+			  X = mean + Math.sqrt(variance) * X;
+		  } while (X <= 0);
 		  return X;
 		}
 		//stableFlow();
