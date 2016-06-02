@@ -71,7 +71,16 @@ function Simulation(hookSelector) {
 		"demand-equals-throughput": function(createTaskFunction) {
 			if (this.board.columns[0].tasks.length == 0)
 				this.board.addTask(createTaskFunction(this.taskCounter++, this.time));
-		}.bind(this)};
+		}.bind(this),
+		"constant-push": function(createTaskFunction) {
+			if (this.time % 120 == 0 || this.time % 180 == 0)
+				this.board.addTask(createTaskFunction(this.taskCounter++, this.time));
+		}.bind(this),
+		"random-push": function(createTaskFunction) {
+			if (this.time % 60 == 0 && Math.random() < 0.7)
+				this.board.addTask(createTaskFunction(this.taskCounter++, this.time));
+		}.bind(this),
+	};
 	this.temporalTaskStrategy = "demand-equals-throughput";
 	
 	this.temporalTaskStrategyChanged = function(newStrategy) {
@@ -79,26 +88,6 @@ function Simulation(hookSelector) {
 	}
 
 	this.addNewTasks = function() {
-		var stableFlow = function() {
-			if (this.time % 120 == 0 || this.time % 180 == 0) {
-				this.board.addTask(new Task(this.taskCounter++, this.time));
-			}
-		}.bind(this);
-		var stableRandomFlow = function() {
-			if (this.time % 60 == 0 && Math.random() < 0.7) {
-				this.board.addTask(new Task(this.taskCounter++, this.time));
-			}
-		}.bind(this);
-		var alwaysOne = function(taskCreationStrategy) {
-			taskCreationStrategy = taskCreationStrategy || createSimpleTask;
-			if (this.board.columns[0].tasks.length == 0)
-				this.board.addTask(taskCreationStrategy(this.taskCounter++, this.time));
-			
-		}.bind(this);
-		var alwaysOneNormalDistribution = function() {
-			return alwaysOne(createNormallyDistributedTask);
-		}
-		
 		var createSimpleTask = function(id, time) {
 			return new Task(id, time, 2, 7, 4, 1);
 		}
