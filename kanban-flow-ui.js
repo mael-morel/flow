@@ -73,6 +73,12 @@ function GUI(hookSelector, simulation, cache) {
 		simulation.temporalTaskStrategyChanged(newValue);
 	});	
 	
+	$$(".backlog-settings-task-size .backlog-settings-task-size-strategy").change(function(event) {
+		var newValue = event.target.value;
+		simulation.taskSizeStrategyChanged(newValue);
+	});	
+	
+	
 	var currentlySelected = 0;
 	$$(".bottom-menu .nav li").click(function() {
 		var navElement = $(this);

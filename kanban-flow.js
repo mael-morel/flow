@@ -83,44 +83,46 @@ function Simulation(hookSelector) {
 	};
 	this.temporalTaskStrategy = "demand-equals-throughput";
 	
+	this.taskSizeStrategies = {
+		"uniform": function(id, time) {
+			return new Task(id, time, 2, 7, 4, 1);
+		}.bind(this), 
+		"normal": function(id, time) {
+			return new Task(id, time, normal_random(2, 2), normal_random(7, 4), normal_random(4, 3), normal_random(1, 2));
+		}.bind(this),
+	};
+	this.taskSizeStrategy = "uniform";
+	
 	this.temporalTaskStrategyChanged = function(newStrategy) {
 		this.temporalTaskStrategy = newStrategy;
 	}
-
-	this.addNewTasks = function() {
-		var createSimpleTask = function(id, time) {
-			return new Task(id, time, 2, 7, 4, 1);
-		}
-		var createNormallyDistributedTask = function(id, time) {
-			return new Task(id, time, normal_random(2, 2), normal_random(7, 4), normal_random(4, 3), normal_random(1, 2));
-		}
-		function normal_random(mean, variance) {
-		  if (mean == undefined)
-		    mean = 0.0;
-		  if (variance == undefined)
-		    variance = 1.0;
-		  var V1, V2, S, X;
-		  do {
-			  do {
-			    var U1 = Math.random();
-			    var U2 = Math.random();
-			    V1 = 2 * U1 - 1;
-			    V2 = 2 * U2 - 1;
-			    S = V1 * V1 + V2 * V2;
-			  } while (S > 1);
-			  X = Math.sqrt(-2 * Math.log(S) / S) * V1;
-			  X = mean + Math.sqrt(variance) * X;
-		  } while (X <= 0);
-		  return X;
-		}
-		//stableFlow();
-		//stableRandomFlow();
-		//scrumStrategy();
-		//alwaysOne();
-		//alwaysOneNormalDistribution();
-		this.temporalTaskStrategies[this.temporalTaskStrategy](createNormallyDistributedTask);
+	
+	this.taskSizeStrategyChanged = function(newStrategy) {
+		this.taskSizeStrategy = newStrategy;
 	}
 
+	this.addNewTasks = function() {
+		this.temporalTaskStrategies[this.temporalTaskStrategy](this.taskSizeStrategies[this.taskSizeStrategy]);
+	}
+	function normal_random(mean, variance) {
+	  if (mean == undefined)
+	    mean = 0.0;
+	  if (variance == undefined)
+	    variance = 1.0;
+	  var V1, V2, S, X;
+	  do {
+		  do {
+		    var U1 = Math.random();
+		    var U2 = Math.random();
+		    V1 = 2 * U1 - 1;
+		    V2 = 2 * U2 - 1;
+		    S = V1 * V1 + V2 * V2;
+		  } while (S > 1);
+		  X = Math.sqrt(-2 * Math.log(S) / S) * V1;
+		  X = mean + Math.sqrt(variance) * X;
+	  } while (X <= 0);
+	  return X;
+	}
 	this.moveTasks = function(columns) {
 		var changed = true;
 		while (changed) {
