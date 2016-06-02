@@ -720,6 +720,10 @@ function GUI(hookSelector, simulation, cache) {
 	$$(".simulation-settings").click(function() {
 		$$(".simulation-settings-div").slideFadeToggle();
 	});
+	
+	$$(".backlog-settings").click(function() {
+		$$(".backlog-settings-div").slideFadeToggle();
+	});
 
 	$$(".simulation-cfd-tab").CanvasJSChart({
       title:{
