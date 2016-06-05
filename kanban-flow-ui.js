@@ -175,9 +175,6 @@ function GUI(hookSelector, simulation, cache) {
 	}.bind(this));
 	
 	$$(".simulation-littles-tab").CanvasJSChart({
-      title:{
-        text: "WIP & Throghput & Lead Time (AVG)"  
-      },
 	  backgroundColor: null,
 	  zoomEnabled: true,
 	  zoomType: "x",
