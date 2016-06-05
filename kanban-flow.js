@@ -467,6 +467,7 @@ function Board(ticksPerHour, simulation) {
 
 function Task(taskId, time, analysis, development, qa, deployment) {
 	this.id = "Task" + taskId;
+	this.label = "#" + taskId;
 	this.created = time;
 	this.analysis = analysis*60;
 	this.development = development*60;

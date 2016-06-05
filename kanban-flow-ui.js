@@ -391,7 +391,7 @@ function GUI(hookSelector, simulation, cache) {
 	};
 	
 	function createTaskDiv(task) {
-		var html = "<div class='task " + task.id + "'><div class='task-status'>" + createStatusSpan(task.peopleAssigned)+ "</div><div>" + task.id + "</div><div class='progress'><div class='progress-bar progress-bar-info' style='width:100%'/></div></div>";
+		var html = "<div class='task " + task.id + "'>" + task.label + " <div class='task-status'>" + createStatusSpan(task.peopleAssigned)+ "</div><div class='progress'><div class='progress-bar progress-bar-info' style='width:100%'/></div></div>";
 		return $(html).data("taskReference", task);
 	}
 	function createStatusSpan(peopleWorkingOn) {

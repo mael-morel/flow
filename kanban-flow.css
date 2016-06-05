@@ -55,6 +55,10 @@
     -o-transition: width .1s ease;
     transition: width 0.1s ease;
 }
+
+.task .task-status {
+	display:inline-block;
+}
 .board th {
 	text-align: center;
 	border: 1px solid black;
