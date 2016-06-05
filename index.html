@@ -1,12 +1,20 @@
 <html>
 <head>
 	<script src="libs/iframeResizer.min.js"></script>
+	
+	<style>
+	iframe{width:700px;}
+	</style>
+
 </head>
 <body>
 	
-    <iframe src="board.html" scrolling="no" frameborder="0"> </iframe>
+	<div class="iframe-div" >
+    	<iframe src="board.html" scrolling="no" frameborder="0" id="board-iframe"> </iframe>
+
+	</div>
 	<script>
-	iFrameResize({sizeWidth: true})
+	iFrameResize();
 	</script>
 </body>
 </html>

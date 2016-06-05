@@ -2,6 +2,7 @@
 	display:inline-block;
 	font-family: arial;
 	position: relative;
+	width: 100%;
 }
 .board-overlay>* {
     background: #eee; /* For browsers that do not support gradients */
@@ -14,6 +15,8 @@
 	background: #ccc;
 	border-collapse: collapse;
 	height:100%;
+    table-layout: fixed;
+    width: 100%;
 }
 
 .board-wrapper-max-height {
@@ -24,7 +27,6 @@
     height: 100%;
 }
 .tasks td {
-	width:70pt;
 	text-align: center;
 	border: 1px solid black;
 	vertical-align: top;
