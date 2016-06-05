@@ -189,7 +189,7 @@
     border-style: solid;
     overflow-y: hidden;
     overflow-x: hidden;
-    max-height: 300pt;
+    max-height: 210pt;
 }
 
 .board input[type="text"] {
