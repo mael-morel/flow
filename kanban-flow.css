@@ -207,6 +207,10 @@
 	width: 20pt;
 }
 
+.column-settings {
+	display:none;
+}
+
 .board th span.headcount {
     padding: 2pt;
     padding-left: 4pt;

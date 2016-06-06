@@ -248,10 +248,10 @@ function GUI(hookSelector, simulation, cache) {
         divOverlay.hide();
     });
 	
-	$$(".board th").mouseover(function() {
+	$$(".board th.column-settings-header").mouseover(function() {
 		$$('.column-settings').show();
 	});
-	$$(".board th").mouseleave(function() {
+	$$(".board th.column-settings-header").mouseleave(function() {
 		$$('.column-settings').hide();
 	});
 	
