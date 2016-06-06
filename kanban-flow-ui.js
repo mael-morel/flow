@@ -39,6 +39,10 @@ function GUI(hookSelector, simulation, cache) {
 	$$(".play").click(function() {
 		simulation.play();
 	});
+	
+	$$(".simulation-help").click(function() {
+		window.location = "https://mgajdzik.com/kanban-flow-simulator/help/";
+	});
 
 	$$(".headcount input[type=checkbox]").change(function(event){
 		var checkbox = event.target;
