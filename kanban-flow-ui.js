@@ -103,9 +103,6 @@ function GUI(hookSelector, simulation, cache) {
 	});
 
 	$$(".simulation-cfd-tab").CanvasJSChart({
-      title:{
-        text: "Cumulative Flow Diagram (CFD)"  
-      },
 	  backgroundColor: null,
 	  zoomEnabled: true,
 	  zoomType: "x",
