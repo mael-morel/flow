@@ -213,6 +213,17 @@
     padding-right: 4pt;
 }
 
+.board th div.headcount-surrounding {
+	display:inline-block;
+}
+.board th input {
+	margin-top: 3pt;
+}
+.board th input[type='checkbox'] {
+	margin-top: 8pt;
+	margin-bottom: 4pt;
+}
+
 th.analysis {
 	background: #cce;
 }

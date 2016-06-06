@@ -39,23 +39,16 @@ function GUI(hookSelector, simulation, cache) {
 	$$(".play").click(function() {
 		simulation.play();
 	});
-	var specialisations = ["analysis", "development", "qa", "deployment"];
-	specialisations.findFromArray = function(otherArray) {
-		for (var i = 0; i < otherArray.length; i++) {
-			if (specialisations.indexOf(otherArray[i]) != -1) {
-				return otherArray[i];
-			}
-		}
-	}
+
 	$$(".headcount input[type=checkbox]").change(function(event){
 		var checkbox = event.target;
 		var checked = event.target.checked;
-		var column = specialisations.findFromArray(checkbox.parentElement.className.split(" "));
-		var specialisation = specialisations.findFromArray(checkbox.parentElement.parentElement.className.split(" "));
+		var column = $(event.target).data("columnPermissionsColumn");
+		var specialisation = $(event.target).data("columnPermissionsSpecialist");
 		simulation.updateColumnsAvailabilityForSpecialisation(specialisation, column, checked);
 	});
 	$$("input[type=text].headcount").change(function(event){
-		var specialisation = specialisations.findFromArray(event.target.parentElement.className.split(" "));
+		var specialisation = $(event.target).data("headcountFor");
 		var newHeadcount = event.target.value;
 		simulation.updateHeadcount(specialisation, newHeadcount);
 	});
@@ -234,7 +227,7 @@ function GUI(hookSelector, simulation, cache) {
 
 	}.bind(this));
 	
-	$(".tasks").mouseover(function() {
+	$$(".tasks").mouseover(function() {
         var divOverlay = $$('.tasksDivOverlay');
         var bottomWidth = $(this).css('width');
         var bottomHeight = $(this).css('height');
@@ -250,10 +243,17 @@ function GUI(hookSelector, simulation, cache) {
         });
 		divOverlay.show();
 	});
-    $('.tasksDivOverlay').mouseleave(function() {
+    $$('.tasksDivOverlay').mouseleave(function() {
         var divOverlay = $$('.tasksDivOverlay');
         divOverlay.hide();
     });
+	
+	$$(".board th").mouseover(function() {
+		$$('.column-settings').show();
+	});
+	$$(".board th").mouseleave(function() {
+		$$('.column-settings').hide();
+	});
 	
 	this.getLimitForColumn = function (columnName) {
 		var input = $$("." + columnName + "Header input");
@@ -267,7 +267,7 @@ function GUI(hookSelector, simulation, cache) {
 	this.getHeadcount = function() {
 		var result = [];
 		$$("input[type=text].headcount").toArray().forEach(function(element) {
-			result.push([specialisations.findFromArray(element.parentElement.className.split(" ")), element.value]);
+			result.push([$(element).data("headcountFor"), element.value]);
 		});
 		return result;
 	}
@@ -277,8 +277,8 @@ function GUI(hookSelector, simulation, cache) {
 		var result = {'development': [], 'analysis': [], 'qa': [], 'deployment': []};
 		checkboxes.forEach(function (checkbox) {
 			if(checkbox.checked) {
-				var column = specialisations.findFromArray(checkbox.parentElement.className.split(" "));
-				var specialisation = specialisations.findFromArray(checkbox.parentElement.parentElement.className.split(" "));
+				var column = $(checkbox).data("columnPermissionsColumn");
+				var specialisation = $(checkbox).data("columnPermissionsSpecialist");
 				result[specialisation].push(column);
 			}	
 		});

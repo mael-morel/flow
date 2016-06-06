@@ -32,7 +32,7 @@
 				<input class="timescale" data-slider-id='timescaleSlider' type="text"/>
 			</div>
 			<div class="title">
-				<p>Software Development Flow</p>
+				<p>Kanban Flow</p>
 				<p>Simulator</p>
 			</div>
 			<div class="actions">
@@ -86,32 +86,36 @@
 					</div>
 				</div></th>
 			<th colspan="2" class="analysis analysisWithQueueHeader">Analysis <input type="text" class="wiplimit" maxlength="2" value="5"/><br/>
-			 	<span class="glyphicon glyphicon-user analysis"></span>X<input type="text" maxlength="2" value="2" class="headcount"/>
-				<span class="headcount analysis"><input type="checkbox" checked/></span><span 
-					class="headcount development"><input type="checkbox"/></span><span 
-					class="headcount qa"><input type="checkbox" class="qa"/></span><span 
-					class="headcount deployment"><input type="checkbox" class="deployment"/></span>
-			 	</th>
+			 	<div class="column-settings"><span class="glyphicon glyphicon-user analysis"></span>X<input type="text" maxlength="2" value="2" class="headcount" data-headcount-for="analysis"/>
+				<div class="headcount-surrounding"><span class="headcount analysis"><input type="checkbox" checked data-column-permissions-column="analysis" data-column-permissions-specialist="analysis"/></span><span 
+					class="headcount development"><input type="checkbox" data-column-permissions-column="development" data-column-permissions-specialist="analysis"/></span><span 
+					class="headcount qa"><input type="checkbox" class="qa" data-column-permissions-column="qa" data-column-permissions-specialist="analysis"/></span><span 
+					class="headcount deployment"><input type="checkbox" class="deployment" data-column-permissions-column="deployment" data-column-permissions-specialist="analysis"/></span></div>
+			</div>
+		 	</th>
 			<th colspan="2" class="development developmentWithQueueHeader">Development <input type="text" class="wiplimit" maxlength="2" value="5"/><br/>
-			 	<span class="glyphicon glyphicon-user development"></span>X<input type="text" maxlength="2" value="5" class="headcount"/>
-				<span class="headcount analysis"><input type="checkbox"/></span><span 
-					class="headcount development"><input type="checkbox" checked/></span><span 
-					class="headcount qa"><input type="checkbox" class="qa"/></span><span 
-					class="headcount deployment"><input type="checkbox" class="deployment"/></span>
+			 	<div class="column-settings"><span class="glyphicon glyphicon-user development"></span>X<input type="text" maxlength="2" value="5" class="headcount" data-headcount-for="development"/>
+				<div class="headcount-surrounding"><span class="headcount analysis"><input type="checkbox" data-column-permissions-column="analysis" data-column-permissions-specialist="development"/></span><span 
+					class="headcount development"><input type="checkbox" checked  data-column-permissions-column="development" data-column-permissions-specialist="development"/></span><span 
+					class="headcount qa"><input type="checkbox" class="qa"  data-column-permissions-column="qa" data-column-permissions-specialist="development"/></span><span 
+					class="headcount deployment"><input type="checkbox" class="deployment" data-column-permissions-column="deployment" data-column-permissions-specialist="development"/></span></div>
+			</div>
 			</th>
 			<th colspan="2" class="qa qaWithQueueHeader">QA <input type="text" class="wiplimit" maxlength="2" value="3"/><br/>
-		 	<span class="glyphicon glyphicon-user qa"></span>X<input type="text" maxlength="2" value="3" class="headcount"/>
-			<span class="headcount analysis"><input type="checkbox"/></span><span 
-				class="headcount development"><input type="checkbox"/></span><span 
-				class="headcount qa"><input type="checkbox" class="qa" checked/></span><span 
-				class="headcount deployment"><input type="checkbox" class="deployment"/></span>
+		 	<div class="column-settings"><span class="glyphicon glyphicon-user qa"></span>X<input type="text" maxlength="2" value="3" class="headcount" data-headcount-for="qa"/>
+			<div class="headcount-surrounding"><span class="headcount analysis"><input type="checkbox"  data-column-permissions-column="analysis" data-column-permissions-specialist="qa"/></span><span 
+				class="headcount development"><input type="checkbox" data-column-permissions-column="development" data-column-permissions-specialist="qa"/></span><span 
+				class="headcount qa"><input type="checkbox" class="qa" checked data-column-permissions-column="qa" data-column-permissions-specialist="qa"/></span><span 
+				class="headcount deployment"><input type="checkbox" class="deployment" data-column-permissions-column="deployment" data-column-permissions-specialist="qa"/></span></div>
+			</div>
 			</th>
 			<th colspan="2" class="deployment deploymentWithQueueHeader">Deployment <input type="text" class="wiplimit" maxlength="2" value="5"/><br/>
-		 	<span class="glyphicon glyphicon-user deployment"></span>X<input type="text" maxlength="2" value="1" class="headcount"/>
-			<span class="headcount analysis"><input type="checkbox"/></span><span 
-				class="headcount development"><input type="checkbox"/></span><span 
-				class="headcount qa"><input type="checkbox" class="qa"/></span><span 
-				class="headcount deployment"><input type="checkbox" class="deployment" checked/></span>
+		 	<div class="column-settings"><span class="glyphicon glyphicon-user deployment"></span>X<input type="text" maxlength="2" value="1" class="headcount" data-headcount-for="deployment"/>
+			<div class="headcount-surrounding"><span class="headcount analysis"><input type="checkbox" data-column-permissions-column="analysis" data-column-permissions-specialist="deployment"/></span><span 
+				class="headcount development"><input type="checkbox" data-column-permissions-column="development" data-column-permissions-specialist="deployment"/></span><span 
+				class="headcount qa"><input type="checkbox" class="qa" data-column-permissions-column="qa" data-column-permissions-specialist="deployment"/></span><span 
+				class="headcount deployment"><input type="checkbox" class="deployment" checked data-column-permissions-column="deployment" data-column-permissions-specialist="deployment"/></span></div>
+			</div>
 			</th>
 		</tr>
 		<tr>
