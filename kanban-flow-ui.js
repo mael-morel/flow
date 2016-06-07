@@ -41,7 +41,7 @@ function GUI(hookSelector, simulation, cache) {
 	});
 	
 	$$(".simulation-help").click(function() {
-		window.location = "https://mgajdzik.com/kanban-flow-simulator/help/";
+		window.top.location = "https://mgajdzik.com/kanban-flow-simulator/help/";
 	});
 
 	$$(".headcount input[type=checkbox]").change(function(event){

@@ -84,14 +84,14 @@ function Simulation(hookSelector) {
 	this.temporalTaskStrategy = "demand-equals-throughput";
 	
 	this.taskSizeStrategies = {
-		"uniform": function(id, time) {
+		"constant": function(id, time) {
 			return new Task(id, time, 2, 7, 4, 1);
 		}.bind(this), 
 		"normal": function(id, time) {
 			return new Task(id, time, normal_random(2, 2), normal_random(7, 4), normal_random(4, 3), normal_random(1, 2));
 		}.bind(this),
 	};
-	this.taskSizeStrategy = "uniform";
+	this.taskSizeStrategy = "constant";
 	
 	this.temporalTaskStrategyChanged = function(newStrategy) {
 		this.temporalTaskStrategy = newStrategy;
