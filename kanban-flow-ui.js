@@ -26,18 +26,43 @@ function GUI(hookSelector, simulation, cache) {
 		simulation.hourLengthInSeconds = 100 / event.value;
 	}).on("slideStop", function(event) {
 		simulation.hourLengthInSeconds = 100 / event.value;
+		ga('send', {
+		  hitType: 'event',
+		  eventCategory: 'Control',
+		  eventAction: 'speed',
+		  eventLabel: 'Speed Changed',
+		  eventValue: simulation.hourLengthInSeconds
+		});
 	});
 
 	$$(".stop").click(function() {
 		simulation.stop();
 		lastUpdatedCFDDay = -1;
 		lastUpdatedLittlesDay = -1;
+		ga('send', {
+		  hitType: 'event',
+		  eventCategory: 'Control',
+		  eventAction: 'stop',
+		  eventLabel: 'Stopped',
+		});
 	});
 	$$(".pause").click(function() {
 		simulation.pause();
+		ga('send', {
+		  hitType: 'event',
+		  eventCategory: 'Control',
+		  eventAction: 'pause',
+		  eventLabel: 'Paused',
+		});
 	});
 	$$(".play").click(function() {
 		simulation.play();
+		ga('send', {
+		  hitType: 'event',
+		  eventCategory: 'Control',
+		  eventAction: 'start',
+		  eventLabel: 'Started',
+		});
 	});
 	
 	$$(".simulation-help").click(function() {
@@ -50,29 +75,65 @@ function GUI(hookSelector, simulation, cache) {
 		var column = $(event.target).data("columnPermissionsColumn");
 		var specialisation = $(event.target).data("columnPermissionsSpecialist");
 		simulation.updateColumnsAvailabilityForSpecialisation(specialisation, column, checked);
+		ga('send', {
+		  hitType: 'event',
+		  eventCategory: 'Column',
+		  eventAction: 'policy',
+		  eventLabel: 'Columns working policy',
+		});
 	});
 	$$("input[type=text].headcount").change(function(event){
 		var specialisation = $(event.target).data("headcountFor");
 		var newHeadcount = event.target.value;
 		simulation.updateHeadcount(specialisation, newHeadcount);
+		ga('send', {
+		  hitType: 'event',
+		  eventCategory: 'Column',
+		  eventAction: 'headcount',
+		  eventLabel: 'Columns headcount',
+		});
 	});
 	$$(".simulation-settings-general .settings-no-of-tasks").change(function(event) {
 		var newValue = event.target.value;
 		simulation.maxTasksOnOnePerson = newValue;
+		ga('send', {
+		  hitType: 'event',
+		  eventCategory: 'General settings',
+		  eventAction: 'multitasking',
+		  eventLabel: 'Multitasking policy',
+		});
 	});
 	$$(".simulation-settings-general .settings-no-of-people").change(function(event) {
 		var newValue = event.target.value;
 		simulation.maxPeopleOnOneTask = newValue;
+		ga('send', {
+		  hitType: 'event',
+		  eventCategory: 'General settings',
+		  eventAction: 'pairing',
+		  eventLabel: 'Pairing policy',
+		});
 	});	
 	
 	$$(".backlog-settings-temporal .backlog-settings-temporal-strategy").change(function(event) {
 		var newValue = event.target.value;
 		simulation.temporalTaskStrategyChanged(newValue);
+		ga('send', {
+		  hitType: 'event',
+		  eventCategory: 'Backlog settings',
+		  eventAction: 'temporal',
+		  eventLabel: 'Temporal strategy',
+		});
 	});	
 	
 	$$(".backlog-settings-task-size .backlog-settings-task-size-strategy").change(function(event) {
 		var newValue = event.target.value;
 		simulation.taskSizeStrategyChanged(newValue);
+		ga('send', {
+		  hitType: 'event',
+		  eventCategory: 'Backlog settings',
+		  eventAction: 'size',
+		  eventLabel: 'Size strategy',
+		});
 	});	
 	
 	
