@@ -263,7 +263,7 @@ function GUI(hookSelector, simulation, cache) {
 		  showInLegend: true,
       },{        
           type: "line",
-    	  name: "Throghput",
+    	  name: "Throughput",
           dataPoints: [],
 		  showInLegend: true,
       },{        
