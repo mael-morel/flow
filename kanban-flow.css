@@ -295,3 +295,7 @@ span.deployment {
 	position:absolute; 
 	z-index:10; 
 } 
+
+.copyright {
+	text-align: right;
+}
