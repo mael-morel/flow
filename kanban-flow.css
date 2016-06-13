@@ -287,15 +287,18 @@ span.deployment {
 	height:300px;
 	width: 100%;
 }
+.simulation-cfd-tab {
+	display:flex;
+}
 .simulation-cfd {
 	height: 100%;
-	width: 70%;
-	float:left;
+	flex:1;
 }
 .simulation-cfd-settings {
 	height: 100%;
-	width: 30%;	
-	float:left;
+	flex-shrink:1;
+	padding: 10pt;
+	background-color: #ddd;
 }
 
 .simulation-cfd-settings div{
