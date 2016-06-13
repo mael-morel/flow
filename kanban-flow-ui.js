@@ -160,7 +160,7 @@ function GUI(hookSelector, simulation, cache) {
 		$$(".backlog-settings-div").slideFadeToggle();
 	});
 
-	$$(".simulation-cfd-tab").CanvasJSChart({
+	$$(".simulation-cfd").CanvasJSChart({
 	  backgroundColor: null,
 	  zoomEnabled: true,
 	  zoomType: "x",
@@ -226,7 +226,67 @@ function GUI(hookSelector, simulation, cache) {
       ]
     });
 	$$(".simulation-cfd-tab").bind('isVisible', function() {
-		updateCFD(this.simulation.time, this.simulation.stats)
+		updateCFDConfiguration.bind(this)();
+		updateCFD(this.simulation.time, this.simulation.stats);
+	}.bind(this));
+	var colors = ['silver', 'mediumaquamarine', 'lightskyblue', 'lightpink', 'lightgray', 'lightcoral', 'lightblue', 'burlywood', 'antiquewhite'];
+	function updateCFDConfiguration() {
+		var groups = [];
+		var group = [];
+		var checkboxes = $$(".simulation-cfd-settings input[type='checkbox']");
+		for (var i=0; i<checkboxes.length; i++) {
+			var checkbox = checkboxes[i];
+			var checked = checkbox.checked;
+			if (checked) {
+				group = [];
+				groups.push(group);
+			}
+			group.push([checkbox.parentElement, this.simulation.board.columns[i]]);
+		}
+		for (var i=0; i<groups.length; i++) {
+			for (var j =0; j<groups[i].length; j++) {
+				$(groups[i][j][0]).css("backgroundColor", colors[i]);
+			}
+		}
+		var model = [];
+		for (var i=0; i<groups.length; i++) {
+			var columnsToSum = [];
+			var name = "group " + i;
+			var fromActiveColumn = false;
+			var fromColumn = false;
+			var fromCoumnsActive = [];
+			for (var j =0; j<groups[i].length; j++) {
+				var column = groups[i][j][1];
+				columnsToSum.push(column);
+				if (!fromColumn) {
+					name = column.label;
+					fromColumn = true;
+				}
+				if (!fromActiveColumn && !column.isQueue() && fromCoumnsActive.length == 0) {
+					name = column.label;
+					fromActiveColumn = true;
+				}
+				if (!column.isQueue()) {
+					fromCoumnsActive.push(column);
+				}
+				if (fromCoumnsActive.length > 1) {
+					name = "";
+					for (var k=0; k<fromCoumnsActive.length; k++) {
+						name += fromCoumnsActive[k].shortLabel + " ";
+					}
+				}
+			}
+			model[i] = { type: "stackedArea", dataPoints: [], name: name.trim(), showInLegend: true, color: colors[i], columnsToSum: columnsToSum};
+		}
+		$$(".simulation-cfd").CanvasJSChart().options.data = model;
+		$$(".simulation-cfd").CanvasJSChart().render();
+	};
+	$$(".simulation-cfd-settings input[type='checkbox']").change(updateCFDConfiguration.bind(this));
+	$$(".simulation-cfd-settings div:not(:first-child)").click(function(event) {
+		var checkbox = $(event.target).find("input[type='checkbox']")[0];
+		if (!checkbox) return;
+		checkbox.checked = !checkbox.checked;
+		updateCFDConfiguration.bind(this)();
 	}.bind(this));
 	
 	$$(".simulation-littles-tab").CanvasJSChart({
@@ -278,7 +338,7 @@ function GUI(hookSelector, simulation, cache) {
 		updateLittles(this.simulation.time, this.simulation.stats)
 	}.bind(this));
 	
-	$$(".bottom-menu div:not(:nth-of-type(1))").hide();
+	$$(".bottom-menu>div:not(:nth-of-type(1))").hide();
 	
 	$$(".tasksDivOverlay").click(function() {
         var divOverlay = $$('.tasksDivOverlay');
@@ -388,9 +448,9 @@ function GUI(hookSelector, simulation, cache) {
 		if (currentDay <= lastUpdatedCFDDay) return;
 		lastUpdatedCFDDay = currentDay;
 		for (var i=0; i<stats.cfdData.length; i++) {
-			tab.CanvasJSChart().options.data[stats.cfdData.length - i - 1].dataPoints = stats.cfdData[i];
+			$$(".simulation-cfd").CanvasJSChart().options.data[stats.cfdData.length - i - 1].dataPoints = stats.cfdData[i];
 		}
-		tab.CanvasJSChart().render();
+		$$(".simulation-cfd").CanvasJSChart().render();
 	}
 	
 	

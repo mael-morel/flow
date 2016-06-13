@@ -445,19 +445,19 @@ function Board(ticksPerHour, simulation) {
 	function createColumns(board, simulation) {
 		board.columns = [];
 		var columns = board.columns;
-		columns.push(new Column("input", true, simulation));
-		Array.prototype.push.apply(columns, createColumnWithChildren("analysis", simulation).children);
-		Array.prototype.push.apply(columns, createColumnWithChildren("development", simulation).children);
-		Array.prototype.push.apply(columns, createColumnWithChildren("qa", simulation).children);
-		Array.prototype.push.apply(columns, createColumnWithChildren("deployment", simulation).children);
+		columns.push(new Column("input", true, simulation, "Backlog"));
+		Array.prototype.push.apply(columns, createColumnWithChildren("analysis", simulation, "Analysis", "An").children);
+		Array.prototype.push.apply(columns, createColumnWithChildren("development", simulation, "Development", "Dev").children);
+		Array.prototype.push.apply(columns, createColumnWithChildren("qa", simulation, "QA", "QA").children);
+		Array.prototype.push.apply(columns, createColumnWithChildren("deployment", simulation, "Deployment", "Depl").children);
 		board.columns[board.columns.length - 1].ignoreLimit = true;
 	}
 
-	function createColumnWithChildren(name, simulation) {
+	function createColumnWithChildren(name, simulation, label, shortLabel) {
 		var parentColumn = new Column(name + "WithQueue", false, simulation);
-		var column = new Column(name, false, simulation);
+		var column = new Column(name, false, simulation, label, shortLabel);
 		column.parent = parentColumn;
-		var done = new Column(name + "Done", true, simulation);
+		var done = new Column(name + "Done", true, simulation, label + " Done", shortLabel + " D");
 		done.parent = parentColumn;
 		parentColumn.children.push(column);
 		parentColumn.children.push(done);
@@ -500,7 +500,7 @@ function Task(taskId, time, analysis, development, qa, deployment) {
 	}
 }
 
-function Column(name, queue, simulation) {
+function Column(name, queue, simulation, label, shortLabel) {
 	this.name = name;
 	this.limit = Number.POSITIVE_INFINITY;
 	this.tasks = [];
@@ -509,6 +509,8 @@ function Column(name, queue, simulation) {
 	this.ignoreLimit = false;
 	this.queue = queue;
 	this.simulation = simulation;
+	this.label = label;
+	this.shortLabel = shortLabel;
 	
 	this.getTasksAssignedToOneOrMoreOrderedByNumberOfPeople = function() {
 		var result = [];
