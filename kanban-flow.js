@@ -578,7 +578,7 @@ function Stats() {
 	this.leadTimes = [];
 	this.wipCount = [];
 	this.tasksFinished = [];
-	this.cfdData = [[],[],[],[],[]]; // [[{time, value},{time, value}][{time, value},{time, value}][]]
+	this.cfdData = {}; // [[{time, value},{time, value}][{time, value},{time, value}][]]
 	this.dataPointsToRemember = 8  * 20; // hours * days
 	this.wipAvg = null;
 	this.wipAvgHistory = [];
@@ -629,12 +629,15 @@ function Stats() {
 	this.updateCfdData = function(board, time) {
 		if (time % (60 * 8) != 0) return;
 		var day = (time/60/8);
-		for (var i=0; i<board.columns.length - 1; i+=2) {
-			var sum = board.columns[i].tasks.length + board.columns[i+1].tasks.length;
-			this.cfdData[i/2].push({x: day, y:sum});
+		for (var i=0; i<board.columns.length - 1; i++) {
+			if (!this.cfdData[board.columns[i].name]) this.cfdData[board.columns[i].name] = [];
+			this.cfdData[board.columns[i].name].push({x: day, y:board.columns[i].tasks.length});
 		}
-		var lastDoneCount = this.cfdData[4][this.cfdData[4].length - 1] ? this.cfdData[4][this.cfdData[4].length - 1].y : 0;
-		this.cfdData[4].push({x: day, y:(board.columns[board.columns.length - 1].tasks.length + lastDoneCount)});
+		var lastColumnName = board.columns[board.columns.length - 1].name;
+		if (!this.cfdData[lastColumnName]) this.cfdData[lastColumnName] = [];
+		var lastColumn = this.cfdData[lastColumnName];
+		var lastDoneCount = lastColumn[lastColumn.length - 1] ? lastColumn[lastColumn.length - 1].y : 0;
+		lastColumn.push({x: day, y:(board.columns[board.columns.length - 1].tasks.length + lastDoneCount)});
 	}
 }
 

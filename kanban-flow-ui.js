@@ -276,7 +276,7 @@ function GUI(hookSelector, simulation, cache) {
 					}
 				}
 			}
-			model[i] = { type: "stackedArea", dataPoints: [], name: name.trim(), showInLegend: true, color: colors[i], columnsToSum: columnsToSum};
+			model[groups.length - 1 - i] = { type: "stackedArea", dataPoints: [], name: name.trim(), showInLegend: true, color: colors[i], columnsToSum: columnsToSum};
 		}
 		$$(".simulation-cfd").CanvasJSChart().options.data = model;
 		$$(".simulation-cfd").CanvasJSChart().render();
@@ -447,8 +447,17 @@ function GUI(hookSelector, simulation, cache) {
 		var currentDay = Math.floor(time / (60 * 8));
 		if (currentDay <= lastUpdatedCFDDay) return;
 		lastUpdatedCFDDay = currentDay;
-		for (var i=0; i<stats.cfdData.length; i++) {
-			$$(".simulation-cfd").CanvasJSChart().options.data[stats.cfdData.length - i - 1].dataPoints = stats.cfdData[i];
+		var model = $$(".simulation-cfd").CanvasJSChart().options.data;
+		for (var i=0; i<model.length; i++) {
+			var columnsToSum = model[i].columnsToSum;
+			for (var j=model[i].dataPoints.length; j<stats.cfdData[columnsToSum[0].name].length; j++) {
+				var sum = 0;
+				for (var k=0; k<columnsToSum.length; k++) {
+					sum += stats.cfdData[columnsToSum[k].name][j].y;
+				}
+				model[i].dataPoints[j] = {x: stats.cfdData[columnsToSum[0].name].x, y: sum};
+			}
+			//model[stats.cfdData.length - i - 1].dataPoints = stats.cfdData[i];
 		}
 		$$(".simulation-cfd").CanvasJSChart().render();
 	}
