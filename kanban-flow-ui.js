@@ -192,38 +192,7 @@ function GUI(hookSelector, simulation, cache) {
 		 e.chart.options.axisY.minimum=e.chart.options.data[0].dataPoints[indexOfLowestElement].y;
 		 e.chart.render();
 	  },
-      data: [{        
-          type: "stackedArea", //or stackedColumn
-		  dataPoints: [],
-		  name: "Done",
-		  showInLegend: true,
-		  color: "gray",
-      },{        
-          type: "stackedArea", //or stackedColumn
-          dataPoints: [],
-		  name: "Deployment",
-		  showInLegend: true,
-		  color: "#acc",
-      },{        
-          type: "stackedArea", //or stackedColumn
-          dataPoints: [],
-		  name: "QA",
-		  showInLegend: true,
-		  color: "#cac",
-      },{        
-          type: "stackedArea", //or stackedColumn
-          dataPoints: [],
-		  name: "Development",
-		  showInLegend: true,
-		  color: "#aca",
-      },{        
-          type: "stackedArea", //or stackedColumn
-          dataPoints: [],
-		  name: "Analysis",
-		  showInLegend: true,
-		  color: "#aac",
-      }
-      ]
+      data: [],
     });
 	$$(".simulation-cfd-tab").bind('isVisible', function() {
 		updateCFDConfiguration.bind(this)();
@@ -279,7 +248,7 @@ function GUI(hookSelector, simulation, cache) {
 			model[groups.length - 1 - i] = { type: "stackedArea", dataPoints: [], name: name.trim(), showInLegend: true, color: colors[i], columnsToSum: columnsToSum};
 		}
 		$$(".simulation-cfd").CanvasJSChart().options.data = model;
-		lastUpdatedCFDDay = 0;
+		lastUpdatedCFDDay = -1;
 		updateCFD(this.simulation.time, this.simulation.stats);
 	};
 	$$(".simulation-cfd-settings input[type='checkbox']").change(updateCFDConfiguration.bind(this));

@@ -20,7 +20,7 @@ function Simulation(hookSelector) {
 		this.taskCounter = 1;
 		this.team = new Team();
 		this.board = new Board(this.ticksPerHour, this);
-		this.stats = new Stats();
+		this.stats = new Stats(this);
 		this.gui.update(this.board, this.stats, true);
 		this.gui.getHeadcount().forEach(function (newHeadcount) {
 			this.team.updateHeadcount(newHeadcount[0], newHeadcount[1]);
@@ -574,7 +574,7 @@ function Column(name, queue, simulation, label, shortLabel) {
 	}
 }
 
-function Stats() {
+function Stats(simulation) {
 	this.leadTimes = [];
 	this.wipCount = [];
 	this.tasksFinished = [];
@@ -586,6 +586,10 @@ function Stats() {
 	this.throughputAvgHistory = [];
 	this.leadTimeAvg = null;
 	this.leadTimeAvgHistory = [];
+	
+	for (var i=0; i<simulation.board.columns.length; i++) {
+		this.cfdData[simulation.board.columns[i].name] = [];
+	}
 	
 	this.getWipAvg = function() {
 		this.wipAvg = this.wipAvg || this.wipCount.average();
@@ -630,11 +634,11 @@ function Stats() {
 		if (time % (60 * 8) != 0) return;
 		var day = (time/60/8);
 		for (var i=0; i<board.columns.length - 1; i++) {
-			if (!this.cfdData[board.columns[i].name]) this.cfdData[board.columns[i].name] = [];
+			// if (!this.cfdData[board.columns[i].name]) this.cfdData[board.columns[i].name] = [];
 			this.cfdData[board.columns[i].name].push({x: day, y:board.columns[i].tasks.length});
 		}
 		var lastColumnName = board.columns[board.columns.length - 1].name;
-		if (!this.cfdData[lastColumnName]) this.cfdData[lastColumnName] = [];
+		// if (!this.cfdData[lastColumnName]) this.cfdData[lastColumnName] = [];
 		var lastColumn = this.cfdData[lastColumnName];
 		var lastDoneCount = lastColumn[lastColumn.length - 1] ? lastColumn[lastColumn.length - 1].y : 0;
 		lastColumn.push({x: day, y:(board.columns[board.columns.length - 1].tasks.length + lastDoneCount)});
