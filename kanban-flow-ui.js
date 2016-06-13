@@ -279,7 +279,8 @@ function GUI(hookSelector, simulation, cache) {
 			model[groups.length - 1 - i] = { type: "stackedArea", dataPoints: [], name: name.trim(), showInLegend: true, color: colors[i], columnsToSum: columnsToSum};
 		}
 		$$(".simulation-cfd").CanvasJSChart().options.data = model;
-		$$(".simulation-cfd").CanvasJSChart().render();
+		lastUpdatedCFDDay = 0;
+		updateCFD(this.simulation.time, this.simulation.stats);
 	};
 	$$(".simulation-cfd-settings input[type='checkbox']").change(updateCFDConfiguration.bind(this));
 	$$(".simulation-cfd-settings div:not(:first-child)").click(function(event) {
@@ -457,7 +458,6 @@ function GUI(hookSelector, simulation, cache) {
 				}
 				model[i].dataPoints[j] = {x: stats.cfdData[columnsToSum[0].name].x, y: sum};
 			}
-			//model[stats.cfdData.length - i - 1].dataPoints = stats.cfdData[i];
 		}
 		$$(".simulation-cfd").CanvasJSChart().render();
 	}
