@@ -164,6 +164,7 @@
 
 .title {
 	flex: 1;
+	-webkit-flex: 1;
     font-weight: bold;
     font-size: large;
     text-align: center;
@@ -289,14 +290,17 @@ span.deployment {
 }
 .simulation-cfd-tab {
 	display:flex;
+	display: -webkit-flex;
 }
 .simulation-cfd {
 	height: 100%;
 	flex:1;
+	-webkit-flex: 1
 }
 .simulation-cfd-settings {
 	height: 100%;
 	flex-shrink:1;
+	-webkit-flex-shrink:1;
 	padding: 10pt;
 	background-color: #ddd;
 }
