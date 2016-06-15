@@ -53,7 +53,7 @@ function Simulation(hookSelector) {
 		this.doWork();
 		this.moveTasks(this.board.columns);
 		this.assignTeamMembersToTasks();
-		this.stats.recalculateStats(this.board, this.time);
+		this.stats.recalculateStats(this);
 		this.removeDoneTasks();
 		this.gui.update(this.board, this.stats);
 		this.play();
@@ -183,7 +183,7 @@ function Simulation(hookSelector) {
 	}
 	
 	this.assignTeamMembersToTasksBySpecialisation = function(column, specialisation) {
-		var notWorkingPpl = this.team.getNotWorking(column, specialisation);
+		var notWorkingPpl = this.team.getNotWorkingForColumn(column, specialisation);
 		var tasksWithNoAssignee = column.getNotAssignedTasks();
 		var i;
 		for (i=0; i<notWorkingPpl.length && i<tasksWithNoAssignee.length; i++) {
@@ -267,12 +267,20 @@ function Team() {
 		});
 	}
 	
-	this.getNotWorking = function(column, specialisation) {
+	this.getNotWorkingForColumn = function(column, specialisation) {
 		var result = [];
 		this.members.forEach(function(person) {
 			if (person.tasksWorkingOn.length == 0 && (!specialisation || person.specialisation == specialisation) && person.isAllowedToWorkIn(column.name)) {
 				result.push(person);
 			}
+		});
+		return result;
+	}
+	
+	this.getNotWorking = function() {
+		var result = [];
+		this.members.forEach(function(person) {
+			if (person.tasksWorkingOn.length == 0) result.push(person);
 		});
 		return result;
 	}
@@ -578,14 +586,19 @@ function Stats(simulation) {
 	this.leadTimes = [];
 	this.wipCount = [];
 	this.tasksFinished = [];
+	this.availablePeople = [];
+	this.busyPeople = [];
+	this.capacityUtilisation = [];
 	this.cfdData = {}; // [[{time, value},{time, value}][{time, value},{time, value}][]]
-	this.dataPointsToRemember = 8  * 20; // hours * days
+	this.dataPointsToRemember = 8  * 5; // hours * days
 	this.wipAvg = null;
 	this.wipAvgHistory = [];
 	this.throughputAvg = null;
 	this.throughputAvgHistory = [];
 	this.leadTimeAvg = null;
 	this.leadTimeAvgHistory = [];
+	this.capacityUtilisationAvg = null;
+	this.capacityUtilisationAvgHistory = [];
 	
 	for (var i=0; i<simulation.board.columns.length; i++) {
 		this.cfdData[simulation.board.columns[i].name] = [];
@@ -606,28 +619,52 @@ function Stats(simulation) {
 		return this.leadTimeAvg;
 	}
 	
-	this.recalculateStats = function(board, time) {
-		if (time % 60 != 0) return;
-		this.updateCfdData(board, time);
+	this.getCapacityUtilisationAvg = function() {
+		this.capacityUtilisationAvg = this.capacityUtilisationAvg ||  this.capacityUtilisation.average();
+		return this.capacityUtilisationAvg;
+	}
+	
+	this.recalculateStats = function(simulation) {
+		this.calculateAvailablePeople(simulation);
+		if (simulation.time % 60 != 0) return;
+		this.updateCfdData(simulation.board, simulation.time);
 		this.wipAvg = null;
 		this.throughputAvg = null;
 		this.leadTimeAvg = null;
-		var position = (time / 60) % this.dataPointsToRemember;
-		var lastColumn = board.lastColumn();
+		this.capacityUtilisationAvg = null;
+		var position = (simulation.time / 60) % this.dataPointsToRemember;
+		var lastColumn = simulation.board.lastColumn();
 		var leadTimes = [];
 		this.leadTimes[position] = leadTimes;
 		lastColumn.tasks.forEach(function(task) {
 			leadTimes.push(task.arrivalTime[lastColumn.name] - task.created);
 		});
-		this.tasksFinished[position] = board.getDoneTasksCount(time - 60, time);
-		this.wipCount[position] = board.getCurrentWip();
-		this.updateHistory(time);
+		this.tasksFinished[position] = simulation.board.getDoneTasksCount(simulation.time - 60, simulation.time);
+		this.wipCount[position] = simulation.board.getCurrentWip();
+		
+		this.availablePeople[position] = this.notWorkingCountSummed / simulation.ticksPerHour;
+		this.busyPeople[position] = this.busyCountSummed / simulation.ticksPerHour;
+		this.capacityUtilisation[position] = 100 * this.busyPeople[position] / (this.busyPeople[position] + this.availablePeople[position]);
+		this.notWorkingCountSummed = 0;
+		this.busyCountSummed = 0;
+		this.updateHistory(simulation.time);
+		
+	}
+	
+	this.notWorkingCountSummed = 0;
+	this.busyCountSummed = 0;
+	this.calculateAvailablePeople = function(simulation) {
+		var notWorkingCount = simulation.team.getNotWorking().length;
+		var teamSize = simulation.team.members.length;
+		this.notWorkingCountSummed += notWorkingCount;
+		this.busyCountSummed += teamSize - notWorkingCount;
 	}
 	
 	this.updateHistory = function(time) {
 		this.wipAvgHistory.push({x: time / 60, y: this.getWipAvg()});
 		this.throughputAvgHistory.push({x: time / 60, y: this.getThroughputAvg()});
 		this.leadTimeAvgHistory.push({x: time / 60, y: this.getLeadTimeAvg()});
+		this.capacityUtilisationAvgHistory.push({x: time / 60, y: this.getCapacityUtilisationAvg()});
 	}
 	
 	this.updateCfdData = function(board, time) {

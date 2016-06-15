@@ -269,6 +269,10 @@ function GUI(hookSelector, simulation, cache) {
 	  axisY:{
 		  minimum: 0
 	  },
+	  axisY2:{
+		  minimum: 0,
+		  maximum: 100
+	  },
 	  toolTip: {
      	 shared: "true",
   		contentFormatter: function (e) {
@@ -301,6 +305,12 @@ function GUI(hookSelector, simulation, cache) {
 		  name: "Lead Time",
           dataPoints: [],
 		  showInLegend: true,
+      },{        
+          type: "line",
+		  name: "Capacity Utilisation",
+          dataPoints: [],
+		  showInLegend: true,
+		  axisYType: "secondary",
       },
       ]
     });
@@ -406,6 +416,7 @@ function GUI(hookSelector, simulation, cache) {
 		$$('.stats-throughput').text(stats.getThroughputAvg() ? stats.getThroughputAvg().toFixed(1) : '-');
 		$$('.stats-lead-time').text(leadTimeAvg ? leadTimeAvg.toFixed(1) : '-');
 		$$('.stats-wip-lead-time').text(wipAvg && leadTimeAvg ? (wipAvg / leadTimeAvg).toFixed(1) : '-');
+		$$('.stats-utilisation').text(stats.getCapacityUtilisationAvg() ? stats.getCapacityUtilisationAvg().toFixed(1) : '-');
 	}
 	
 	var lastUpdatedCFDDay = 0;
@@ -445,6 +456,7 @@ function GUI(hookSelector, simulation, cache) {
 		diagramData[0].dataPoints = stats.wipAvgHistory;
 		diagramData[1].dataPoints = stats.throughputAvgHistory;
 		diagramData[2].dataPoints = stats.leadTimeAvgHistory;
+		diagramData[3].dataPoints = stats.capacityUtilisationAvgHistory;
 		tab.CanvasJSChart().render();
 	}
 	
