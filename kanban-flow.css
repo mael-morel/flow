@@ -124,6 +124,7 @@
 	border-radius: 6px 6px 6px 6px;
 	box-shadow: 10px 10px 5px rgba(150, 150, 150, 0.8);
 	width: 290pt;
+	padding: 5pt;
 }
 
 .simulation-settings-div>div{
@@ -134,8 +135,8 @@
     vertical-align: top;
     border: 1pt;
     border-style: solid;
-    margin: 3pt;
     background-color: papayawhip;
+	width: 100%;
 }
 
 .backlog-settings-div {
@@ -148,6 +149,7 @@
 	border-radius: 6px 6px 6px 6px;
 	box-shadow: 10px 10px 5px rgba(150, 150, 150, 0.8);
 	width: 290pt;
+	padding: 5pt;
 }
 
 .backlog-settings-div>div{
@@ -158,8 +160,8 @@
     vertical-align: top;
     border: 1pt;
     border-style: solid;
-    margin: 3pt;
     background-color: papayawhip;
+	width: 100%;
 }
 
 .title {
