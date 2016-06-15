@@ -15,7 +15,7 @@
 	border-style:solid;
 	border-width: 1px 0px 0px;
 }
-.board-overlay div:first-of-type {
+.board-overlay>div:first-of-type {
 	border-width: 0px;
 }
 .board {
