@@ -30,6 +30,7 @@ function Simulation(hookSelector) {
 		this.maxTasksOnOnePerson = generalSettings['maxTasksOnOnePerson'];
 		this.maxPeopleOnOneTask = generalSettings['maxPeopleOnOneTask'];
 		this.stats.changeNoOfDaysForCountingAverages(generalSettings['noOfDaysForCountingAverages']);
+		this.team.workingOutOfSpecialisationCoefficient = generalSettings['productivityOfWorkingNotInSpecialisation'];
 	}
 	this.initBasics();
 
@@ -250,6 +251,10 @@ function Simulation(hookSelector) {
 	
 	this.updateHeadcount = function(specialisation, newHeadcount) {
 		this.team.updateHeadcount(specialisation, newHeadcount);
+	}
+	
+	this.changeProductivityOfWorkingNotInSpecialisation = function(newValue) {
+		this.team.workingOutOfSpecialisationCoefficient = newValue;
 	}
 }
 

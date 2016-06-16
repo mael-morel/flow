@@ -124,6 +124,18 @@ function GUI(hookSelector, simulation, cache) {
 		});
 	});	
 	
+	$$(".simulation-settings-general .settings-productivity-of-working-not-in-specialisation").change(function(event) {
+		var newValue = event.target.value;
+		simulation.changeProductivityOfWorkingNotInSpecialisation(newValue);
+		ga('send', {
+		  hitType: 'event',
+		  eventCategory: 'General settings',
+		  eventAction: 'productivityNotSpecialisation',
+		  eventLabel: 'Productivity of working not in specialisation',
+		});
+	});	
+	
+	
 	$$(".backlog-settings-temporal .backlog-settings-temporal-strategy").change(function(event) {
 		var newValue = event.target.value;
 		simulation.temporalTaskStrategyChanged(newValue);
@@ -405,6 +417,7 @@ function GUI(hookSelector, simulation, cache) {
 		result['maxTasksOnOnePerson'] = $$(".simulation-settings-general .settings-no-of-tasks")[0].value;
 		result['maxPeopleOnOneTask'] = $$(".simulation-settings-general .settings-no-of-people")[0].value;
 		result['noOfDaysForCountingAverages'] = $$(".simulation-settings-general .settings-no-of-days-for-stats")[0].value;
+		result['productivityOfWorkingNotInSpecialisation'] = $$(".simulation-settings-general .settings-productivity-of-working-not-in-specialisation")[0].value;
 		return result;
 	}
 	
