@@ -113,6 +113,16 @@ function GUI(hookSelector, simulation, cache) {
 		  eventLabel: 'Pairing policy',
 		});
 	});	
+	$$(".simulation-settings-general .settings-no-of-days-for-stats").change(function(event) {
+		var newValue = event.target.value;
+		simulation.changeNoOfDaysForCountingAverages(newValue);
+		ga('send', {
+		  hitType: 'event',
+		  eventCategory: 'General settings',
+		  eventAction: 'avgdays',
+		  eventLabel: 'No of days for avg counting',
+		});
+	});	
 	
 	$$(".backlog-settings-temporal .backlog-settings-temporal-strategy").change(function(event) {
 		var newValue = event.target.value;

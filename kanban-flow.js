@@ -100,6 +100,10 @@ function Simulation(hookSelector) {
 	this.taskSizeStrategyChanged = function(newStrategy) {
 		this.taskSizeStrategy = newStrategy;
 	}
+	
+	this.changeNoOfDaysForCountingAverages = function(newNoOfDays) {
+		this.stats.changeNoOfDaysForCountingAverages(newNoOfDays, this.time);
+	}
 
 	this.addNewTasks = function() {
 		this.temporalTaskStrategies[this.temporalTaskStrategy](this.taskSizeStrategies[this.taskSizeStrategy]);
@@ -599,9 +603,29 @@ function Stats(simulation) {
 	this.leadTimeAvgHistory = [];
 	this.capacityUtilisationAvg = null;
 	this.capacityUtilisationAvgHistory = [];
+	this.currentPosition = -1;
 	
 	for (var i=0; i<simulation.board.columns.length; i++) {
 		this.cfdData[simulation.board.columns[i].name] = [];
+	}
+	
+	this.changeNoOfDaysForCountingAverages = function(newNoOfDays, time) {
+		newNoOfDays = parseInt(newNoOfDays);
+		if (Number.isNaN(newNoOfDays) || newNoOfDays <= 0) return;
+		var reorder = function(array, newNoOfDays, currentPosition) {
+			var newArray = array.slice(currentPosition + 1).concat(array.slice(0, currentPosition + 1));
+			newArray = newArray.slice(-newNoOfDays * 8);
+			return newArray;
+		}
+		this.leadTimes = reorder(this.leadTimes, newNoOfDays, this.currentPosition);
+		this.wipCount = reorder(this.wipCount, newNoOfDays, this.currentPosition);
+		this.tasksFinished = reorder(this.tasksFinished, newNoOfDays, this.currentPosition);
+		this.availablePeople = reorder(this.availablePeople, newNoOfDays, this.currentPosition);
+		this.busyPeople = reorder(this.busyPeople, newNoOfDays, this.currentPosition);
+		this.capacityUtilisation = reorder(this.capacityUtilisation, newNoOfDays, this.currentPosition);
+		
+		this.dataPointsToRemember = newNoOfDays * 8;
+		this.currentPosition = this.leadTimes.length - 1;
 	}
 	
 	this.getWipAvg = function() {
@@ -632,19 +656,19 @@ function Stats(simulation) {
 		this.throughputAvg = null;
 		this.leadTimeAvg = null;
 		this.capacityUtilisationAvg = null;
-		var position = (simulation.time / 60) % this.dataPointsToRemember;
+		this.currentPosition = (this.currentPosition + 1) % this.dataPointsToRemember;
 		var lastColumn = simulation.board.lastColumn();
 		var leadTimes = [];
-		this.leadTimes[position] = leadTimes;
+		this.leadTimes[this.currentPosition] = leadTimes;
 		lastColumn.tasks.forEach(function(task) {
 			leadTimes.push(task.arrivalTime[lastColumn.name] - task.created);
 		});
-		this.tasksFinished[position] = simulation.board.getDoneTasksCount(simulation.time - 60, simulation.time);
-		this.wipCount[position] = simulation.board.getCurrentWip();
+		this.tasksFinished[this.currentPosition] = simulation.board.getDoneTasksCount(simulation.time - 60, simulation.time);
+		this.wipCount[this.currentPosition] = simulation.board.getCurrentWip();
 		
-		this.availablePeople[position] = this.notWorkingCountSummed / simulation.ticksPerHour;
-		this.busyPeople[position] = this.busyCountSummed / simulation.ticksPerHour;
-		this.capacityUtilisation[position] = 100 * this.busyPeople[position] / (this.busyPeople[position] + this.availablePeople[position]);
+		this.availablePeople[this.currentPosition] = this.notWorkingCountSummed / simulation.ticksPerHour;
+		this.busyPeople[this.currentPosition] = this.busyCountSummed / simulation.ticksPerHour;
+		this.capacityUtilisation[this.currentPosition] = 100 * this.busyPeople[this.currentPosition] / (this.busyPeople[this.currentPosition] + this.availablePeople[this.currentPosition]);
 		this.notWorkingCountSummed = 0;
 		this.busyCountSummed = 0;
 		this.updateHistory(simulation.time);
