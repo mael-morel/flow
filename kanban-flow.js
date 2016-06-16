@@ -26,6 +26,10 @@ function Simulation(hookSelector) {
 			this.team.updateHeadcount(newHeadcount[0], newHeadcount[1]);
 		}.bind(this));
 		this.team.allowedToWorkIn = this.gui.getColumnsAvailability();
+		var generalSettings = this.gui.getGeneralSettings();
+		this.maxTasksOnOnePerson = generalSettings['maxTasksOnOnePerson'];
+		this.maxPeopleOnOneTask = generalSettings['maxPeopleOnOneTask'];
+		this.stats.changeNoOfDaysForCountingAverages(generalSettings['noOfDaysForCountingAverages']);
 	}
 	this.initBasics();
 
@@ -102,7 +106,7 @@ function Simulation(hookSelector) {
 	}
 	
 	this.changeNoOfDaysForCountingAverages = function(newNoOfDays) {
-		this.stats.changeNoOfDaysForCountingAverages(newNoOfDays, this.time);
+		this.stats.changeNoOfDaysForCountingAverages(newNoOfDays);
 	}
 
 	this.addNewTasks = function() {
@@ -258,6 +262,7 @@ function Team() {
 		'qa': ['qa'],
 		'deployment': ['deployment']
 	};
+	this.workingOutOfSpecialisationCoefficient = 1;
 	
 	this.doWork = function(ticksPerHour) {
 		this.members.forEach(function(person) {
@@ -376,14 +381,14 @@ function Person(specialisation, team) {
 		var workPerTask = this.productivityPerHour / this.tasksWorkingOn.length / ticksPerHour;
 		this.tasksWorkingOn.forEach(function(task) {
 			if (task.column.name != specialisation) {
-				task.work(workPerTask / 2);
+				task.work(workPerTask * this.team.workingOutOfSpecialisationCoefficient);
 			} else {
 				task.work(workPerTask);
 			}
 			if (task.finished()) {
 				task.unassignPeople();
 			}
-		});
+		}.bind(this));
 	}
 	
 	this.isAllowedToWorkIn = function(columnName) {
@@ -609,7 +614,7 @@ function Stats(simulation) {
 		this.cfdData[simulation.board.columns[i].name] = [];
 	}
 	
-	this.changeNoOfDaysForCountingAverages = function(newNoOfDays, time) {
+	this.changeNoOfDaysForCountingAverages = function(newNoOfDays) {
 		newNoOfDays = parseInt(newNoOfDays);
 		if (Number.isNaN(newNoOfDays) || newNoOfDays <= 0) return;
 		var reorder = function(array, newNoOfDays, currentPosition) {

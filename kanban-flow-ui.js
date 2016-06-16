@@ -400,6 +400,14 @@ function GUI(hookSelector, simulation, cache) {
 		return result;
 	}
 	
+	this.getGeneralSettings = function() {
+		var result = {};
+		result['maxTasksOnOnePerson'] = $$(".simulation-settings-general .settings-no-of-tasks")[0].value;
+		result['maxPeopleOnOneTask'] = $$(".simulation-settings-general .settings-no-of-people")[0].value;
+		result['noOfDaysForCountingAverages'] = $$(".simulation-settings-general .settings-no-of-days-for-stats")[0].value;
+		return result;
+	}
+	
 	this.update = function(board, stats, force) {
 		var now = Date.now();
 		if (!force && now - this.lastUpdated < 1000/this.fps) return;
