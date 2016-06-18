@@ -78,8 +78,27 @@ function Simulation(hookSelector) {
 				this.board.addTask(createTaskFunction(this.taskCounter++, this.time));
 		}.bind(this),
 		"constant-push": function(createTaskFunction) {
-			if (this.time % 120 == 0 || this.time % 180 == 0)
-				this.board.addTask(createTaskFunction(this.taskCounter++, this.time));
+			var demand = this.temporatTaskStrategyProperties['demand'];
+			var ticksPerDay = 8 * this.ticksPerHour;
+			var distanceInTicks = ticksPerDay / demand;
+			var tickDuration = 60/this.ticksPerHour;
+			var currentTick = (this.time) / tickDuration;
+			var deltaIndex = currentTick - Math.floor(currentTick / distanceInTicks) * distanceInTicks;
+			var spawnTasks = deltaIndex < 1;
+			if (spawnTasks) {
+				var noOfTasksToSpawn = 1;
+				if (demand > ticksPerDay) {
+					noOfTasksToSpawn += Math.floor(demand/ticksPerDay) - 1;
+					var distanceInTicks = ticksPerDay / (demand % ticksPerDay);
+					var deltaIndex = currentTick - Math.floor(currentTick / distanceInTicks) * distanceInTicks;
+					var spawnTask = deltaIndex < 1;
+					noOfTasksToSpawn += spawnTask ? 1 : 0;
+				}
+				for (var i=0; i < noOfTasksToSpawn; i++) {
+					this.board.addTask(createTaskFunction(this.taskCounter++, this.time));
+				}
+			}
+				
 		}.bind(this),
 		"random-push": function(createTaskFunction) {
 			if (this.time % 60 == 0 && Math.random() < 0.7)
@@ -87,6 +106,7 @@ function Simulation(hookSelector) {
 		}.bind(this),
 	};
 	this.temporalTaskStrategy = "demand-equals-throughput";
+	this.temporatTaskStrategyProperties = {};
 	
 	this.taskSizeStrategies = {
 		"constant": function(id, time) {
@@ -98,8 +118,9 @@ function Simulation(hookSelector) {
 	};
 	this.taskSizeStrategy = "constant";
 	
-	this.temporalTaskStrategyChanged = function(newStrategy) {
+	this.temporalTaskStrategyChanged = function(newStrategy, properties) {
 		this.temporalTaskStrategy = newStrategy;
+		this.temporatTaskStrategyProperties = properties;
 	}
 	
 	this.taskSizeStrategyChanged = function(newStrategy) {

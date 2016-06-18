@@ -163,6 +163,24 @@
     background-color: papayawhip;
 	width: 100%;
 }
+.backlog-settings-temporal table {
+	table-layout: fixed;
+}
+.backlog-settings-temporal table td {
+	padding: 2pt;
+}
+.backlog-settings-temporal table tr:not(:first-child) {
+	display:none;
+	
+}
+.backlog-settings-temporal table tr td {
+	text-align: right;
+	padding-right: 3pt;
+}
+.backlog-settings-temporal table tr td:not(:first-child) {
+	text-align: left;
+	font-weight: normal;
+}
 
 .title {
 	flex: 1;
