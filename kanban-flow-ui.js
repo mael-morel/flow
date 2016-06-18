@@ -116,13 +116,15 @@ function GUI(hookSelector, simulation, cache) {
 	$$(".simulation-settings-general .settings-no-of-days-for-stats").change(function(event) {
 		var newValue = event.target.value;
 		simulation.changeNoOfDaysForCountingAverages(newValue);
+		lastUpdatedLittlesDay = -1;
+		updateLittles(this.simulation.time, this.simulation.stats);
 		ga('send', {
 		  hitType: 'event',
 		  eventCategory: 'General settings',
 		  eventAction: 'avgdays',
 		  eventLabel: 'No of days for avg counting',
 		});
-	});	
+	}.bind(this));	
 	
 	$$(".simulation-settings-general .settings-productivity-of-working-not-in-specialisation").change(function(event) {
 		var newValue = event.target.value;
