@@ -67,8 +67,12 @@ function Simulation(hookSelector) {
 	
 	this.temporalTaskStrategies = {
 		"scrum": function(createTaskFunction) {
-			if (this.time / (60 * 8) % 10 == 0) {
-				for (var i = 0; i < 55; i++) {
+			var length = this.temporatTaskStrategyProperties['length'];
+			var tasks = this.temporatTaskStrategyProperties['tasks'];
+			var includeExisting = this.temporatTaskStrategyProperties['include-existing'];
+			if  (includeExisting) tasks = tasks - this.board.getCurrentWip();
+			if (this.time / (60 * 8) % length == 0) {
+				for (var i = 0; i < tasks; i++) {
 					this.board.addTask(createTaskFunction(this.taskCounter++, this.time));
 				}
 			}
