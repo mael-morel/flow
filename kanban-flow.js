@@ -101,8 +101,17 @@ function Simulation(hookSelector) {
 				
 		}.bind(this),
 		"random-push": function(createTaskFunction) {
-			if (this.time % 60 == 0 && Math.random() < 0.7)
-				this.board.addTask(createTaskFunction(this.taskCounter++, this.time));
+			var demand = this.temporatTaskStrategyProperties['demand'];
+			var batchSize = this.temporatTaskStrategyProperties['batch-size'];
+			var ticksPerDay = 8 * this.ticksPerHour;
+			var probabilityOfSpawningNow = demand / ticksPerDay / batchSize;
+			if (Math.random() < probabilityOfSpawningNow) {
+				batchSize = Math.max(demand / ticksPerDay, batchSize);
+				var noOfTasksToSpawn = Math.round(normal_random(batchSize, batchSize / 3));
+				for (var i=0; i < noOfTasksToSpawn; i++) {
+					this.board.addTask(createTaskFunction(this.taskCounter++, this.time));
+				}
+			}
 		}.bind(this),
 	};
 	this.temporalTaskStrategy = "demand-equals-throughput";
