@@ -168,7 +168,13 @@ function GUI(hookSelector, simulation, cache) {
 	
 	$$(".backlog-settings-task-size .backlog-settings-task-size-strategy").change(function(event) {
 		var newValue = event.target.value;
-		simulation.taskSizeStrategyChanged(newValue);
+		$$(".backlog-settings-task-size [data-for-option]").hide();
+		$$(".backlog-settings-task-size [data-for-option='" + newValue + "']").show();
+		var properties = {};
+		$$(".backlog-settings-task-size [data-for-option='" + newValue + "'] input").each(function() {
+			properties[this.dataset['property']] = this.type == 'checkbox' ? this.checked : this.value;
+		});
+		simulation.taskSizeStrategyChanged(newValue, properties);
 		ga('send', {
 		  hitType: 'event',
 		  eventCategory: 'Backlog settings',
@@ -177,6 +183,18 @@ function GUI(hookSelector, simulation, cache) {
 		});
 	});	
 	
+	$$(".backlog-settings-task-size [data-for-option] input").change(function(event) {
+		var strategy = $(event.target).closest("[data-for-option]")[0].dataset["forOption"];
+		var properties = {};
+		$$(".backlog-settings-task-size [data-for-option='" + strategy + "'] input").each(function() {
+			properties[this.dataset['property']] = this.type == 'checkbox' ? this.checked : this.value;
+		});
+		simulation.taskSizeStrategyChanged(strategy, properties);
+	});
+	
+	this.initialiseBacklogStrategies = function() {
+		$$(".backlog-settings-task-size .backlog-settings-task-size-strategy").change();
+	}
 	
 	var currentlySelected = 0;
 	$$(".bottom-menu .nav li").click(function() {

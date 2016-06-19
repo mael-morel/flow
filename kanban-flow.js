@@ -27,12 +27,12 @@ function Simulation(hookSelector) {
 		}.bind(this));
 		this.team.allowedToWorkIn = this.gui.getColumnsAvailability();
 		var generalSettings = this.gui.getGeneralSettings();
+		this.gui.initialiseBacklogStrategies();
 		this.maxTasksOnOnePerson = generalSettings['maxTasksOnOnePerson'];
 		this.maxPeopleOnOneTask = generalSettings['maxPeopleOnOneTask'];
 		this.stats.changeNoOfDaysForCountingAverages(generalSettings['noOfDaysForCountingAverages']);
 		this.team.workingOutOfSpecialisationCoefficient = generalSettings['productivityOfWorkingNotInSpecialisation'];
 	}
-	this.initBasics();
 
 	this.play = function() {
 		if (!this.timeoutHandler)
@@ -122,21 +122,23 @@ function Simulation(hookSelector) {
 	
 	this.taskSizeStrategies = {
 		"constant": function(id, time) {
-			return new Task(id, time, 2, 7, 4, 1);
+			return new Task(id, time, this.taskSizeStrategyProperties["analysis"], this.taskSizeStrategyProperties["development"], this.taskSizeStrategyProperties["qa"], this.taskSizeStrategyProperties["deployment"]);
 		}.bind(this), 
 		"normal": function(id, time) {
-			return new Task(id, time, normal_random(2, 2), normal_random(7, 4), normal_random(4, 3), normal_random(1, 2));
+			return new Task(id, time, normal_random(this.taskSizeStrategyProperties["analysis"], this.taskSizeStrategyProperties["analysis-variation"]), normal_random(this.taskSizeStrategyProperties["development"], this.taskSizeStrategyProperties["development-variation"]), normal_random(this.taskSizeStrategyProperties["qa"], this.taskSizeStrategyProperties["qa-variation"]), normal_random(this.taskSizeStrategyProperties["deployment"], this.taskSizeStrategyProperties["deployment-variation"]));
 		}.bind(this),
 	};
 	this.taskSizeStrategy = "constant";
+	this.taskSizeStrategyProperties = {};
 	
 	this.temporalTaskStrategyChanged = function(newStrategy, properties) {
 		this.temporalTaskStrategy = newStrategy;
 		this.temporatTaskStrategyProperties = properties;
 	}
 	
-	this.taskSizeStrategyChanged = function(newStrategy) {
+	this.taskSizeStrategyChanged = function(newStrategy, properties) {
 		this.taskSizeStrategy = newStrategy;
+		this.taskSizeStrategyProperties = properties;
 	}
 	
 	this.changeNoOfDaysForCountingAverages = function(newNoOfDays) {
@@ -149,8 +151,10 @@ function Simulation(hookSelector) {
 	function normal_random(mean, variance) {
 	  if (mean == undefined)
 	    mean = 0.0;
+	  mean = 1.0 * mean;
 	  if (variance == undefined)
 	    variance = 1.0;
+	  variance = 1.0 * variance;
 	  var V1, V2, S, X;
 	  do {
 		  do {
@@ -289,6 +293,8 @@ function Simulation(hookSelector) {
 	this.changeProductivityOfWorkingNotInSpecialisation = function(newValue) {
 		this.team.workingOutOfSpecialisationCoefficient = newValue;
 	}
+	
+	this.initBasics();
 }
 
 function Team() {
