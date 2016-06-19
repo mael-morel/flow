@@ -42,11 +42,10 @@ function Simulation(hookSelector) {
 	this.stop = function() {
 		clearTimeout(this.timeoutHandler);
 		this.timeoutHandler = null;
-		this.initBasics()
+		this.initBasics();
 	}
 	
 	this.pause = function() {
-		this.gui.update(this.board, this.stats, true);
 		clearTimeout(this.timeoutHandler);
 		this.timeoutHandler = null;
 	}

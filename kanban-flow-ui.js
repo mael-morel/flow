@@ -39,22 +39,25 @@ function GUI(hookSelector, simulation, cache) {
 		simulation.stop();
 		lastUpdatedCFDDay = -1;
 		lastUpdatedLittlesDay = -1;
+		updateCFDConfiguration.bind(this)();
+		this.update(this.simulation.board, this.simulation.stats, true);
 		ga('send', {
 		  hitType: 'event',
 		  eventCategory: 'Control',
 		  eventAction: 'stop',
 		  eventLabel: 'Stopped',
 		});
-	});
+	}.bind(this));
 	$$(".pause").click(function() {
 		simulation.pause();
+		this.update(this.simulation.board, this.simulation.stats, true);
 		ga('send', {
 		  hitType: 'event',
 		  eventCategory: 'Control',
 		  eventAction: 'pause',
 		  eventLabel: 'Paused',
 		});
-	});
+	}.bind(this));
 	$$(".play").click(function() {
 		simulation.play();
 		ga('send', {
