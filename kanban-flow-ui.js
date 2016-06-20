@@ -39,6 +39,7 @@ function GUI(hookSelector, simulation, cache) {
 		simulation.stop();
 		lastUpdatedCFDDay = -1;
 		lastUpdatedLittlesDay = -1;
+		lastUpdatedCodDay = -1;
 		updateCFDConfiguration.bind(this)();
 		this.update(this.simulation.board, this.simulation.stats, true);
 		ga('send', {
@@ -121,6 +122,8 @@ function GUI(hookSelector, simulation, cache) {
 		simulation.changeNoOfDaysForCountingAverages(newValue);
 		lastUpdatedLittlesDay = -1;
 		updateLittles(this.simulation.time, this.simulation.stats);
+		lastUpdatedCodDay = -1;
+		updateCod(this.simulation.time, this.simulation.stats, true);
 		ga('send', {
 		  hitType: 'event',
 		  eventCategory: 'General settings',
@@ -377,6 +380,54 @@ function GUI(hookSelector, simulation, cache) {
 		updateLittles(this.simulation.time, this.simulation.stats)
 	}.bind(this));
 	
+	$$(".simulation-cod-tab").CanvasJSChart({
+	  backgroundColor: null,
+	  zoomEnabled: true,
+	  zoomType: "x",
+	  axisX:{
+	    minimum: 0,
+	  },
+	  axisY:{
+		  minimum: 0
+	  },
+	  axisY2:{
+		  minimum: 0,
+	  },
+	  toolTip: {
+     	 shared: "true",
+  		contentFormatter: function (e) {
+  			var content = "Day: <strong>" + Math.floor(e.entries[0].dataPoint.x / 8) + "</strong><br/>";
+  			for (var i = 0; i< e.entries.length; i++) {
+				if (!isNaN(e.entries[i].dataPoint.y))
+					content += e.entries[i].dataSeries.name + ": <strong>" + e.entries[i].dataPoint.y.toFixed(1) + "</strong><br/>";
+  			}
+  			return content;
+  		},
+	  },
+	  legend: {
+          horizontalAlign: "left", // "center" , "right"
+          verticalAlign: "top",  // "top" , "bottom"
+          fontSize: 15,
+		  dockInsidePlotArea: true
+      },
+      data: [{        
+          type: "line",
+		  name: "Cost Of Delay",
+          dataPoints: [],
+		  showInLegend: true,
+      },{        
+          type: "line",
+		  name: "WIP",
+		  dataPoints: [],
+		  showInLegend: true,
+		  axisYType: "secondary",
+      }
+      ]
+    });
+	$$(".simulation-cod-tab").bind('isVisible', function() {
+		updateCod(this.simulation.time, this.simulation.stats)
+	}.bind(this));
+	
 	$$(".bottom-menu>div:not(:nth-of-type(1))").hide();
 	
 	$$(".tasksDivOverlay").click(function() {
@@ -467,6 +518,7 @@ function GUI(hookSelector, simulation, cache) {
 		updateBoard(board, this.renderTasks);
 		updateCFD(this.simulation.time, stats);
 		updateLittles(this.simulation.time, stats);
+		updateCod(this.simulation.time, stats, force);
 	}
 
 	function updateTime(time, cache) {
@@ -525,6 +577,24 @@ function GUI(hookSelector, simulation, cache) {
 		diagramData[1].dataPoints = stats.throughputAvgHistory;
 		diagramData[2].dataPoints = stats.leadTimeAvgHistory;
 		diagramData[3].dataPoints = stats.capacityUtilisationAvgHistory;
+		tab.CanvasJSChart().render();
+	}
+	
+	var lastUpdatedCodDay = 0;
+	function updateCod(time, stats, recalculate) {
+		var tab = $$(".simulation-cod-tab:visible", false);
+		if (tab.length == 0) {
+			return;
+		}
+		var currentDay = Math.floor(time / (60 * 8));
+		if (currentDay <= lastUpdatedCodDay) return;
+		lastUpdatedCodDay = currentDay;
+		var diagramData = tab.CanvasJSChart().options.data;
+		diagramData[0].dataPoints = stats.costOfDelaySummedAvgHistory;
+		if (recalculate) diagramData[1].dataPoints = [];
+		for (var i=diagramData[1].dataPoints.length * 8; i<stats.wipAvgHistory.length; i+=8) {
+			diagramData[1].dataPoints.push(stats.wipAvgHistory[i]);
+		}
 		tab.CanvasJSChart().render();
 	}
 	
