@@ -110,7 +110,7 @@ function Simulation(hookSelector) {
 			var probabilityOfSpawningNow = demand / ticksPerDay / batchSize;
 			if (Math.random() < probabilityOfSpawningNow) {
 				batchSize = Math.max(demand / ticksPerDay, batchSize);
-				var noOfTasksToSpawn = Math.round(normal_random(batchSize, batchSize / 3));
+				var noOfTasksToSpawn = Math.max(0, Math.round(normal_random(batchSize, batchSize / 3, true)));
 				for (var i=0; i < noOfTasksToSpawn; i++) {
 					this.board.addTask(createTaskFunction(this.taskCounter++, this.time));
 				}
@@ -148,7 +148,7 @@ function Simulation(hookSelector) {
 	this.addNewTasks = function() {
 		this.temporalTaskStrategies[this.temporalTaskStrategy](this.taskSizeStrategies[this.taskSizeStrategy]);
 	}
-	function normal_random(mean, variance) {
+	function normal_random(mean, variance, includeNegatives) {
 	  if (mean == undefined)
 	    mean = 0.0;
 	  mean = 1.0 * mean;
@@ -166,7 +166,7 @@ function Simulation(hookSelector) {
 		  } while (S > 1);
 		  X = Math.sqrt(-2 * Math.log(S) / S) * V1;
 		  X = mean + Math.sqrt(variance) * X;
-	  } while (X <= 0);
+	  } while (!includeNegatives && X <= 0);
 	  return X;
 	}
 	this.moveTasks = function(columns) {
