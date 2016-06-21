@@ -40,6 +40,7 @@ function GUI(hookSelector, simulation, cache) {
 		lastUpdatedCFDDay = -1;
 		lastUpdatedLittlesDay = -1;
 		lastUpdatedCodDay = -1;
+		lastUpdatedScatterPlotDay = -1;
 		updateCFDConfiguration.bind(this)();
 		this.update(this.simulation.board, this.simulation.stats, true);
 		ga('send', {
