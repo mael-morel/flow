@@ -458,16 +458,21 @@ function Board(ticksPerHour, simulation) {
 	}
 	
 	this.getDoneTasksCount = function(start, end) {
+		return this.getDoneTasks(start, end).length;
+	}
+	
+	this.getDoneTasks = function(start, end) {
+		var result = [];
 		var tasks = this.lastColumn().tasks;
-		var colunName = this.lastColumn().name;
+		var columnName = this.lastColumn().name;
 		if (!start || !end)
-			return tasks.length;
+			return tasks.slice();
 		var count = 0;
 		for (var i=0; i < tasks.length; i++) {
-			var timeFinished = tasks[i].arrivalTime[colunName];
-			if(timeFinished > start && timeFinished <= end) count++;
+			var timeFinished = tasks[i].arrivalTime[columnName];
+			if(timeFinished > start && timeFinished <= end) result.push(tasks[i]);
 		}
-		return count;
+		return result;
 	}
 	
 	this.updateColumnsLimitsFrom = function(gui) {
@@ -560,6 +565,10 @@ function Task(taskId, time, analysis, development, qa, deployment) {
 			person.tasksWorkingOn.splice(person.tasksWorkingOn.indexOf(this), 1);
 		}.bind(this));
 		this.peopleAssigned = [];
+	}
+	
+	this.getLeadTime = function() {
+		return this.arrivalTime[this.column.name] - this.created;
 	}
 }
 
@@ -660,6 +669,7 @@ function Stats(simulation) {
 	this.costOfDelayAvgHistory = [];
 	this.costOfDelaySummedAvg = null;
 	this.costOfDelaySummedAvgHistory = [];
+	this.leadTimesHistory = [];
 	
 	for (var i=0; i<simulation.board.columns.length; i++) {
 		this.cfdData[simulation.board.columns[i].name] = [];
@@ -736,7 +746,7 @@ function Stats(simulation) {
 		var leadTimes = [];
 		this.leadTimes.push(leadTimes);
 		lastColumn.tasks.forEach(function(task) {
-			leadTimes.push(task.arrivalTime[lastColumn.name] - task.created);
+			leadTimes.push(task.getLeadTime());
 		});
 		this.tasksFinished.push(simulation.board.getDoneTasksCount(simulation.time - 60, simulation.time));
 		this.wipCount.push(simulation.board.getCurrentWip());
@@ -770,6 +780,11 @@ function Stats(simulation) {
 		this.throughputAvgHistory.push({x: time / 60, y: this.getThroughputAvg()});
 		this.leadTimeAvgHistory.push({x: time / 60, y: this.getLeadTimeAvg()});
 		this.capacityUtilisationAvgHistory.push({x: time / 60, y: this.getCapacityUtilisationAvg()});
+		var tasks = simulation.board.getDoneTasks(simulation.time - 60, simulation.time);
+		for (var i=0; i< tasks.length; i++) {
+			this.leadTimesHistory.push({x: time, y:tasks[i].getLeadTime()/60/8});
+		}
+		this.tasksFinished.push();
 		if (time % (60*8) == 0) {
 			this.costOfDelayAvgHistory.push({x: time / 60, y: this.getCostOfDelayAvg()});
 			this.costOfDelaySummedAvgHistory.push({x: time / 60, y: this.getCostOfDelaySummedAvg()});

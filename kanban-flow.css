@@ -301,7 +301,7 @@ span.deployment {
 	cursor: pointer;
 }
 
-.simulation-cfd-tab, .simulation-littles-tab, .simulation-cod-tab {
+.simulation-cfd-tab, .simulation-littles-tab, .simulation-cod-tab, .simulation-scatterplot-tab {
 	height:300px;
 	width: 100%;
 }

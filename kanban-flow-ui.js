@@ -428,6 +428,49 @@ function GUI(hookSelector, simulation, cache) {
 		updateCod(this.simulation.time, this.simulation.stats)
 	}.bind(this));
 	
+	$$(".simulation-scatterplot-tab").CanvasJSChart({
+	  backgroundColor: null,
+	  zoomEnabled: true,
+	  zoomType: "x",
+	  axisX:{
+	    minimum: 0,
+	  },
+	  axisY:{
+		  minimum: 0
+	  },
+	  axisY2:{
+		  minimum: 0,
+	  },
+	  toolTip: {
+     	 shared: "true",
+  		contentFormatter: function (e) {
+  			var content = "Time: <strong>" + Math.floor(e.entries[0].dataPoint.x / 8) + "</strong><br/>";
+  			for (var i = 0; i< e.entries.length; i++) {
+				if (!isNaN(e.entries[i].dataPoint.y))
+					content += e.entries[i].dataSeries.name + ": <strong>" + e.entries[i].dataPoint.y.toFixed(1) + "</strong><br/>";
+  			}
+  			return content;
+  		},
+	  },
+      data: [{        
+          type: "scatter",
+		  name: "Lead Time",
+          dataPoints: [],
+		  showInLegend: false,
+		  markerSize: 4,
+      },{        
+          type: "line",
+		  name: "Percentile",
+		  dataPoints: [],
+		  showInLegend: false,
+		  axisYType: "secondary",
+      }
+      ]
+    });
+	$$(".simulation-scatterplot-tab").bind('isVisible', function() {
+		updateScatterPlot(this.simulation.time, this.simulation.stats)
+	}.bind(this));
+	
 	$$(".bottom-menu>div:not(:nth-of-type(1))").hide();
 	
 	$$(".tasksDivOverlay").click(function() {
@@ -519,6 +562,7 @@ function GUI(hookSelector, simulation, cache) {
 		updateCFD(this.simulation.time, stats);
 		updateLittles(this.simulation.time, stats);
 		updateCod(this.simulation.time, stats, force);
+		updateScatterPlot(this.simulation.time, stats, force);
 	}
 
 	function updateTime(time, cache) {
@@ -595,6 +639,24 @@ function GUI(hookSelector, simulation, cache) {
 		for (var i=diagramData[1].dataPoints.length * 8; i<stats.wipAvgHistory.length; i+=8) {
 			diagramData[1].dataPoints.push(stats.wipAvgHistory[i]);
 		}
+		tab.CanvasJSChart().render();
+	}
+	
+	var lastUpdatedScatterPlotDay = 0;
+	function updateScatterPlot(time, stats, recalculate) {
+		var tab = $$(".simulation-scatterplot-tab:visible", false);
+		if (tab.length == 0) {
+			return;
+		}
+		var currentDay = Math.floor(time / (60 * 8));
+		if (currentDay <= lastUpdatedScatterPlotDay) return;
+		lastUpdatedScatterPlotDay = currentDay;
+		var diagramData = tab.CanvasJSChart().options.data;
+		diagramData[0].dataPoints = stats.leadTimesHistory;
+		if (recalculate) diagramData[1].dataPoints = [];
+		// for (var i=diagramData[1].dataPoints.length * 8; i<stats.wipAvgHistory.length; i+=8) {
+// 			diagramData[1].dataPoints.push(stats.wipAvgHistory[i]);
+// 		}
 		tab.CanvasJSChart().render();
 	}
 	
