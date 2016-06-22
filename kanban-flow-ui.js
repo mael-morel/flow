@@ -591,7 +591,7 @@ function GUI(hookSelector, simulation, cache) {
 	}
 	
 	function updateStats(stats, cache) {
-		var wipAvg = stats.getWipAvg();
+		var wipAvg = stats.wip.getAvg();
 		var leadTimeAvg = stats.getLeadTimeAvg();
 		$$('.stats-wip').text(wipAvg ? wipAvg.toFixed(1) : '-');
 		$$('.stats-throughput').text(stats.getThroughputAvg() ? stats.getThroughputAvg().toFixed(1) : '-');
@@ -634,7 +634,7 @@ function GUI(hookSelector, simulation, cache) {
 		if (currentDay <= lastUpdatedLittlesDay) return;
 		lastUpdatedLittlesDay = currentDay;
 		var diagramData = tab.CanvasJSChart().options.data;
-		diagramData[0].dataPoints = stats.wipAvgHistory;
+		diagramData[0].dataPoints = stats.wip.avgHistory;
 		diagramData[1].dataPoints = stats.throughputAvgHistory;
 		diagramData[2].dataPoints = stats.leadTimeAvgHistory;
 		diagramData[3].dataPoints = stats.capacityUtilisationAvgHistory;
@@ -654,8 +654,8 @@ function GUI(hookSelector, simulation, cache) {
 		diagramData[0].dataPoints = stats.costOfDelayAvgHistory;
 		diagramData[1].dataPoints = stats.valueDeliveredAvgHistory;
 		if (recalculate) diagramData[2].dataPoints = [];
-		for (var i=diagramData[2].dataPoints.length * 8; i<stats.wipAvgHistory.length; i+=8) {
-			diagramData[2].dataPoints.push(stats.wipAvgHistory[i]);
+		for (var i=diagramData[2].dataPoints.length * 8; i<stats.wip.avgHistory.length; i+=8) {
+			diagramData[2].dataPoints.push(stats.wip.avgHistory[i]);
 		}
 		tab.CanvasJSChart().render();
 	}
