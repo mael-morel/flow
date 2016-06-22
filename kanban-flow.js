@@ -755,15 +755,6 @@ function Stats(simulation) {
 		newNoOfDays = parseInt(newNoOfDays);
 		if (Number.isNaN(newNoOfDays) || newNoOfDays <= 0) return;
 		this.dataPointsToRemember = newNoOfDays * 8;
-		
-		var recalculate = function(array, avgFunction, indexMultiplier) {
-			indexMultiplier = indexMultiplier || 1;
-			var newArray = [];
-			for (var i=0; i<array.length; i++) {
-				newArray.push({x: i * indexMultiplier, y:avgFunction(i, true)});
-			}
-			return newArray;
-		}.bind(this);
 		this.wip.recalculateAvg();
 		this.throughput.recalculateAvg();
 		this.capacityUtilisation.recalculateAvg();
@@ -831,11 +822,9 @@ function Stats(simulation) {
 		if (time % (60 * 8) != 0) return;
 		var day = (time/60/8);
 		for (var i=0; i<board.columns.length - 1; i++) {
-			// if (!this.cfdData[board.columns[i].name]) this.cfdData[board.columns[i].name] = [];
 			this.cfdData[board.columns[i].name].push({x: day, y:board.columns[i].tasks.length});
 		}
 		var lastColumnName = board.columns[board.columns.length - 1].name;
-		// if (!this.cfdData[lastColumnName]) this.cfdData[lastColumnName] = [];
 		var lastColumn = this.cfdData[lastColumnName];
 		var lastDoneCount = lastColumn[lastColumn.length - 1] ? lastColumn[lastColumn.length - 1].y : 0;
 		lastColumn.push({x: day, y:(board.columns[board.columns.length - 1].tasks.length + lastDoneCount)});
