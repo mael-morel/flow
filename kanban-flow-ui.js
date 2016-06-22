@@ -648,7 +648,10 @@ function GUI(hookSelector, simulation, cache) {
 			return;
 		}
 		var currentDay = Math.floor(time / (60 * 8));
-		if (currentDay <= lastUpdatedCodDay) return;
+		if (currentDay <= lastUpdatedCodDay) {
+			tab.CanvasJSChart().render();
+			return;
+		}
 		lastUpdatedCodDay = currentDay;
 		var diagramData = tab.CanvasJSChart().options.data;
 		diagramData[0].dataPoints = stats.costOfDelayAvgHistory;
