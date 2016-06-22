@@ -739,17 +739,9 @@ function Stats(simulation) {
 	this.busyPeople = new DataSet(this);
 	this.capacityUtilisation = new DataSet(this);
 	this.leadTime = new DataSet(this, 1, 1/(8 * 60), true);
-	
-	this.costOfDelay = [];
-	this.costOfDelaySummed = [];
-	this.valueDelivered = [];
+	this.costOfDelay = new DataSet(this, 8);
+	this.valueDelivered = new DataSet(this, 8);
 
-	this.valueDeliveredAvg = null;
-	this.valueDeliveredAvgHistory = [];
-	this.costOfDelayAvg = null;
-	this.costOfDelayAvgHistory = [];
-	this.costOfDelaySummedAvg = null;
-	this.costOfDelaySummedAvgHistory = [];
 	this.leadTimesHistory = [];
 	
 	for (var i=0; i<simulation.board.columns.length; i++) {
@@ -773,28 +765,8 @@ function Stats(simulation) {
 		this.throughput.recalculateAvg();
 		this.capacityUtilisation.recalculateAvg();
 		this.leadTime.recalculateAvg();
-		
-		this.costOfDelayAvgHistory = recalculate(this.costOfDelay, this.getCostOfDelayAvg.bind(this), 8);
-		this.costOfDelaySummedAvgHistory = recalculate(this.costOfDelaySummed, this.getCostOfDelaySummedAvg.bind(this), 8);
-		this.valueDeliveredAvgHistory = recalculate(this.valueDelivered, this.getValueDeliveredAvg.bind(this), 8);
-	}
-	
-	this.getCostOfDelayAvg = function(index, forceRecalculate) {
-		index = index == undefined ? this.costOfDelay.length - 1 : index;
-		this.costOfDelayAvg = !forceRecalculate && this.costOfDelayAvg ||  this.costOfDelay.slice(Math.max(0, index - (this.dataPointsToRemember / 8)), index).average();
-		return this.costOfDelayAvg;
-	}
-	
-	this.getCostOfDelaySummedAvg = function(index, forceRecalculate) {
-		index = index == undefined ? this.costOfDelaySummed.length - 1 : index;
-		this.costOfDelaySummedAvg = !forceRecalculate && this.costOfDelaySummedAvg ||  this.costOfDelaySummed.slice(Math.max(0, index - (this.dataPointsToRemember / 8)), index).average();
-		return this.costOfDelaySummedAvg;
-	}
-	
-	this.getValueDeliveredAvg = function(index, forceRecalculate) {
-		index = index == undefined ? this.valueDelivered.length - 1 : index;
-		this.valueDeliveredAvg = !forceRecalculate && this.valueDeliveredAvg ||  this.valueDelivered.slice(Math.max(0, index - (this.dataPointsToRemember / 8)), index).average();
-		return this.valueDeliveredAvg;
+		this.costOfDelay.recalculateAvg();
+		this.valueDelivered.recalculateAvg();
 	}
 	
 	this.recalculateStats = function(simulation) {
@@ -824,14 +796,13 @@ function Stats(simulation) {
 		
 		if (simulation.time % (60*8) == 0) {
 			var cod = simulation.board.getCostOfDelay();
-			this.costOfDelay.push(cod['cod']);
-			this.costOfDelaySummed.push(cod['cumulated']);
+			this.costOfDelay.addEvent(cod['cod']);
 			var tasks = simulation.board.getDoneTasks();
 			var valueDelivered = 0;
 			for (var i=0; i< tasks.length; i++) {
 				valueDelivered += tasks[i].costOfDelay;
 			}
-			this.valueDelivered.push(valueDelivered);
+			this.valueDelivered.addEvent(valueDelivered);
 		}
 		this.updateHistory(simulation.time);
 		
@@ -850,11 +821,6 @@ function Stats(simulation) {
 		var tasks = simulation.board.getDoneTasks(simulation.time - 60, simulation.time);
 		for (var i=0; i< tasks.length; i++) {
 			this.leadTimesHistory.push({x: time, y:tasks[i].getLeadTime()/60/8});
-		}
-		if (time % (60*8) == 0) {
-			this.costOfDelayAvgHistory.push({x: time / 60, y: this.getCostOfDelayAvg()});
-			this.costOfDelaySummedAvgHistory.push({x: time / 60, y: this.getCostOfDelaySummedAvg()});
-			this.valueDeliveredAvgHistory.push({x: time / 60, y: this.getValueDeliveredAvg()});
 		}
 	}
 	

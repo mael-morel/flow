@@ -654,8 +654,8 @@ function GUI(hookSelector, simulation, cache) {
 		}
 		lastUpdatedCodDay = currentDay;
 		var diagramData = tab.CanvasJSChart().options.data;
-		diagramData[0].dataPoints = stats.costOfDelayAvgHistory;
-		diagramData[1].dataPoints = stats.valueDeliveredAvgHistory;
+		diagramData[0].dataPoints = stats.costOfDelay.getAvgHistory();
+		diagramData[1].dataPoints = stats.valueDelivered.getAvgHistory();
 		if (recalculate) diagramData[2].dataPoints = [];
 		var wipHistory = stats.wip.getAvgHistory();
 		for (var i=diagramData[2].dataPoints.length * 8; i<wipHistory.length; i+=8) {
