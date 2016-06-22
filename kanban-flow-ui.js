@@ -531,7 +531,7 @@ function GUI(hookSelector, simulation, cache) {
 	});
 	
 	this.getLimitForColumn = function (columnName) {
-		var input = $$("." + columnName + "Header input");
+		var input = $$("." + columnName + "Header input.wiplimit");
 		var result = Number.POSITIVE_INFINITY;
 		if (input.length) {
 			result = !parseInt(input.val()) ? Number.POSITIVE_INFINITY : Math.abs(parseInt(input.val()));
