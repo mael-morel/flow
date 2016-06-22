@@ -594,7 +594,7 @@ function GUI(hookSelector, simulation, cache) {
 		var wipAvg = stats.wip.getAvg();
 		var leadTimeAvg = stats.getLeadTimeAvg();
 		$$('.stats-wip').text(wipAvg ? wipAvg.toFixed(1) : '-');
-		$$('.stats-throughput').text(stats.getThroughputAvg() ? stats.getThroughputAvg().toFixed(1) : '-');
+		$$('.stats-throughput').text(stats.throughput.getAvg() ? stats.throughput.getAvg().toFixed(1) : '-');
 		$$('.stats-lead-time').text(leadTimeAvg ? leadTimeAvg.toFixed(1) : '-');
 		$$('.stats-wip-lead-time').text(wipAvg && leadTimeAvg ? (wipAvg / leadTimeAvg).toFixed(1) : '-');
 		$$('.stats-utilisation').text(stats.getCapacityUtilisationAvg() ? stats.getCapacityUtilisationAvg().toFixed(1) : '-');
@@ -635,7 +635,7 @@ function GUI(hookSelector, simulation, cache) {
 		lastUpdatedLittlesDay = currentDay;
 		var diagramData = tab.CanvasJSChart().options.data;
 		diagramData[0].dataPoints = stats.wip.avgHistory;
-		diagramData[1].dataPoints = stats.throughputAvgHistory;
+		diagramData[1].dataPoints = stats.throughput.avgHistory;
 		diagramData[2].dataPoints = stats.leadTimeAvgHistory;
 		diagramData[3].dataPoints = stats.capacityUtilisationAvgHistory;
 		tab.CanvasJSChart().render();

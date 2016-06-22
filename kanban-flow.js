@@ -721,8 +721,10 @@ function Stats(simulation) {
 	this.cfdData = {}; 
 
 	this.wip = new DataSet(this);
+	this.throughput = new DataSet(this, 1, 8);
+	
 	this.leadTimes = [];
-	this.tasksFinished = [];
+	
 	this.availablePeople = [];
 	this.busyPeople = [];
 	this.capacityUtilisation = [];
@@ -730,8 +732,6 @@ function Stats(simulation) {
 	this.costOfDelaySummed = [];
 	this.valueDelivered = [];
 	
-	this.throughputAvg = null;
-	this.throughputAvgHistory = [];
 	this.leadTimeAvg = null;
 	this.leadTimeAvgHistory = [];
 	this.valueDeliveredAvg = null;
@@ -762,18 +762,12 @@ function Stats(simulation) {
 			return newArray;
 		}.bind(this);
 		this.wip.recalculateAvg();
-		this.throughputAvgHistory = recalculate(this.tasksFinished, this.getThroughputAvg.bind(this));
+		this.throughput.recalculateAvg();
 		this.leadTimeAvgHistory = recalculate(this.leadTimes, this.getLeadTimeAvg.bind(this));
 		this.capacityUtilisationAvgHistory = recalculate(this.capacityUtilisation, this.getCapacityUtilisationAvg.bind(this));
 		this.costOfDelayAvgHistory = recalculate(this.costOfDelay, this.getCostOfDelayAvg.bind(this), 8);
 		this.costOfDelaySummedAvgHistory = recalculate(this.costOfDelaySummed, this.getCostOfDelaySummedAvg.bind(this), 8);
 		this.valueDeliveredAvgHistory = recalculate(this.valueDelivered, this.getValueDeliveredAvg.bind(this), 8);
-	}
-	
-	this.getThroughputAvg = function(index, forceRecalculate) {
-		index = index == undefined ? this.tasksFinished.length - 1 : index;
-		this.throughputAvg = !forceRecalculate && this.throughputAvg || this.tasksFinished.slice(Math.max(0, index - this.dataPointsToRemember), index).average() * 8;
-		return this.throughputAvg;
 	}
 	
 	this.getLeadTimeAvg = function(index, forceRecalculate) {
@@ -810,7 +804,6 @@ function Stats(simulation) {
 		this.calculateAvailablePeople(simulation);
 		if (simulation.time % 60 != 0) return;
 		this.updateCfdData(simulation.board, simulation.time);
-		this.throughputAvg = null;
 		this.leadTimeAvg = null;
 		this.capacityUtilisationAvg = null;
 		this.costOfDelayAvg = null;
@@ -822,9 +815,9 @@ function Stats(simulation) {
 		lastColumn.tasks.forEach(function(task) {
 			leadTimes.push(task.getLeadTime());
 		});
-		this.tasksFinished.push(simulation.board.getDoneTasksCount(simulation.time - 60, simulation.time));
 		
 		this.wip.addEvent(simulation.board.getCurrentWip());
+		this.throughput.addEvent(simulation.board.getDoneTasksCount(simulation.time - 60, simulation.time));
 		
 		this.availablePeople.push(this.notWorkingCountSummed / simulation.ticksPerHour);
 		this.busyPeople.push(this.busyCountSummed / simulation.ticksPerHour);
@@ -857,7 +850,6 @@ function Stats(simulation) {
 	}
 	
 	this.updateHistory = function(time) {
-		this.throughputAvgHistory.push({x: time / 60, y: this.getThroughputAvg()});
 		this.leadTimeAvgHistory.push({x: time / 60, y: this.getLeadTimeAvg()});
 		this.capacityUtilisationAvgHistory.push({x: time / 60, y: this.getCapacityUtilisationAvg()});
 		var tasks = simulation.board.getDoneTasks(simulation.time - 60, simulation.time);
