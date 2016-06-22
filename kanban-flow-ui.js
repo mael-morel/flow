@@ -408,7 +408,7 @@ function GUI(hookSelector, simulation, cache) {
 	  toolTip: {
      	 shared: "true",
   		contentFormatter: function (e) {
-  			var content = "Day: <strong>" + Math.floor(e.entries[0].dataPoint.x / 8) + "</strong><br/>";
+  			var content = "Hour: <strong>" + Math.floor(e.entries[0].dataPoint.x / 8) + "</strong><br/>";
   			for (var i = 0; i< e.entries.length; i++) {
 				if (!isNaN(e.entries[i].dataPoint.y))
 					content += e.entries[i].dataSeries.name + ": <strong>" + e.entries[i].dataPoint.y.toFixed(1) + "</strong><br/>";
@@ -427,7 +427,12 @@ function GUI(hookSelector, simulation, cache) {
 		  name: "Cost Of Delay rate",
           dataPoints: [],
 		  showInLegend: true,
-      },{        
+      },{  
+          type: "line",
+		  name: "Value Delivered rate",
+          dataPoints: [],
+		  showInLegend: true,
+      },{       
           type: "line",
 		  name: "WIP",
 		  dataPoints: [],
@@ -437,7 +442,7 @@ function GUI(hookSelector, simulation, cache) {
       ]
     });
 	$$(".simulation-cod-tab").bind('isVisible', function() {
-		updateCod(this.simulation.time, this.simulation.stats)
+		updateCod(this.simulation.time, this.simulation.stats);
 	}.bind(this));
 	
 	$$(".simulation-scatterplot-tab").CanvasJSChart({
@@ -647,9 +652,10 @@ function GUI(hookSelector, simulation, cache) {
 		lastUpdatedCodDay = currentDay;
 		var diagramData = tab.CanvasJSChart().options.data;
 		diagramData[0].dataPoints = stats.costOfDelayAvgHistory;
-		if (recalculate) diagramData[1].dataPoints = [];
-		for (var i=diagramData[1].dataPoints.length * 8; i<stats.wipAvgHistory.length; i+=8) {
-			diagramData[1].dataPoints.push(stats.wipAvgHistory[i]);
+		diagramData[1].dataPoints = stats.valueDeliveredAvgHistory;
+		if (recalculate) diagramData[2].dataPoints = [];
+		for (var i=diagramData[2].dataPoints.length * 8; i<stats.wipAvgHistory.length; i+=8) {
+			diagramData[2].dataPoints.push(stats.wipAvgHistory[i]);
 		}
 		tab.CanvasJSChart().render();
 	}

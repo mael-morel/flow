@@ -686,6 +686,7 @@ function Stats(simulation) {
 	this.capacityUtilisation = [];
 	this.costOfDelay = [];
 	this.costOfDelaySummed = [];
+	this.valueDelivered = [];
 	this.cfdData = {}; 
 	this.wipAvg = null;
 	this.wipAvgHistory = [];
@@ -693,6 +694,8 @@ function Stats(simulation) {
 	this.throughputAvgHistory = [];
 	this.leadTimeAvg = null;
 	this.leadTimeAvgHistory = [];
+	this.valueDeliveredAvg = null;
+	this.valueDeliveredAvgHistory = [];
 	this.capacityUtilisationAvg = null;
 	this.capacityUtilisationAvgHistory = [];
 	this.costOfDelayAvg = null;
@@ -724,6 +727,7 @@ function Stats(simulation) {
 		this.capacityUtilisationAvgHistory = recalculate(this.capacityUtilisation, this.getCapacityUtilisationAvg.bind(this));
 		this.costOfDelayAvgHistory = recalculate(this.costOfDelay, this.getCostOfDelayAvg.bind(this), 8);
 		this.costOfDelaySummedAvgHistory = recalculate(this.costOfDelaySummed, this.getCostOfDelaySummedAvg.bind(this), 8);
+		this.valueDeliveredAvgHistory = recalculate(this.valueDelivered, this.getValueDeliveredAvg.bind(this), 8);
 	}
 	
 	this.getWipAvg = function(index, forceRecalculate) {
@@ -762,6 +766,12 @@ function Stats(simulation) {
 		return this.costOfDelaySummedAvg;
 	}
 	
+	this.getValueDeliveredAvg = function(index, forceRecalculate) {
+		index = index == undefined ? this.valueDelivered.length - 1 : index;
+		this.valueDeliveredAvg = !forceRecalculate && this.valueDeliveredAvg ||  this.valueDelivered.slice(Math.max(0, index - (this.dataPointsToRemember / 8)), index).average();
+		return this.valueDeliveredAvg;
+	}
+	
 	this.recalculateStats = function(simulation) {
 		this.calculateAvailablePeople(simulation);
 		if (simulation.time % 60 != 0) return;
@@ -772,6 +782,7 @@ function Stats(simulation) {
 		this.capacityUtilisationAvg = null;
 		this.costOfDelayAvg = null;
 		this.costOfDelaySummedAvg = null;
+		this.valueDeliveredAvg = null;
 		var lastColumn = simulation.board.lastColumn();
 		var leadTimes = [];
 		this.leadTimes.push(leadTimes);
@@ -780,7 +791,6 @@ function Stats(simulation) {
 		});
 		this.tasksFinished.push(simulation.board.getDoneTasksCount(simulation.time - 60, simulation.time));
 		this.wipCount.push(simulation.board.getCurrentWip());
-		
 		this.availablePeople.push(this.notWorkingCountSummed / simulation.ticksPerHour);
 		this.busyPeople.push(this.busyCountSummed / simulation.ticksPerHour);
 		var lastPos = this.busyPeople.length - 1;
@@ -791,6 +801,12 @@ function Stats(simulation) {
 			var cod = simulation.board.getCostOfDelay();
 			this.costOfDelay.push(cod['cod']);
 			this.costOfDelaySummed.push(cod['cumulated']);
+			var tasks = simulation.board.getDoneTasks();
+			var valueDelivered = 0;
+			for (var i=0; i< tasks.length; i++) {
+				valueDelivered += tasks[i].costOfDelay;
+			}
+			this.valueDelivered.push(valueDelivered);
 		}
 		this.updateHistory(simulation.time);
 		
@@ -814,10 +830,10 @@ function Stats(simulation) {
 		for (var i=0; i< tasks.length; i++) {
 			this.leadTimesHistory.push({x: time, y:tasks[i].getLeadTime()/60/8});
 		}
-		this.tasksFinished.push();
 		if (time % (60*8) == 0) {
 			this.costOfDelayAvgHistory.push({x: time / 60, y: this.getCostOfDelayAvg()});
 			this.costOfDelaySummedAvgHistory.push({x: time / 60, y: this.getCostOfDelaySummedAvg()});
+			this.valueDeliveredAvgHistory.push({x: time / 60, y: this.getValueDeliveredAvg()});
 		}
 	}
 	
