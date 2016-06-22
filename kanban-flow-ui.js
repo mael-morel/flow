@@ -144,6 +144,17 @@ function GUI(hookSelector, simulation, cache) {
 		});
 	});	
 	
+	$$(".simulation-settings-general .settings-prioritisation-method").change(function(event) {
+		var newValue = event.target.value;
+		this.simulation.changePrioritisationStrategy(newValue);
+		ga('send', {
+		  hitType: 'event',
+		  eventCategory: 'General settings',
+		  eventAction: 'prioritisation',
+		  eventLabel: 'Change prioritisation strategy',
+		});
+	}.bind(this));	
+	
 	
 	$$(".backlog-settings-temporal .backlog-settings-temporal-strategy").change(function(event) {
 		var newValue = event.target.value;
@@ -413,7 +424,7 @@ function GUI(hookSelector, simulation, cache) {
       },
       data: [{        
           type: "line",
-		  name: "Cost Of Delay",
+		  name: "Cost Of Delay rate",
           dataPoints: [],
 		  showInLegend: true,
       },{        
@@ -627,7 +638,7 @@ function GUI(hookSelector, simulation, cache) {
 	
 	var lastUpdatedCodDay = 0;
 	function updateCod(time, stats, recalculate) {
-		var tab = $$(".simulation-cod-tab:visible", false);
+		var tab = $$(".simulation-cod-tab" + (recalculate ? "" : ":visible"), false);
 		if (tab.length == 0) {
 			return;
 		}
@@ -635,7 +646,7 @@ function GUI(hookSelector, simulation, cache) {
 		if (currentDay <= lastUpdatedCodDay) return;
 		lastUpdatedCodDay = currentDay;
 		var diagramData = tab.CanvasJSChart().options.data;
-		diagramData[0].dataPoints = stats.costOfDelaySummedAvgHistory;
+		diagramData[0].dataPoints = stats.costOfDelayAvgHistory;
 		if (recalculate) diagramData[1].dataPoints = [];
 		for (var i=diagramData[1].dataPoints.length * 8; i<stats.wipAvgHistory.length; i+=8) {
 			diagramData[1].dataPoints.push(stats.wipAvgHistory[i]);

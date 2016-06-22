@@ -54,6 +54,7 @@ function Simulation(hookSelector) {
 		this.timeoutHandler = null;
 		this.board.updateColumnsLimitsFrom(this.gui);
 		this.addNewTasks(this.board);
+		this.board.reprioritiseTasks(this.prioritisationStrategy);
 		this.doWork();
 		this.moveTasks(this.board.columns);
 		this.assignTeamMembersToTasks();
@@ -144,6 +145,25 @@ function Simulation(hookSelector) {
 	
 	this.changeNoOfDaysForCountingAverages = function(newNoOfDays) {
 		this.stats.changeNoOfDaysForCountingAverages(newNoOfDays);
+	}
+	
+	this.prioritisationStrategies = {
+		fifo: function(tasksList) {
+		},
+		value: function(tasksList) {
+			tasksList.sort(function(taskA, taskB) {
+				return taskB.costOfDelay - taskA.costOfDelay;
+			});
+		},
+		cd3: function(tasksList) {
+			tasksList.sort(function(taskA, taskB) {
+				return taskB.costOfDelay/taskB.getRemainingWork() - taskA.costOfDelay/taskA.getRemainingWork();
+			});
+		}
+	};
+	this.prioritisationStrategy = this.prioritisationStrategies['fifo'];
+	this.changePrioritisationStrategy = function(newStrategy) {
+		this.prioritisationStrategy = this.prioritisationStrategies[newStrategy];
 	}
 
 	this.addNewTasks = function() {
@@ -427,6 +447,12 @@ function Board(ticksPerHour, simulation) {
 	
 	createColumns(this, simulation);
 	
+	this.reprioritiseTasks = function(sortTasksFun) {
+		for (var i=0; i<this.columns.length -2; i++) {
+			sortTasksFun(this.columns[i].tasks);
+		}
+	}
+	
 	this.lastColumn = function() {
 		return this.columns[this.columns.length - 1];
 	}
@@ -554,6 +580,10 @@ function Task(taskId, time, analysis, development, qa, deployment) {
 			column = this.column;
 		}
 		return this[column.name] <= 0 || !this[column.name];
+	}
+	
+	this.getRemainingWork = function(){
+		return Math.max(0, this.analysis) + Math.max(0, this.development) + Math.max(0, this.qa) + Math.max(0, this.deployment);
 	}
 	
 	this.work = function(amount) {
