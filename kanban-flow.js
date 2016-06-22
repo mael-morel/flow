@@ -79,9 +79,12 @@ function Simulation(hookSelector) {
 				}
 			}
 		}.bind(this), 
-		"demand-equals-throughput": function(createTaskFunction) {
-			if (this.board.columns[0].tasks.length == 0)
+		"up-to-limit": function(createTaskFunction) {
+			var limit = this.board.columns[0].limit;
+			if (limit == Number.POSITIVE_INFINITY) limit = 1;
+			for (var i=this.board.columns[0].tasks.length; i < limit; i++) {
 				this.board.addTask(createTaskFunction(this.taskCounter++, this.time));
+			}
 		}.bind(this),
 		"constant-push": function(createTaskFunction) {
 			var demand = this.temporatTaskStrategyProperties['demand'];
@@ -120,7 +123,7 @@ function Simulation(hookSelector) {
 			}
 		}.bind(this),
 	};
-	this.temporalTaskStrategy = "demand-equals-throughput";
+	this.temporalTaskStrategy = "up-to-limit";
 	this.temporatTaskStrategyProperties = {};
 	
 	this.taskSizeStrategies = {
