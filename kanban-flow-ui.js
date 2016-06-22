@@ -592,7 +592,7 @@ function GUI(hookSelector, simulation, cache) {
 	
 	function updateStats(stats, cache) {
 		var wipAvg = stats.wip.getAvg();
-		var leadTimeAvg = stats.getLeadTimeAvg();
+		var leadTimeAvg = stats.leadTime.getAvg();
 		$$('.stats-wip').text(wipAvg ? wipAvg.toFixed(1) : '-');
 		$$('.stats-throughput').text(stats.throughput.getAvg() ? stats.throughput.getAvg().toFixed(1) : '-');
 		$$('.stats-lead-time').text(leadTimeAvg ? leadTimeAvg.toFixed(1) : '-');
@@ -636,7 +636,7 @@ function GUI(hookSelector, simulation, cache) {
 		var diagramData = tab.CanvasJSChart().options.data;
 		diagramData[0].dataPoints = stats.wip.getAvgHistory();
 		diagramData[1].dataPoints = stats.throughput.getAvgHistory();
-		diagramData[2].dataPoints = stats.leadTimeAvgHistory;
+		diagramData[2].dataPoints = stats.leadTime.getAvgHistory();;
 		diagramData[3].dataPoints = stats.capacityUtilisation.getAvgHistory();
 		tab.CanvasJSChart().render();
 	}
