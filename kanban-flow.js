@@ -55,6 +55,7 @@ function Simulation(hookSelector) {
 		this.board.updateColumnsLimitsFrom(this.gui);
 		this.addNewTasks(this.board);
 		this.board.reprioritiseTasks(this.prioritisationStrategy);
+		this.board.removeTasksOverLimitFromBacklog();
 		this.doWork();
 		this.moveTasks(this.board.columns);
 		this.assignTeamMembersToTasks();
@@ -444,6 +445,7 @@ function Board(ticksPerHour, simulation) {
 	this.columns = null;
 	this.tasks = {};
 	this.ticksPerHour = ticksPerHour;
+	this.droppedTasks = [];
 	
 	createColumns(this, simulation);
 	
@@ -532,6 +534,15 @@ function Board(ticksPerHour, simulation) {
 				task.costOfDelayCumulated += task.costOfDelay;
 			});
 		});
+	}
+	
+	this.removeTasksOverLimitFromBacklog = function() {
+		var freshlyRemovedTasks = this.columns[0].tasks.splice(this.columns[0].limit, this.columns[0].tasks.length);
+		this.droppedTasks.concat(freshlyRemovedTasks);
+		freshlyRemovedTasks.forEach(function(task) {
+			task.column = null;
+			delete this.tasks[task.id];
+		}.bind(this));
 	}
 	
 	function createColumns(board, simulation) {
