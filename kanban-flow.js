@@ -133,6 +133,28 @@ function Simulation(hookSelector) {
 		"normal": function(id, time) {
 			return new Task(id, time, normal_random(this.taskSizeStrategyProperties["analysis"], this.taskSizeStrategyProperties["analysis-variation"]), normal_random(this.taskSizeStrategyProperties["development"], this.taskSizeStrategyProperties["development-variation"]), normal_random(this.taskSizeStrategyProperties["qa"], this.taskSizeStrategyProperties["qa-variation"]), normal_random(this.taskSizeStrategyProperties["deployment"], this.taskSizeStrategyProperties["deployment-variation"]));
 		}.bind(this),
+		"tshirt": function(id, time) {
+			var smallProbability = parseFloat(this.taskSizeStrategyProperties["small-probability"]);
+			var mediumProbability = parseFloat(this.taskSizeStrategyProperties["medium-probability"]);
+			var largeProbability = parseFloat(this.taskSizeStrategyProperties["large-probability"]);
+			var xlargeProbability = parseFloat(this.taskSizeStrategyProperties["xlarge-probability"]);
+			var tshirtSizeRandom = Math.random() * (smallProbability + mediumProbability + largeProbability + xlargeProbability);
+			var size = "small";
+			if (tshirtSizeRandom > smallProbability) size = "medium";
+			if (tshirtSizeRandom > smallProbability + mediumProbability) size = "large";
+			if (tshirtSizeRandom > smallProbability + mediumProbability + largeProbability) size = "xlarge";
+			var totalSize = parseFloat(this.taskSizeStrategyProperties[size + "-effort"]);
+			var analysis = parseFloat(this.taskSizeStrategyProperties["analysis"]);
+			var development = parseFloat(this.taskSizeStrategyProperties["development"]);
+			var qa = parseFloat(this.taskSizeStrategyProperties["qa"]);
+			var deployment = parseFloat(this.taskSizeStrategyProperties["deployment"]);
+			var sum = analysis + development + qa + deployment;
+			analysis = totalSize * analysis / sum;
+			development = totalSize * development / sum;
+			qa = totalSize * qa / sum;
+			deployment = totalSize * deployment / sum;
+			return new Task(id, time, normal_random(analysis, analysis / 2), normal_random(development, development / 2),normal_random(qa, qa / 2),normal_random(deployment, deployment / 2));
+		}.bind(this),
 	};
 	this.taskSizeStrategy = "constant";
 	this.taskSizeStrategyProperties = {};
@@ -192,7 +214,7 @@ function Simulation(hookSelector) {
 	}
 	
 	this.removeDoneTasks = function() {
-		if (this.time % (60 * 8) == 0) this.board.removeDoneTasks();
+		if (this.time % (60 * 8) == 0) this.board.cleanDoneAndDropped();
 	}
 
 	this.findNextColumn = function(task, columns) {
@@ -467,13 +489,14 @@ function Board(ticksPerHour, simulation) {
 		this.tasks[task.id] = task;
 	}
 	
-	this.removeDoneTasks = function() {
+	this.cleanDoneAndDropped = function() {
 		var lastColumn = this.columns[this.columns.length - 1];
 		lastColumn.tasks.forEach(function(task) {
 			task.column = null;
 			delete this.tasks[task.id];
 		}.bind(this));
 		lastColumn.tasks = [];
+		this.droppedTasks = [];
 	}
 	
 	this.getCurrentWip = function() {
@@ -541,7 +564,7 @@ function Board(ticksPerHour, simulation) {
 	
 	this.removeTasksOverLimitFromBacklog = function() {
 		var freshlyRemovedTasks = this.columns[0].tasks.splice(this.columns[0].limit, this.columns[0].tasks.length);
-		this.droppedTasks.concat(freshlyRemovedTasks);
+		this.droppedTasks = this.droppedTasks.concat(freshlyRemovedTasks);
 		freshlyRemovedTasks.forEach(function(task) {
 			task.column = null;
 			delete this.tasks[task.id];
@@ -744,6 +767,7 @@ function Stats(simulation) {
 	this.leadTime = new DataSet(this, 1, 1/(8 * 60), true);
 	this.costOfDelay = new DataSet(this, 8);
 	this.valueDelivered = new DataSet(this, 8);
+	this.valueDropped = new DataSet(this, 8);
 
 	this.leadTimesHistory = [];
 	
@@ -761,15 +785,13 @@ function Stats(simulation) {
 		this.leadTime.recalculateAvg();
 		this.costOfDelay.recalculateAvg();
 		this.valueDelivered.recalculateAvg();
+		this.valueDropped.recalculateAvg();
 	}
 	
 	this.recalculateStats = function(simulation) {
 		this.calculateAvailablePeople(simulation);
 		if (simulation.time % 60 != 0) return;
 		this.updateCfdData(simulation.board, simulation.time);
-		this.costOfDelayAvg = null;
-		this.costOfDelaySummedAvg = null;
-		this.valueDeliveredAvg = null;
 		
 		var lastColumn = simulation.board.lastColumn();
 		var leadTimes = [];
@@ -791,12 +813,19 @@ function Stats(simulation) {
 		if (simulation.time % (60*8) == 0) {
 			var cod = simulation.board.getCostOfDelay();
 			this.costOfDelay.addEvent(cod['cod']);
-			var tasks = simulation.board.getDoneTasks();
+			var tasksDone = simulation.board.getDoneTasks();
 			var valueDelivered = 0;
-			for (var i=0; i< tasks.length; i++) {
-				valueDelivered += tasks[i].costOfDelay;
+			for (var i=0; i< tasksDone.length; i++) {
+				valueDelivered += tasksDone[i].costOfDelay;
 			}
 			this.valueDelivered.addEvent(valueDelivered);
+			
+			var tasksDropped = simulation.board.droppedTasks;
+			var valueDroppedSummed = 0;
+			for (var i=0; i< tasksDropped.length; i++) {
+				valueDroppedSummed += tasksDropped[i].costOfDelay;
+			}
+			this.valueDropped.addEvent(valueDroppedSummed);
 		}
 		this.updateHistory(simulation.time);
 		

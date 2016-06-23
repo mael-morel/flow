@@ -398,6 +398,10 @@ function GUI(hookSelector, simulation, cache) {
 	  zoomType: "x",
 	  axisX:{
 	    minimum: 0,
+		  labelFormatter : function(e) {
+			  if (e.value % 8 == 0) return e.value / 8 + 1;
+			  return ""
+		  }
 	  },
 	  axisY:{
 		  minimum: 0
@@ -408,7 +412,7 @@ function GUI(hookSelector, simulation, cache) {
 	  toolTip: {
      	 shared: "true",
   		contentFormatter: function (e) {
-  			var content = "Hour: <strong>" + Math.floor(e.entries[0].dataPoint.x / 8) + "</strong><br/>";
+  			var content = "Day: <strong>" + Math.floor(e.entries[0].dataPoint.x / 8 + 1) + "</strong><br/>";
   			for (var i = 0; i< e.entries.length; i++) {
 				if (!isNaN(e.entries[i].dataPoint.y))
 					content += e.entries[i].dataSeries.name + ": <strong>" + e.entries[i].dataPoint.y.toFixed(1) + "</strong><br/>";
@@ -424,15 +428,20 @@ function GUI(hookSelector, simulation, cache) {
       },
       data: [{        
           type: "line",
-		  name: "Cost Of Delay rate",
+		  name: "Cost Of Delay/d",
           dataPoints: [],
 		  showInLegend: true,
       },{  
           type: "line",
-		  name: "Value Delivered rate",
+		  name: "Value Delivered/d",
           dataPoints: [],
 		  showInLegend: true,
-      },{       
+      },{
+          type: "line",
+		  name: "Value Dropped/d",
+          dataPoints: [],
+		  showInLegend: true,
+      },{      
           type: "line",
 		  name: "WIP",
 		  dataPoints: [],
@@ -451,6 +460,10 @@ function GUI(hookSelector, simulation, cache) {
 	  zoomType: "x",
 	  axisX:{
 	    minimum: 0,
+		  labelFormatter : function(e) {
+			  return "D:" + (Math.floor(e.value / 60 / 8) + 1) + " h:" + Math.floor(e.value / 60 % 8 + 9);
+			 
+		  }
 	  },
 	  axisY:{
 		  minimum: 0
@@ -461,7 +474,8 @@ function GUI(hookSelector, simulation, cache) {
 	  toolTip: {
      	 shared: "true",
   		contentFormatter: function (e) {
-  			var content = "Time: <strong>" + Math.floor(e.entries[0].dataPoint.x / 8) + "</strong><br/>";
+			var value = e.entries[0].dataPoint.x;
+  			var content = "Time: <strong>" + "D:" + (Math.floor(value / 60 / 8) + 1) + " h:" + Math.floor(value / 60 % 8 + 9) + "</strong><br/>";
   			for (var i = 0; i< e.entries.length; i++) {
 				if (!isNaN(e.entries[i].dataPoint.y))
 					content += e.entries[i].dataSeries.name + ": <strong>" + e.entries[i].dataPoint.y.toFixed(1) + "</strong><br/>";
@@ -656,10 +670,11 @@ function GUI(hookSelector, simulation, cache) {
 		var diagramData = tab.CanvasJSChart().options.data;
 		diagramData[0].dataPoints = stats.costOfDelay.getAvgHistory();
 		diagramData[1].dataPoints = stats.valueDelivered.getAvgHistory();
-		if (recalculate) diagramData[2].dataPoints = [];
+		diagramData[2].dataPoints = stats.valueDropped.getAvgHistory();
+		if (recalculate) diagramData[3].dataPoints = [];
 		var wipHistory = stats.wip.getAvgHistory();
-		for (var i=diagramData[2].dataPoints.length * 8; i<wipHistory.length; i+=8) {
-			diagramData[2].dataPoints.push(wipHistory[i]);
+		for (var i=diagramData[3].dataPoints.length * 8; i<wipHistory.length; i+=8) {
+			diagramData[3].dataPoints.push(wipHistory[i]);
 		}
 		tab.CanvasJSChart().render();
 	}

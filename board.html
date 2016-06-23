@@ -127,9 +127,10 @@
 						<table>
 							<tr>
 								<td>Task size strategy</td>
-								<td><select class="backlog-settings-task-size-strategy">
+								<td colspan="2"><select class="backlog-settings-task-size-strategy">
 								  <option value="constant">Constant</option>
 								  <option value="normal">Normal Distribution</option>
+								  <option value="tshirt">S/M/L/XL</option>
 								</select></td>
 							</tr>
 							<tr data-for-option="constant">
@@ -179,6 +180,47 @@
 							<tr data-for-option="normal">
 								<td>Deployment variation:</td>
 								<td><input type="text" value="2" data-property="deployment-variation"/></td>
+							</tr>
+							<tr data-for-option="tshirt">
+								<td>Analysis:</td>
+								<td><input type="text" value="14" data-property="analysis"/> %</td>
+							</tr>
+							<tr data-for-option="tshirt">
+								<td>Development:</td>
+								<td><input type="text" value="50" data-property="development"/> %</td>
+							</tr>
+							<tr data-for-option="tshirt">
+								<td>QA:</td>
+								<td><input type="text" value="28" data-property="qa"/> %</td>
+							</tr>
+							<tr data-for-option="tshirt">
+								<td>Deployment:</td>
+								<td><input type="text" value="8" data-property="deployment"/> %</td>
+							</tr>
+							<tr data-for-option="tshirt">
+								<td></td>
+								<td>Effort(h)</td>
+								<td>Probability(%)</td>
+							</tr>
+							<tr data-for-option="tshirt">
+								<td>Small:</td>
+								<td><input type="text" value="3" data-property="small-effort"/></td>
+								<td><input type="text" value="45" data-property="small-probability"/></td>
+							</tr>
+							<tr data-for-option="tshirt">
+								<td>Medium:</td>
+								<td><input type="text" value="10" data-property="medium-effort"/></td>
+								<td><input type="text" value="30" data-property="medium-probability"/></td>
+							</tr>
+							<tr data-for-option="tshirt">
+								<td>Large:</td>
+								<td><input type="text" value="25" data-property="large-effort"/></td>
+								<td><input type="text" value="20" data-property="large-probability"/></td>
+							</tr>
+							<tr data-for-option="tshirt">
+								<td>XLarge:</td>
+								<td><input type="text" value="75" data-property="xlarge-effort"/></td>
+								<td><input type="text" value="5" data-property="xlarge-probability"/></td>
 							</tr>
 						</table>
 					</div>
