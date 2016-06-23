@@ -247,7 +247,7 @@ function GUI(hookSelector, simulation, cache) {
 	  toolTip: {
      	shared: "true",
 		contentFormatter: function (e) {
-			var content = "Day: <strong>" + e.entries[0].dataPoint.x + "</strong><br/>";
+			var content = "Day: <strong>" + (e.entries[0].dataPoint.x + 1) + "</strong><br/>";
 			for (var i = e.entries.length - 1; i >= 0; i--) {
 				content += e.entries[i].dataSeries.name + ": <strong>" + e.entries[i].dataPoint.y + "</strong><br/>";
 			}
@@ -256,6 +256,9 @@ function GUI(hookSelector, simulation, cache) {
 	  },
 	  axisX:{
 	    minimum: 0,
+		  labelFormatter : function(e) {
+			  return e.value + 1;
+		  }
 	  },
 	  axisY:{
 		  minimum: 0,
@@ -339,6 +342,9 @@ function GUI(hookSelector, simulation, cache) {
 	  zoomType: "x",
 	  axisX:{
 	    minimum: 0,
+		  labelFormatter : function(e) {
+			  return "D:" + (Math.floor(e.value / 8) + 1) + " h:" + Math.floor(e.value % 8 + 9);
+		  }
 	  },
 	  axisY:{
 		  minimum: 0
@@ -350,7 +356,7 @@ function GUI(hookSelector, simulation, cache) {
 	  toolTip: {
      	 shared: "true",
   		contentFormatter: function (e) {
-  			var content = "Day: <strong>" + Math.floor(e.entries[0].dataPoint.x / 8) + "</strong>, hour: <strong>" + (e.entries[0].dataPoint.x % 8 + 1) + "</strong><br/>";
+  			var content = "Day: <strong>" + Math.floor(e.entries[0].dataPoint.x / 8) + "</strong>, hour: <strong>" + (e.entries[0].dataPoint.x % 8 + 9) + "</strong><br/>";
   			for (var i = 0; i< e.entries.length; i++) {
 				if (!isNaN(e.entries[i].dataPoint.y))
 					content += e.entries[i].dataSeries.name + ": <strong>" + e.entries[i].dataPoint.y.toFixed(1) + "</strong><br/>";
@@ -462,7 +468,6 @@ function GUI(hookSelector, simulation, cache) {
 	    minimum: 0,
 		  labelFormatter : function(e) {
 			  return "D:" + (Math.floor(e.value / 60 / 8) + 1) + " h:" + Math.floor(e.value / 60 % 8 + 9);
-			 
 		  }
 	  },
 	  axisY:{
@@ -475,7 +480,7 @@ function GUI(hookSelector, simulation, cache) {
      	 shared: "true",
   		contentFormatter: function (e) {
 			var value = e.entries[0].dataPoint.x;
-  			var content = "Time: <strong>" + "D:" + (Math.floor(value / 60 / 8) + 1) + " h:" + Math.floor(value / 60 % 8 + 9) + "</strong><br/>";
+  			var content = "Day: <strong>" + (Math.floor(value / 60 / 8) + 1) + ", hour:" + Math.floor(value / 60 % 8 + 9) + "</strong><br/>";
   			for (var i = 0; i< e.entries.length; i++) {
 				if (!isNaN(e.entries[i].dataPoint.y))
 					content += e.entries[i].dataSeries.name + ": <strong>" + e.entries[i].dataPoint.y.toFixed(1) + "</strong><br/>";
