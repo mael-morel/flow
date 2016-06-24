@@ -876,6 +876,7 @@ function normal_random(mean, variance, includeNegatives) {
   if (variance == undefined)
     variance = 1.0;
   variance = 1.0 * variance;
+  if (mean == 0 && variance == 0) return 0;
   var V1, V2, S, X;
   do {
 	  do {
