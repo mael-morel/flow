@@ -1,0 +1,25 @@
+{
+  "name": "flow",
+  "homepage": "https://github.com/mgajdzik/flow",
+  "authors": [
+    "mgajdzik@gmail.com"
+  ],
+  "description": "",
+  "main": "index.html",
+  "moduleType": [],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "react": "^15.1.0",
+    "jquery": "^3.0.0",
+    "bootstrap": "^3.3.6",
+    "bootstrap-slider": "*"
+  }
+}
