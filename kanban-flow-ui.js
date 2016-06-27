@@ -360,7 +360,7 @@ function GUI(hookSelector, simulation, cache) {
 	  },
 	  toolTip: {
   		contentFormatter: function (e) {
-  			var content = "Day: <strong>" + Math.floor(e.entries[0].dataPoint.x / 8) + "</strong>, hour: <strong>" + (e.entries[0].dataPoint.x % 8 + 9) + "</strong><br/>";
+  			var content = "Day: <strong>" + Math.floor(e.entries[0].dataPoint.x / 8 + 1) + "</strong>, hour: <strong>" + (e.entries[0].dataPoint.x % 8 + 9) + "</strong><br/>";
   			for (var i = 0; i< e.entries.length; i++) {
 				if (!isNaN(e.entries[i].dataPoint.y))
 					content += e.entries[i].dataSeries.name + ": <strong>" + e.entries[i].dataPoint.y.toFixed(1) + "</strong><br/>";
