@@ -234,18 +234,33 @@ function GUI(hookSelector, simulation, cache) {
 		$$(".backlog-settings-div").slideFadeToggle();
 	});
 
-	$$(".simulation-cfd").CanvasJSChart({
+	
+	var commonDiagramProperties = {
 	  backgroundColor: null,
 	  zoomEnabled: true,
 	  zoomType: "x",
+  	  axisY:{
+  		  minimum: 0
+  	  },
+  	  axisY2:{
+  		  minimum: 0,
+  	  },
+	  axisX:{
+	    minimum: 0,
+	  },
+	  toolTip: {
+     	 shared: "true",
+	  },
 	  legend: {
-          horizontalAlign: "left", // "center" , "right"
-          verticalAlign: "top",  // "top" , "bottom"
+          horizontalAlign: "left",
+          verticalAlign: "top",
           fontSize: 15,
 		  dockInsidePlotArea: true
       },
+	};
+
+	$$(".simulation-cfd").CanvasJSChart($.extend(true, {}, commonDiagramProperties, {
 	  toolTip: {
-     	shared: "true",
 		contentFormatter: function (e) {
 			var content = "Day: <strong>" + (e.entries[0].dataPoint.x + 1) + "</strong><br/>";
 			for (var i = e.entries.length - 1; i >= 0; i--) {
@@ -255,13 +270,11 @@ function GUI(hookSelector, simulation, cache) {
 		},
 	  },
 	  axisX:{
-	    minimum: 0,
 		  labelFormatter : function(e) {
 			  return e.value + 1;
 		  }
 	  },
 	  axisY:{
-		  minimum: 0,
 		  includeZero: false,
 	  },
 	  rangeChanged: function(e){
@@ -270,7 +283,7 @@ function GUI(hookSelector, simulation, cache) {
 		 e.chart.render();
 	  },
       data: [],
-    });
+    }));
 	$$(".simulation-cfd-tab").bind('isVisible', function() {
 		updateCFDConfiguration.bind(this)();
 		updateCFD(this.simulation.time, this.simulation.stats);
@@ -336,25 +349,16 @@ function GUI(hookSelector, simulation, cache) {
 		updateCFDConfiguration.bind(this)();
 	}.bind(this));
 	
-	$$(".simulation-littles-tab").CanvasJSChart({
-	  backgroundColor: null,
-	  zoomEnabled: true,
-	  zoomType: "x",
+	$$(".simulation-littles-tab").CanvasJSChart($.extend(true, {}, commonDiagramProperties, {
 	  axisX:{
-	    minimum: 0,
 		  labelFormatter : function(e) {
 			  return "D:" + (Math.floor(e.value / 8) + 1) + " h:" + Math.floor(e.value % 8 + 9);
 		  }
 	  },
-	  axisY:{
-		  minimum: 0
-	  },
 	  axisY2:{
-		  minimum: 0,
 		  maximum: 100
 	  },
 	  toolTip: {
-     	 shared: "true",
   		contentFormatter: function (e) {
   			var content = "Day: <strong>" + Math.floor(e.entries[0].dataPoint.x / 8) + "</strong>, hour: <strong>" + (e.entries[0].dataPoint.x % 8 + 9) + "</strong><br/>";
   			for (var i = 0; i< e.entries.length; i++) {
@@ -364,12 +368,6 @@ function GUI(hookSelector, simulation, cache) {
   			return content;
   		},
 	  },
-	  legend: {
-          horizontalAlign: "left", // "center" , "right"
-          verticalAlign: "top",  // "top" , "bottom"
-          fontSize: 15,
-		  dockInsidePlotArea: true
-      },
       data: [{        
           type: "line",
 		  name: "WIP",
@@ -393,30 +391,19 @@ function GUI(hookSelector, simulation, cache) {
 		  axisYType: "secondary",
       },
       ]
-    });
+    }));
 	$$(".simulation-littles-tab").bind('isVisible', function() {
 		updateLittles(this.simulation.time, this.simulation.stats)
 	}.bind(this));
 	
-	$$(".simulation-cod-tab").CanvasJSChart({
-	  backgroundColor: null,
-	  zoomEnabled: true,
-	  zoomType: "x",
+	$$(".simulation-cod-tab").CanvasJSChart($.extend(true, {}, commonDiagramProperties, {
 	  axisX:{
-	    minimum: 0,
 		  labelFormatter : function(e) {
 			  if (e.value % 8 == 0) return e.value / 8 + 1;
 			  return ""
 		  }
 	  },
-	  axisY:{
-		  minimum: 0
-	  },
-	  axisY2:{
-		  minimum: 0,
-	  },
 	  toolTip: {
-     	 shared: "true",
   		contentFormatter: function (e) {
   			var content = "Day: <strong>" + Math.floor(e.entries[0].dataPoint.x / 8 + 1) + "</strong><br/>";
   			for (var i = 0; i< e.entries.length; i++) {
@@ -426,12 +413,6 @@ function GUI(hookSelector, simulation, cache) {
   			return content;
   		},
 	  },
-	  legend: {
-          horizontalAlign: "left", // "center" , "right"
-          verticalAlign: "top",  // "top" , "bottom"
-          fontSize: 15,
-		  dockInsidePlotArea: true
-      },
       data: [{        
           type: "line",
 		  name: "Cost Of Delay/d",
@@ -455,29 +436,18 @@ function GUI(hookSelector, simulation, cache) {
 		  axisYType: "secondary",
       }
       ]
-    });
+    }));
 	$$(".simulation-cod-tab").bind('isVisible', function() {
 		updateCod(this.simulation.time, this.simulation.stats);
 	}.bind(this));
 	
-	$$(".simulation-scatterplot-tab").CanvasJSChart({
-	  backgroundColor: null,
-	  zoomEnabled: true,
-	  zoomType: "x",
+	$$(".simulation-scatterplot-tab").CanvasJSChart($.extend(true, {}, commonDiagramProperties, {
 	  axisX:{
-	    minimum: 0,
 		  labelFormatter : function(e) {
 			  return "D:" + (Math.floor(e.value / 60 / 8) + 1) + " h:" + Math.floor(e.value / 60 % 8 + 9);
 		  }
 	  },
-	  axisY:{
-		  minimum: 0
-	  },
-	  axisY2:{
-		  minimum: 0,
-	  },
 	  toolTip: {
-     	 shared: "true",
   		contentFormatter: function (e) {
 			var value = e.entries[0].dataPoint.x;
   			var content = "Day: <strong>" + (Math.floor(value / 60 / 8) + 1) + ", hour:" + Math.floor(value / 60 % 8 + 9) + "</strong><br/>";
@@ -502,7 +472,7 @@ function GUI(hookSelector, simulation, cache) {
 		  axisYType: "secondary",
       }
       ]
-    });
+    }));
 	$$(".simulation-scatterplot-tab").bind('isVisible', function() {
 		updateScatterPlot(this.simulation.time, this.simulation.stats)
 	}.bind(this));
