@@ -178,12 +178,12 @@ function Simulation(hookSelector) {
 		},
 		value: function(tasksList) {
 			tasksList.sort(function(taskA, taskB) {
-				return taskB.costOfDelay - taskA.costOfDelay;
-			});
-		},
+				return taskB.value.costOfDelay(this.time) - taskA.value.costOfDelay(this.time);
+			}.bind(this));
+		}.bind(this),
 		cd3: function(tasksList) {
 			tasksList.sort(function(taskA, taskB) {
-				return taskB.costOfDelay/taskB.getRemainingWork() - taskA.costOfDelay/taskA.getRemainingWork();
+				return taskB.value.costOfDelay(this.time)/taskB.getRemainingWork() - taskA.value.costOfDelay(this.time)/taskA.getRemainingWork();
 			});
 		}
 	};
@@ -547,17 +547,17 @@ function Board(ticksPerHour, simulation) {
 		var cumulated = 0;
 		this.columns.slice(0, this.columns.length - 1).forEach(function(column) {
 			column.tasks.forEach(function(task) {
-				cod += task.costOfDelay;
+				cod += task.value.costOfDelay(simulation.time);
 				cumulated += task.costOfDelayCumulated;
-			});
-		});
+			}.bind(this));
+		}.bind(this));
 		return {cod: cod, cumulated: cumulated};
 	}
 	
 	this.accumulateCod = function() {
 		this.columns.slice(0, this.columns.length - 1).forEach(function(column) {
 			column.tasks.forEach(function(task) {
-				task.costOfDelayCumulated += task.costOfDelay;
+				task.costOfDelayCumulated += task.value.costOfDelay(simulation.time);
 			});
 		});
 	}
@@ -609,8 +609,37 @@ function Task(taskId, time, analysis, development, qa, deployment) {
 	this.column = null;
 	this.peopleAssigned = [];
 	this.arrivalTime = {};
-	this.costOfDelay = normal_random(100, 1000);
-	this.costOfDelayCumulated = 0;
+	this.value = new Value(this, time, 10, normal_random(100, 1000));
+	
+	function Value(task, start, durationInDays, valuePerDay) {
+		this.start = start;
+		this.end = this.start + durationInDays * 8 * 60;
+		this.valuePerDay = valuePerDay;
+		this.task = task;
+		
+		this.costOfDelay = function(now) {
+			var effort = task.getRemainingWork();
+			if (now + effort > this.start && now + effort < this.end) {
+				return valuePerDay;
+			}
+			return 0;
+		}
+		
+		this.remainingValue = function(now) {
+			return Math.max(0, Math.floor((this.end - Math.max(now, this.start)) / 8)) * this.valuePerDay;
+		}
+		
+		this.currentDailyValue = function(now) {
+			if (now > this.start && now < this.end) {
+				return valuePerDay;
+			}
+			return 0;
+		}
+		
+		this.totalValue = function() {
+			return Math.floor((this.end - this.start) / 8) * this.valuePerDay
+		}
+	}
 	
 	this.finished = function (column) {
 		if (!column) {
@@ -816,14 +845,14 @@ function Stats(simulation) {
 			var tasksDone = simulation.board.getDoneTasks();
 			var valueDelivered = 0;
 			for (var i=0; i< tasksDone.length; i++) {
-				valueDelivered += tasksDone[i].costOfDelay;
+				valueDelivered += tasksDone[i].value.remainingValue(simulation.time);
 			}
 			this.valueDelivered.addEvent(valueDelivered);
 			
 			var tasksDropped = simulation.board.droppedTasks;
 			var valueDroppedSummed = 0;
 			for (var i=0; i< tasksDropped.length; i++) {
-				valueDroppedSummed += tasksDropped[i].costOfDelay;
+				valueDroppedSummed += tasksDropped[i].totalValue();
 			}
 			this.valueDropped.addEvent(valueDroppedSummed);
 		}
