@@ -3,16 +3,36 @@ $(document).ready(function() {
 });
 
 function Simulation(hookSelector) {
-	this.configuration = {
-		maxTasksOnOnePerson: 2,
-		maxPeopleOnOneTask: 2,
-		team: {
-			workingOutOfSpecialisationCoefficient: 50,
-		},
-		stats: {
-			noOfDaysForMovingAverage: 5,
+	function Configuration() {
+		this.data = {
+			maxTasksOnOnePerson: 2,
+			maxPeopleOnOneTask: 2,
+			team: {
+				workingOutOfSpecialisationCoefficient: 50,
+			},
+			stats: {
+				noOfDaysForMovingAverage: 5,
+			}
 		}
-	};
+		this.set = function(property, newValue) {
+			var path = property.split(".");
+			var enclosingObject = this.data;
+			for (var i=0; i < path.length - 1; i++) {
+				enclosingObject = enclosingObject[path[i]];
+			}
+			enclosingObject[path[path.length - 1]] = newValue;
+		}
+		this.get = function(property) {
+			var path = property.split(".");
+			var enclosingObject = this.data;
+			for (var i=0; i < path.length - 1; i++) {
+				enclosingObject = enclosingObject[path[i]];
+			}
+			return enclosingObject[path[path.length - 1]];
+		}
+	}
+	this.configuration = new Configuration();
+	
 	this.hourLengthInSeconds = 1;
 	this.ticksPerHour = 12;
 	this.time;
@@ -271,7 +291,7 @@ function Simulation(hookSelector) {
 		if (stoppedAtIndex < tasksWithNoAssignee.length) {
 			var workingPpl = this.team.getSpecialistsWorkingInColumnOrderedByTaskCount(column, specialisation);
 			var j = 0;
-			for (; i < tasksWithNoAssignee.length && workingPpl.length > 0 &&workingPpl[j].tasksWorkingOn.length < this.configuration.maxTasksOnOnePerson; i++) {
+			for (; i < tasksWithNoAssignee.length && workingPpl.length > 0 &&workingPpl[j].tasksWorkingOn.length < this.configuration.get("maxTasksOnOnePerson"); i++) {
 				workingPpl[j].assignTo(tasksWithNoAssignee[i]);
 				if (workingPpl[j].tasksWorkingOn.length > workingPpl[(j + 1) % workingPpl.length].tasksWorkingOn.length) {
 					j = (j + 1) % workingPpl.length;
@@ -299,7 +319,7 @@ function Simulation(hookSelector) {
 			i = stoppedAtIndex;
 			var tasks = column.getTasksAssignedToOneOrMoreOrderedByNumberOfPeople();
 			var j=0;
-			for (; i< notWorkingPpl.length && tasks.length > 0 && tasks[j].peopleAssigned.length < this.configuration.maxPeopleOnOneTask; i++) {
+			for (; i< notWorkingPpl.length && tasks.length > 0 && tasks[j].peopleAssigned.length < this.configuration.get("maxPeopleOnOneTask"); i++) {
 				notWorkingPpl[i].assignTo(tasks[j]);
 				if (tasks[j].peopleAssigned.length > tasks[(j + 1) % tasks.length].peopleAssigned.length) {
 					j = (j + 1) % tasks.length;
@@ -454,7 +474,7 @@ function Person(specialisation, team, configuration) {
 		var workPerTask = this.productivityPerHour / this.tasksWorkingOn.length / ticksPerHour;
 		this.tasksWorkingOn.forEach(function(task) {
 			if (task.column.name != specialisation) {
-				task.work(workPerTask * (this.configuration.team.workingOutOfSpecialisationCoefficient / 100));
+				task.work(workPerTask * (this.configuration.get("team.workingOutOfSpecialisationCoefficient") / 100));
 			} else {
 				task.work(workPerTask);
 			}

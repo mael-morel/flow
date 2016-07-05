@@ -101,7 +101,7 @@ function GUI(hookSelector, simulation, cache, configuration) {
 	});
 	$$(".simulation-settings-general .settings-no-of-tasks").change(function(event) {
 		var newValue = event.target.value;
-		configuration.maxTasksOnOnePerson = newValue;
+		configuration.set("maxTasksOnOnePerson", newValue);
 		ga('send', {
 		  hitType: 'event',
 		  eventCategory: 'General settings',
@@ -111,7 +111,7 @@ function GUI(hookSelector, simulation, cache, configuration) {
 	});
 	$$(".simulation-settings-general .settings-no-of-people").change(function(event) {
 		var newValue = event.target.value;
-		configuration.maxPeopleOnOneTask = newValue;
+		configuration.set("maxPeopleOnOneTask", newValue);
 		ga('send', {
 		  hitType: 'event',
 		  eventCategory: 'General settings',
@@ -136,7 +136,7 @@ function GUI(hookSelector, simulation, cache, configuration) {
 	
 	$$(".simulation-settings-general .settings-productivity-of-working-not-in-specialisation").change(function(event) {
 		var newValue = event.target.value;
-		configuration.team.workingOutOfSpecialisationCoefficient = newValue;
+		configuration.set("team.workingOutOfSpecialisationCoefficient", newValue);
 		ga('send', {
 		  hitType: 'event',
 		  eventCategory: 'General settings',
