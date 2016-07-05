@@ -3,22 +3,30 @@ $(document).ready(function() {
 });
 
 function Simulation(hookSelector) {
+	this.configuration = {
+		maxTasksOnOnePerson: 2,
+		maxPeopleOnOneTask: 2,
+		team: {
+			workingOutOfSpecialisationCoefficient: 50,
+		},
+		stats: {
+			noOfDaysForMovingAverage: 5,
+		}
+	};
 	this.hourLengthInSeconds = 1;
 	this.ticksPerHour = 12;
 	this.time;
 	this.taskCounter;
 	this.timeoutHandler;
-	this.gui = new GUI(hookSelector, this, new Cache());
+	this.gui = new GUI(hookSelector, this, new Cache(), this.configuration);
 	this.board;
 	this.stats;
 	this.team;
-	this.maxTasksOnOnePerson = 2;
-	this.maxPeopleOnOneTask = 2;
-	
+
 	this.initBasics = function() {
 		this.time = 0;
 		this.taskCounter = 1;
-		this.team = new Team();
+		this.team = new Team(this.configuration);
 		this.board = new Board(this.ticksPerHour, this);
 		this.stats = new Stats(this);
 		this.gui.update(this.board, this.stats, true);
@@ -28,10 +36,8 @@ function Simulation(hookSelector) {
 		this.team.allowedToWorkIn = this.gui.getColumnsAvailability();
 		var generalSettings = this.gui.getGeneralSettings();
 		this.gui.initialiseBacklogStrategies();
-		this.maxTasksOnOnePerson = generalSettings['maxTasksOnOnePerson'];
-		this.maxPeopleOnOneTask = generalSettings['maxPeopleOnOneTask'];
 		this.stats.changeNoOfDaysForCountingAverages(generalSettings['noOfDaysForCountingAverages']);
-		this.team.workingOutOfSpecialisationCoefficient = generalSettings['productivityOfWorkingNotInSpecialisation'];
+		this.gui.updateUiFromConfiguration();
 	}
 
 	this.play = function() {
@@ -265,7 +271,7 @@ function Simulation(hookSelector) {
 		if (stoppedAtIndex < tasksWithNoAssignee.length) {
 			var workingPpl = this.team.getSpecialistsWorkingInColumnOrderedByTaskCount(column, specialisation);
 			var j = 0;
-			for (; i < tasksWithNoAssignee.length && workingPpl.length > 0 &&workingPpl[j].tasksWorkingOn.length < this.maxTasksOnOnePerson; i++) {
+			for (; i < tasksWithNoAssignee.length && workingPpl.length > 0 &&workingPpl[j].tasksWorkingOn.length < this.configuration.maxTasksOnOnePerson; i++) {
 				workingPpl[j].assignTo(tasksWithNoAssignee[i]);
 				if (workingPpl[j].tasksWorkingOn.length > workingPpl[(j + 1) % workingPpl.length].tasksWorkingOn.length) {
 					j = (j + 1) % workingPpl.length;
@@ -293,7 +299,7 @@ function Simulation(hookSelector) {
 			i = stoppedAtIndex;
 			var tasks = column.getTasksAssignedToOneOrMoreOrderedByNumberOfPeople();
 			var j=0;
-			for (; i< notWorkingPpl.length && tasks.length > 0 && tasks[j].peopleAssigned.length < this.maxPeopleOnOneTask; i++) {
+			for (; i< notWorkingPpl.length && tasks.length > 0 && tasks[j].peopleAssigned.length < this.configuration.maxPeopleOnOneTask; i++) {
 				notWorkingPpl[i].assignTo(tasks[j]);
 				if (tasks[j].peopleAssigned.length > tasks[(j + 1) % tasks.length].peopleAssigned.length) {
 					j = (j + 1) % tasks.length;
@@ -316,14 +322,10 @@ function Simulation(hookSelector) {
 		this.team.updateHeadcount(specialisation, newHeadcount);
 	}
 	
-	this.changeProductivityOfWorkingNotInSpecialisation = function(newValue) {
-		this.team.workingOutOfSpecialisationCoefficient = newValue;
-	}
-	
 	this.initBasics();
 }
 
-function Team() {
+function Team(configuration) {
 	this.members = [];
 	this.removedButWorking = [];
 	this.allowedToWorkIn = {
@@ -332,7 +334,7 @@ function Team() {
 		'qa': ['qa'],
 		'deployment': ['deployment']
 	};
-	this.workingOutOfSpecialisationCoefficient = 1;
+	this.configuration = configuration;
 	
 	this.doWork = function(ticksPerHour) {
 		this.members.forEach(function(person) {
@@ -420,7 +422,7 @@ function Team() {
 		});
 		if (specialists.length < newHeadcount) {
 			for (var i = 0; i < newHeadcount - specialists.length; i++) {
-				this.members.push(new Person(specialisation, this));
+				this.members.push(new Person(specialisation, this, this.configuration));
 			}
 		} else if (specialists.length > newHeadcount) {
 			for (var i = 0; i < specialists.length - newHeadcount; i++) {
@@ -434,12 +436,13 @@ function Team() {
 	}
 }
 
-function Person(specialisation, team) {
+function Person(specialisation, team, configuration) {
 	this.specialisation = specialisation;
 	this.tasksWorkingOn = [];
 	this.productivityPerHour = 60;
 	this.team = team;
 	this.markedAsRemoved = false;
+	this.configuration = configuration;
 	
 	this.assignTo = function(task) {
 		this.tasksWorkingOn.push(task);
@@ -451,7 +454,7 @@ function Person(specialisation, team) {
 		var workPerTask = this.productivityPerHour / this.tasksWorkingOn.length / ticksPerHour;
 		this.tasksWorkingOn.forEach(function(task) {
 			if (task.column.name != specialisation) {
-				task.work(workPerTask * this.team.workingOutOfSpecialisationCoefficient);
+				task.work(workPerTask * (this.configuration.team.workingOutOfSpecialisationCoefficient / 100));
 			} else {
 				task.work(workPerTask);
 			}

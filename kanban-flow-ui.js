@@ -1,4 +1,5 @@
-function GUI(hookSelector, simulation, cache) {
+function GUI(hookSelector, simulation, cache, configuration) {
+	this.configuration = configuration;
 	this.cache = cache;
 	this.hookSelector = hookSelector;
 	function $$(selector, useCache) {
@@ -100,7 +101,7 @@ function GUI(hookSelector, simulation, cache) {
 	});
 	$$(".simulation-settings-general .settings-no-of-tasks").change(function(event) {
 		var newValue = event.target.value;
-		simulation.maxTasksOnOnePerson = newValue;
+		configuration.maxTasksOnOnePerson = newValue;
 		ga('send', {
 		  hitType: 'event',
 		  eventCategory: 'General settings',
@@ -110,7 +111,7 @@ function GUI(hookSelector, simulation, cache) {
 	});
 	$$(".simulation-settings-general .settings-no-of-people").change(function(event) {
 		var newValue = event.target.value;
-		simulation.maxPeopleOnOneTask = newValue;
+		configuration.maxPeopleOnOneTask = newValue;
 		ga('send', {
 		  hitType: 'event',
 		  eventCategory: 'General settings',
@@ -135,7 +136,7 @@ function GUI(hookSelector, simulation, cache) {
 	
 	$$(".simulation-settings-general .settings-productivity-of-working-not-in-specialisation").change(function(event) {
 		var newValue = event.target.value;
-		simulation.changeProductivityOfWorkingNotInSpecialisation(newValue);
+		configuration.team.workingOutOfSpecialisationCoefficient = newValue;
 		ga('send', {
 		  hitType: 'event',
 		  eventCategory: 'General settings',
