@@ -26,9 +26,7 @@ function Simulation(hookSelector) {
 					qa: null,
 					qaDone: null,
 					qaWithQueue: 3,
-					deployment: null,
-					deploymentDone: null,
-					deploymentWithQueue: 5,
+					deployment: 5,
 				}
 			},
 		};
@@ -111,7 +109,6 @@ function Simulation(hookSelector) {
 
 	this.tick = function() {
 		this.timeoutHandler = null;
-		this.board.updateColumnsLimitsFrom(this.gui);
 		this.addNewTasks(this.board);
 		this.board.reprioritiseTasks(this.prioritisationStrategies[this.configuration.get("columns.prioritisationStrategy")]);
 		this.board.removeTasksOverLimitFromBacklog();
@@ -139,8 +136,8 @@ function Simulation(hookSelector) {
 			}
 		}.bind(this), 
 		"up-to-limit": function(createTaskFunction) {
-			var limit = this.configuration.get("columns.limits.input");
-			if (limit == null) limit = 1;
+			var limit = this.board.columns[0].limit();
+			if (limit == Number.POSITIVE_INFINITY) limit = 1;
 			for (var i=this.board.columns[0].tasks.length; i < limit; i++) {
 				this.board.addTask(createTaskFunction(this.taskCounter++, this.time));
 			}
@@ -581,19 +578,6 @@ function Board(ticksPerHour, simulation) {
 		return result;
 	}
 	
-	this.updateColumnsLimitsFrom = function(gui) {
-		var updateColumnLimit = function(column) {
-			if (!column) return;
-			column.limit = gui.getLimitForColumn(column.name);
-		}
-
-		this.columns.forEach(function(column) {
-			updateColumnLimit(column);
-			updateColumnLimit(column.parent);
-		});
-
-	}
-	
 	this.getCostOfDelay = function() {
 		var cod = 0;
 		var cumulated = 0;
@@ -615,7 +599,7 @@ function Board(ticksPerHour, simulation) {
 	}
 	
 	this.removeTasksOverLimitFromBacklog = function() {
-		var limit = this.columns[0].limit == null ? Number.POSITIVE_INFINITY : this.columns[0].limit;
+		var limit = this.columns[0].limit();
 		var freshlyRemovedTasks = this.columns[0].tasks.splice(limit, this.columns[0].tasks.length);
 		this.droppedTasks = this.droppedTasks.concat(freshlyRemovedTasks);
 		freshlyRemovedTasks.forEach(function(task) {
@@ -788,8 +772,7 @@ function Column(name, queue, simulation, label, shortLabel) {
 	
 	this.availableSpace = function(task) {
 		if (this.ignoreLimit) return true;
-		var limit = this.configuration.get("columns.limits." + this.name);
-		limit = limit == null ? Number.POSITIVE_INFINITY : limit;
+		var limit = this.limit();
 		var numberOfTasks = this.tasks.length;
 		if (this.children.length > 0) {
 			//checking for parent column of task
@@ -802,6 +785,12 @@ function Column(name, queue, simulation, label, shortLabel) {
 			}
 		}
 		return limit - numberOfTasks > 0 && (!this.parent || this.parent.availableSpace(task));
+	}
+	
+	this.limit = function() {
+		var limit = this.configuration.get("columns.limits." + this.name);
+		var parsed = parseInt(limit);
+		return !parsed ? Number.POSITIVE_INFINITY : Math.abs(parsed)
 	}
 	
 	this.isFirstColumn = function() {

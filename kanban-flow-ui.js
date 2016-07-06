@@ -21,6 +21,17 @@ function GUI(hookSelector, simulation, cache, configuration) {
 		".simulation-settings-general .settings-no-of-people": "maxPeopleOnOneTask",
 		".simulation-settings-general .settings-productivity-of-working-not-in-specialisation": "team.workingOutOfSpecialisationCoefficient",
 		".simulation-settings-general .settings-prioritisation-method": "columns.prioritisationStrategy",
+		".inputHeader input.wiplimit": "columns.limits.input",
+		".analysisHeader input.wiplimit": "columns.limits.analysis",
+		".analysisDoneHeader input.wiplimit": "columns.limits.analysisDone",
+		".analysisWithQueueHeader input.wiplimit": "columns.limits.analysisWithQueue",
+		".developmentHeader input.wiplimit": "columns.limits.development",
+		".developmentDoneHeader input.wiplimit": "columns.limits.developmentDone",
+		".developmentWithQueueHeader input.wiplimit": "columns.limits.developmentWithQueue",
+		".qaHeader input.wiplimit": "columns.limits.qa",
+		".qaDoneHeader input.wiplimit": "columns.limits.qaDone",
+		".qaWithQueueHeader input.wiplimit": "columns.limits.qaWithQueue",
+		".deploymentHeader input.wiplimit": "columns.limits.deployment",
 	};
 
 	$$('.timescale').slider({
@@ -476,14 +487,7 @@ function GUI(hookSelector, simulation, cache, configuration) {
 		$$('.column-settings').hide();
 	});
 	
-	this.getLimitForColumn = function (columnName) {
-		var input = $$("." + columnName + "Header input.wiplimit");
-		var result = null;
-		if (input.length) {
-			result = !parseInt(input.val()) ? null : Math.abs(parseInt(input.val()));
-		}
-		return result;
-	}
+
 	
 	this.getHeadcount = function() {
 		var result = [];
