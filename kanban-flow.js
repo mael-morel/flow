@@ -12,7 +12,10 @@ function Simulation(hookSelector) {
 			},
 			stats: {
 				noOfDaysForMovingAverage: 5,
-			}
+			},
+			columns: {
+				prioritisationStrategy: "fifo",
+			},
 		};
 		this.listeners = {};
 		
@@ -95,7 +98,7 @@ function Simulation(hookSelector) {
 		this.timeoutHandler = null;
 		this.board.updateColumnsLimitsFrom(this.gui);
 		this.addNewTasks(this.board);
-		this.board.reprioritiseTasks(this.prioritisationStrategy);
+		this.board.reprioritiseTasks(this.prioritisationStrategies[this.configuration.get("columns.prioritisationStrategy")]);
 		this.board.removeTasksOverLimitFromBacklog();
 		this.doWork();
 		this.moveTasks(this.board.columns);
@@ -228,10 +231,6 @@ function Simulation(hookSelector) {
 			}.bind(this));
 		}.bind(this)
 	};
-	this.prioritisationStrategy = this.prioritisationStrategies['fifo'];
-	this.changePrioritisationStrategy = function(newStrategy) {
-		this.prioritisationStrategy = this.prioritisationStrategies[newStrategy];
-	}
 
 	this.addNewTasks = function() {
 		this.temporalTaskStrategies[this.temporalTaskStrategy](this.taskSizeStrategies[this.taskSizeStrategy]);

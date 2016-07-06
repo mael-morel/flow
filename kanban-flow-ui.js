@@ -147,7 +147,7 @@ function GUI(hookSelector, simulation, cache, configuration) {
 	
 	$$(".simulation-settings-general .settings-prioritisation-method").change(function(event) {
 		var newValue = event.target.value;
-		this.simulation.changePrioritisationStrategy(newValue);
+		this.configuration.set("columns.prioritisationStrategy", newValue);
 		ga('send', {
 		  hitType: 'event',
 		  eventCategory: 'General settings',
