@@ -15,6 +15,27 @@ function GUI(hookSelector, simulation, cache, configuration) {
 	
 	this.cache.put(hookSelector +' allColumns', $($$('.tasks td').get().reverse()).toArray());
 	this.renderTasks = true;
+	this.bindings = {
+		".simulation-settings-general .settings-no-of-days-for-stats": "stats.noOfDaysForMovingAverage",
+		".simulation-settings-general .settings-no-of-tasks": "maxTasksOnOnePerson",
+		".simulation-settings-general .settings-no-of-people": "maxPeopleOnOneTask",
+		".simulation-settings-general .settings-productivity-of-working-not-in-specialisation": "team.workingOutOfSpecialisationCoefficient",
+		".simulation-settings-general .settings-prioritisation-method": "columns.prioritisationStrategy",
+	};
+	for (var key in this.bindings) {
+		if (this.bindings.hasOwnProperty(key)) {
+			$$(key).change({key: key}, function(event) {
+				var newValue = event.target.value;
+				var key = event.data.key;
+				this.configuration.set(this.bindings[key], newValue);
+				ga('send', {
+				  hitType: 'event',
+				  eventCategory: 'Configuration change',
+				  eventAction: this.bindings[key],
+				});
+			}.bind(this));
+		}
+	}
 
 	$$('.timescale').slider({
 		min: 50,
@@ -99,63 +120,12 @@ function GUI(hookSelector, simulation, cache, configuration) {
 		  eventLabel: 'Columns headcount',
 		});
 	});
-	$$(".simulation-settings-general .settings-no-of-tasks").change(function(event) {
-		var newValue = event.target.value;
-		configuration.set("maxTasksOnOnePerson", newValue);
-		ga('send', {
-		  hitType: 'event',
-		  eventCategory: 'General settings',
-		  eventAction: 'multitasking',
-		  eventLabel: 'Multitasking policy',
-		});
-	});
-	$$(".simulation-settings-general .settings-no-of-people").change(function(event) {
-		var newValue = event.target.value;
-		configuration.set("maxPeopleOnOneTask", newValue);
-		ga('send', {
-		  hitType: 'event',
-		  eventCategory: 'General settings',
-		  eventAction: 'pairing',
-		  eventLabel: 'Pairing policy',
-		});
-	});	
 	$$(".simulation-settings-general .settings-no-of-days-for-stats").change(function(event) {
-		var newValue = event.target.value;
-		configuration.set("stats.noOfDaysForMovingAverage", newValue);
 		lastUpdatedLittlesDay = -1;
 		updateLittles(this.simulation.time, this.simulation.stats);
 		lastUpdatedCodDay = -1;
 		updateCod(this.simulation.time, this.simulation.stats, true);
-		ga('send', {
-		  hitType: 'event',
-		  eventCategory: 'General settings',
-		  eventAction: 'avgdays',
-		  eventLabel: 'No of days for avg counting',
-		});
-	}.bind(this));	
-	
-	$$(".simulation-settings-general .settings-productivity-of-working-not-in-specialisation").change(function(event) {
-		var newValue = event.target.value;
-		configuration.set("team.workingOutOfSpecialisationCoefficient", newValue);
-		ga('send', {
-		  hitType: 'event',
-		  eventCategory: 'General settings',
-		  eventAction: 'productivityNotSpecialisation',
-		  eventLabel: 'Productivity of working not in specialisation',
-		});
-	});	
-	
-	$$(".simulation-settings-general .settings-prioritisation-method").change(function(event) {
-		var newValue = event.target.value;
-		this.configuration.set("columns.prioritisationStrategy", newValue);
-		ga('send', {
-		  hitType: 'event',
-		  eventCategory: 'General settings',
-		  eventAction: 'prioritisation',
-		  eventLabel: 'Change prioritisation strategy',
-		});
-	}.bind(this));	
-	
+	}.bind(this));
 	
 	$$(".backlog-settings-temporal .backlog-settings-temporal-strategy").change(function(event) {
 		var newValue = event.target.value;
