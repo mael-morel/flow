@@ -121,7 +121,7 @@ function GUI(hookSelector, simulation, cache, configuration) {
 	});	
 	$$(".simulation-settings-general .settings-no-of-days-for-stats").change(function(event) {
 		var newValue = event.target.value;
-		simulation.changeNoOfDaysForCountingAverages(newValue);
+		configuration.set("stats.noOfDaysForMovingAverage", newValue);
 		lastUpdatedLittlesDay = -1;
 		updateLittles(this.simulation.time, this.simulation.stats);
 		lastUpdatedCodDay = -1;

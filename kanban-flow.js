@@ -13,14 +13,22 @@ function Simulation(hookSelector) {
 			stats: {
 				noOfDaysForMovingAverage: 5,
 			}
-		}
+		};
+		this.listeners = {};
+		
 		this.set = function(property, newValue) {
 			var path = property.split(".");
 			var enclosingObject = this.data;
 			for (var i=0; i < path.length - 1; i++) {
 				enclosingObject = enclosingObject[path[i]];
 			}
+			var oldValue = enclosingObject[path[path.length - 1]];
 			enclosingObject[path[path.length - 1]] = newValue;
+			if (oldValue != newValue && this.listeners[property]) {
+				for (var i=0; i< this.listeners[property].length; i++) {
+					this.listeners[property][i](newValue);
+				}
+			}
 		}
 		this.get = function(property) {
 			var path = property.split(".");
@@ -29,6 +37,14 @@ function Simulation(hookSelector) {
 				enclosingObject = enclosingObject[path[i]];
 			}
 			return enclosingObject[path[path.length - 1]];
+		}
+		this.onChange = function(property, listenerFun) {
+			var listenersForProperty = this.listeners[property];
+			if (!listenersForProperty) {
+				listenersForProperty = [];
+				this.listeners[property] = listenersForProperty;
+			}
+			listenersForProperty.push(listenerFun);
 		}
 	}
 	this.configuration = new Configuration();
@@ -48,16 +64,15 @@ function Simulation(hookSelector) {
 		this.taskCounter = 1;
 		this.team = new Team(this.configuration);
 		this.board = new Board(this.ticksPerHour, this);
-		this.stats = new Stats(this);
+		this.stats = new Stats(this, this.configuration);
 		this.gui.update(this.board, this.stats, true);
 		this.gui.getHeadcount().forEach(function (newHeadcount) {
 			this.team.updateHeadcount(newHeadcount[0], newHeadcount[1]);
 		}.bind(this));
 		this.team.allowedToWorkIn = this.gui.getColumnsAvailability();
-		var generalSettings = this.gui.getGeneralSettings();
+		//var generalSettings = this.gui.getGeneralSettings();
 		this.gui.initialiseBacklogStrategies();
-		this.stats.changeNoOfDaysForCountingAverages(generalSettings['noOfDaysForCountingAverages']);
-		this.gui.updateUiFromConfiguration();
+		//this.gui.updateUiFromConfiguration();
 	}
 
 	this.play = function() {
@@ -778,7 +793,7 @@ function Column(name, queue, simulation, label, shortLabel) {
 	}
 }
 
-function Stats(simulation) {
+function Stats(simulation, configuration) {
 	
 	function DataSet(stats, interval, avgMultiplier, eventsAsArrays) {
 		this.events = [];
@@ -821,7 +836,8 @@ function Stats(simulation) {
 		}
 	}
 	
-	this.dataPointsToRemember = 8  * 5; // hours * days
+	this.configuration = configuration;
+	this.dataPointsToRemember = 8 * this.configuration.get("stats.noOfDaysForMovingAverage"); // hours * days
 	this.cfdData = {}; 
 
 	this.wip = new DataSet(this);
@@ -852,6 +868,7 @@ function Stats(simulation) {
 		this.valueDelivered.recalculateAvg();
 		this.valueDropped.recalculateAvg();
 	}
+	this.configuration.onChange("stats.noOfDaysForMovingAverage", this.changeNoOfDaysForCountingAverages.bind(this));
 	
 	this.recalculateStats = function(simulation) {
 		this.calculateAvailablePeople(simulation);
