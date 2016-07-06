@@ -24,6 +24,7 @@ function GUI(hookSelector, simulation, cache, configuration) {
 	};
 	for (var key in this.bindings) {
 		if (this.bindings.hasOwnProperty(key)) {
+			$$(key).val(this.configuration.get(this.bindings[key]));
 			$$(key).change({key: key}, function(event) {
 				var newValue = event.target.value;
 				var key = event.data.key;
