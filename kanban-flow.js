@@ -15,18 +15,21 @@ function Simulation(hookSelector) {
 			},
 			columns: {
 				prioritisationStrategy: "fifo",
-				input: {
-					limit: null,
-				},
-				analysis: {
-					
-				},
-				analysisDone: {
-					
-				},
-				analysisWithQueue: {
-					
-				},
+				limits: {
+					input: null,
+					analysis: null,
+					analysisDone: null,
+					analysisWithQueue: 5,
+					development: null,
+					developmentDone: null,
+					developmentWithQueue: 5,
+					qa: null,
+					qaDone: null,
+					qaWithQueue: 3,
+					deployment: null,
+					deploymentDone: null,
+					deploymentWithQueue: 5,
+				}
 			},
 		};
 		this.listeners = {};
@@ -136,7 +139,7 @@ function Simulation(hookSelector) {
 			}
 		}.bind(this), 
 		"up-to-limit": function(createTaskFunction) {
-			var limit = this.board.columns[0].limit;
+			var limit = this.configuration.get("columns.limits.input");
 			if (limit == null) limit = 1;
 			for (var i=this.board.columns[0].tasks.length; i < limit; i++) {
 				this.board.addTask(createTaskFunction(this.taskCounter++, this.time));
@@ -728,7 +731,6 @@ function Task(taskId, time, analysis, development, qa, deployment) {
 
 function Column(name, queue, simulation, label, shortLabel) {
 	this.name = name;
-	this.limit = null;
 	this.tasks = [];
 	this.children = [];
 	this.parent = null;
@@ -738,6 +740,7 @@ function Column(name, queue, simulation, label, shortLabel) {
 	this.label = label;
 	this.shortLabel = shortLabel;
 	this.index = -1;
+	this.configuration = simulation.configuration;
 	
 	this.getTasksAssignedToOneOrMoreOrderedByNumberOfPeople = function() {
 		var result = [];
@@ -785,7 +788,8 @@ function Column(name, queue, simulation, label, shortLabel) {
 	
 	this.availableSpace = function(task) {
 		if (this.ignoreLimit) return true;
-		var limit = this.limit == null ? Number.POSITIVE_INFINITY : this.limit;
+		var limit = this.configuration.get("columns.limits." + this.name);
+		limit = limit == null ? Number.POSITIVE_INFINITY : limit;
 		var numberOfTasks = this.tasks.length;
 		if (this.children.length > 0) {
 			//checking for parent column of task
