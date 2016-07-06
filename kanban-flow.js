@@ -15,6 +15,18 @@ function Simulation(hookSelector) {
 			},
 			columns: {
 				prioritisationStrategy: "fifo",
+				input: {
+					limit: null,
+				},
+				analysis: {
+					
+				},
+				analysisDone: {
+					
+				},
+				analysisWithQueue: {
+					
+				},
 			},
 		};
 		this.listeners = {};
@@ -125,7 +137,7 @@ function Simulation(hookSelector) {
 		}.bind(this), 
 		"up-to-limit": function(createTaskFunction) {
 			var limit = this.board.columns[0].limit;
-			if (limit == Number.POSITIVE_INFINITY) limit = 1;
+			if (limit == null) limit = 1;
 			for (var i=this.board.columns[0].tasks.length; i < limit; i++) {
 				this.board.addTask(createTaskFunction(this.taskCounter++, this.time));
 			}
@@ -600,7 +612,8 @@ function Board(ticksPerHour, simulation) {
 	}
 	
 	this.removeTasksOverLimitFromBacklog = function() {
-		var freshlyRemovedTasks = this.columns[0].tasks.splice(this.columns[0].limit, this.columns[0].tasks.length);
+		var limit = this.columns[0].limit == null ? Number.POSITIVE_INFINITY : this.columns[0].limit;
+		var freshlyRemovedTasks = this.columns[0].tasks.splice(limit, this.columns[0].tasks.length);
 		this.droppedTasks = this.droppedTasks.concat(freshlyRemovedTasks);
 		freshlyRemovedTasks.forEach(function(task) {
 			task.column = null;
@@ -715,7 +728,7 @@ function Task(taskId, time, analysis, development, qa, deployment) {
 
 function Column(name, queue, simulation, label, shortLabel) {
 	this.name = name;
-	this.limit = Number.POSITIVE_INFINITY;
+	this.limit = null;
 	this.tasks = [];
 	this.children = [];
 	this.parent = null;
@@ -772,7 +785,7 @@ function Column(name, queue, simulation, label, shortLabel) {
 	
 	this.availableSpace = function(task) {
 		if (this.ignoreLimit) return true;
-		var limit = this.limit;
+		var limit = this.limit == null ? Number.POSITIVE_INFINITY : this.limit;
 		var numberOfTasks = this.tasks.length;
 		if (this.children.length > 0) {
 			//checking for parent column of task

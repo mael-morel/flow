@@ -22,21 +22,6 @@ function GUI(hookSelector, simulation, cache, configuration) {
 		".simulation-settings-general .settings-productivity-of-working-not-in-specialisation": "team.workingOutOfSpecialisationCoefficient",
 		".simulation-settings-general .settings-prioritisation-method": "columns.prioritisationStrategy",
 	};
-	for (var key in this.bindings) {
-		if (this.bindings.hasOwnProperty(key)) {
-			$$(key).val(this.configuration.get(this.bindings[key]));
-			$$(key).change({key: key}, function(event) {
-				var newValue = event.target.value;
-				var key = event.data.key;
-				this.configuration.set(this.bindings[key], newValue);
-				ga('send', {
-				  hitType: 'event',
-				  eventCategory: 'Configuration change',
-				  eventAction: this.bindings[key],
-				});
-			}.bind(this));
-		}
-	}
 
 	$$('.timescale').slider({
 		min: 50,
@@ -493,9 +478,9 @@ function GUI(hookSelector, simulation, cache, configuration) {
 	
 	this.getLimitForColumn = function (columnName) {
 		var input = $$("." + columnName + "Header input.wiplimit");
-		var result = Number.POSITIVE_INFINITY;
+		var result = null;
 		if (input.length) {
-			result = !parseInt(input.val()) ? Number.POSITIVE_INFINITY : Math.abs(parseInt(input.val()));
+			result = !parseInt(input.val()) ? null : Math.abs(parseInt(input.val()));
 		}
 		return result;
 	}
@@ -696,6 +681,22 @@ function GUI(hookSelector, simulation, cache, configuration) {
 			html += "<span class='glyphicon glyphicon-user person " +person.specialisation + "'/>";
 		});
 		return html;
+	}
+	
+	for (var key in this.bindings) {
+		if (this.bindings.hasOwnProperty(key)) {
+			$$(key).val(this.configuration.get(this.bindings[key]));
+			$$(key).change({key: key}, function(event) {
+				var newValue = event.target.value;
+				var key = event.data.key;
+				this.configuration.set(this.bindings[key], newValue);
+				ga('send', {
+				  hitType: 'event',
+				  eventCategory: 'Configuration change',
+				  eventAction: this.bindings[key],
+				});
+			}.bind(this));
+		}
 	}
 }
 
