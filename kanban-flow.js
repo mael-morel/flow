@@ -27,8 +27,22 @@ function Simulation(hookSelector) {
 					qaDone: null,
 					qaWithQueue: 3,
 					deployment: 5,
-				}
+				},
 			},
+			team: {
+				analysis: {
+					headcount: 2,
+				},
+				development: {
+					headcount: 5,
+				},
+				qa: {
+					headcount: 3,
+				},
+				deployment: {
+					headcount: 1,
+				},
+			}
 		};
 		this.listeners = {};
 		
@@ -42,7 +56,7 @@ function Simulation(hookSelector) {
 			enclosingObject[path[path.length - 1]] = newValue;
 			if (oldValue != newValue && this.listeners[property]) {
 				for (var i=0; i< this.listeners[property].length; i++) {
-					this.listeners[property][i](newValue);
+					this.listeners[property][i](newValue, property);
 				}
 			}
 		}
@@ -81,14 +95,10 @@ function Simulation(hookSelector) {
 		this.team = new Team(this.configuration);
 		this.board = new Board(this.ticksPerHour, this);
 		this.stats = new Stats(this, this.configuration);
+		this.team.initHeadcount();
 		this.gui.update(this.board, this.stats, true);
-		this.gui.getHeadcount().forEach(function (newHeadcount) {
-			this.team.updateHeadcount(newHeadcount[0], newHeadcount[1]);
-		}.bind(this));
 		this.team.allowedToWorkIn = this.gui.getColumnsAvailability();
-		//var generalSettings = this.gui.getGeneralSettings();
 		this.gui.initialiseBacklogStrategies();
-		//this.gui.updateUiFromConfiguration();
 	}
 
 	this.play = function() {
@@ -364,10 +374,6 @@ function Simulation(hookSelector) {
 		this.team.updateColumnsAvailabilityForSpecialisation(specialisation, column, checked);
 	}
 	
-	this.updateHeadcount = function(specialisation, newHeadcount) {
-		this.team.updateHeadcount(specialisation, newHeadcount);
-	}
-	
 	this.initBasics();
 }
 
@@ -462,7 +468,8 @@ function Team(configuration) {
 		}
 	}
 	
-	this.updateHeadcount = function(specialisation, newHeadcount) {
+	this.updateHeadcount = function(newHeadcount, attributeChanged) {
+		var specialisation = attributeChanged.split(".")[1];
 		var specialists = this.members.filter(function (person) {
 			return person.specialisation == specialisation;
 		});
@@ -479,6 +486,17 @@ function Team(configuration) {
 				}
 			}
 		}
+	}
+	this.configuration.onChange("team.analysis.headcount", this.updateHeadcount.bind(this));
+	this.configuration.onChange("team.development.headcount", this.updateHeadcount.bind(this));
+	this.configuration.onChange("team.qa.headcount", this.updateHeadcount.bind(this));
+	this.configuration.onChange("team.deployment.headcount", this.updateHeadcount.bind(this));
+	
+	this.initHeadcount = function() {
+		this.updateHeadcount(this.configuration.get("team.analysis.headcount"), "team.analysis.headcount");
+		this.updateHeadcount(this.configuration.get("team.development.headcount"), "team.development.headcount");
+		this.updateHeadcount(this.configuration.get("team.qa.headcount"), "team.qa.headcount");
+		this.updateHeadcount(this.configuration.get("team.deployment.headcount"), "team.deployment.headcount");
 	}
 }
 

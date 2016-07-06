@@ -32,6 +32,10 @@ function GUI(hookSelector, simulation, cache, configuration) {
 		".qaDoneHeader input.wiplimit": "columns.limits.qaDone",
 		".qaWithQueueHeader input.wiplimit": "columns.limits.qaWithQueue",
 		".deploymentHeader input.wiplimit": "columns.limits.deployment",
+		"input[type=text].headcount[data-headcount-for=analysis]": "team.analysis.headcount",
+		"input[type=text].headcount[data-headcount-for=development]": "team.development.headcount",
+		"input[type=text].headcount[data-headcount-for=qa]": "team.qa.headcount",
+		"input[type=text].headcount[data-headcount-for=deployment]": "team.deployment.headcount",
 	};
 
 	$$('.timescale').slider({
@@ -106,17 +110,7 @@ function GUI(hookSelector, simulation, cache, configuration) {
 		  eventLabel: 'Columns working policy',
 		});
 	});
-	$$("input[type=text].headcount").change(function(event){
-		var specialisation = $(event.target).data("headcountFor");
-		var newHeadcount = event.target.value;
-		simulation.updateHeadcount(specialisation, newHeadcount);
-		ga('send', {
-		  hitType: 'event',
-		  eventCategory: 'Column',
-		  eventAction: 'headcount',
-		  eventLabel: 'Columns headcount',
-		});
-	});
+
 	$$(".simulation-settings-general .settings-no-of-days-for-stats").change(function(event) {
 		lastUpdatedLittlesDay = -1;
 		updateLittles(this.simulation.time, this.simulation.stats);
@@ -486,16 +480,6 @@ function GUI(hookSelector, simulation, cache, configuration) {
 	$$(".board th.column-settings-header").mouseleave(function() {
 		$$('.column-settings').hide();
 	});
-	
-
-	
-	this.getHeadcount = function() {
-		var result = [];
-		$$("input[type=text].headcount").toArray().forEach(function(element) {
-			result.push([$(element).data("headcountFor"), element.value]);
-		});
-		return result;
-	}
 	
 	this.getColumnsAvailability = function() {
 		var checkboxes = $$(".headcount input[type=checkbox]").toArray();
