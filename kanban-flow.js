@@ -7,9 +7,6 @@ function Simulation(hookSelector) {
 		this.data = {
 			maxTasksOnOnePerson: 2,
 			maxPeopleOnOneTask: 2,
-			team: {
-				workingOutOfSpecialisationCoefficient: 50,
-			},
 			stats: {
 				noOfDaysForMovingAverage: 5,
 			},
@@ -30,6 +27,7 @@ function Simulation(hookSelector) {
 				},
 			},
 			team: {
+				workingOutOfSpecialisationCoefficient: 50,
 				analysis: {
 					headcount: 2,
 					columns: ['analysis'],
