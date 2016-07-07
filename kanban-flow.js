@@ -44,6 +44,26 @@ function Simulation(hookSelector) {
 					headcount: 1,
 					columns: ['deployment'],
 				},
+			},
+			tasks: {
+				arrivalStrategy: {
+					current: "up-to-limit",
+					configs: {
+						scrum: {
+							length: 10,
+							tasks: 55,
+							"include-existing": false,
+						},
+						"constant-push": {
+							demand: 5.5,
+						},
+						"random-push": {
+							demand: 5.5,
+							"batch-size": 1,
+						}
+					}
+				}
+				
 			}
 		};
 		this.listeners = {};
@@ -161,12 +181,12 @@ function Simulation(hookSelector) {
 		this.play();
 		this.time += 60/this.ticksPerHour;
 	}
-	
+					
 	this.temporalTaskStrategies = {
 		"scrum": function(createTaskFunction) {
-			var length = this.temporatTaskStrategyProperties['length'];
-			var tasks = this.temporatTaskStrategyProperties['tasks'];
-			var includeExisting = this.temporatTaskStrategyProperties['include-existing'];
+			var length = this.configuration.get('tasks.arrivalStrategy.configs.scrum.length');
+			var tasks = this.configuration.get('tasks.arrivalStrategy.configs.scrum.tasks');
+			var includeExisting = this.configuration.get('tasks.arrivalStrategy.configs.scrum.include-existing');
 			if  (includeExisting) tasks = tasks - this.board.getCurrentWip();
 			if (this.time / (60 * 8) % length == 0) {
 				for (var i = 0; i < tasks; i++) {
@@ -182,7 +202,7 @@ function Simulation(hookSelector) {
 			}
 		}.bind(this),
 		"constant-push": function(createTaskFunction) {
-			var demand = this.temporatTaskStrategyProperties['demand'];
+			var demand = this.configuration.get('tasks.arrivalStrategy.configs.constant-push.demand');
 			var ticksPerDay = 8 * this.ticksPerHour;
 			var distanceInTicks = ticksPerDay / demand;
 			var tickDuration = 60/this.ticksPerHour;
@@ -205,8 +225,8 @@ function Simulation(hookSelector) {
 				
 		}.bind(this),
 		"random-push": function(createTaskFunction) {
-			var demand = this.temporatTaskStrategyProperties['demand'];
-			var batchSize = this.temporatTaskStrategyProperties['batch-size'];
+			var demand = this.configuration.get('tasks.arrivalStrategy.configs.random-push.demand');
+			var batchSize = this.configuration.get('tasks.arrivalStrategy.configs.random-push.batch-size');
 			var ticksPerDay = 8 * this.ticksPerHour;
 			var probabilityOfSpawningNow = demand / ticksPerDay / batchSize;
 			if (Math.random() < probabilityOfSpawningNow) {
@@ -218,8 +238,6 @@ function Simulation(hookSelector) {
 			}
 		}.bind(this),
 	};
-	this.temporalTaskStrategy = "up-to-limit";
-	this.temporatTaskStrategyProperties = {};
 	
 	this.taskSizeStrategies = {
 		"constant": function(id, time) {
@@ -254,11 +272,6 @@ function Simulation(hookSelector) {
 	this.taskSizeStrategy = "constant";
 	this.taskSizeStrategyProperties = {};
 	
-	this.temporalTaskStrategyChanged = function(newStrategy, properties) {
-		this.temporalTaskStrategy = newStrategy;
-		this.temporatTaskStrategyProperties = properties;
-	}
-	
 	this.taskSizeStrategyChanged = function(newStrategy, properties) {
 		this.taskSizeStrategy = newStrategy;
 		this.taskSizeStrategyProperties = properties;
@@ -280,7 +293,7 @@ function Simulation(hookSelector) {
 	};
 
 	this.addNewTasks = function() {
-		this.temporalTaskStrategies[this.temporalTaskStrategy](this.taskSizeStrategies[this.taskSizeStrategy]);
+		this.temporalTaskStrategies[this.configuration.get("tasks.arrivalStrategy.current")](this.taskSizeStrategies[this.taskSizeStrategy]);
 	}
 	this.moveTasks = function(columns) {
 		var changed = true;

@@ -90,7 +90,7 @@
 						<table>
 							<tr>
 								<td>Task creation strategy</td>
-								<td><select class="backlog-settings-temporal-strategy">
+								<td><select class="backlog-settings-temporal-strategy" data-model="tasks.arrivalStrategy.current">
 								  <option value="up-to-limit">If Limit Allows</option>
 								  <option value="constant-push">Constant Push</option>
 								  <option value="random-push">Random Push</option>
@@ -99,27 +99,27 @@
 							</tr>
 							<tr data-for-option="constant-push">
 								<td>Constant demand level:</td>
-								<td><input type="text" value="5.5" data-property="demand"/> items/day</td>
+								<td><input type="text" value="5.5" data-model="tasks.arrivalStrategy.configs.constant-push.demand"/> items/day</td>
 							</tr>
 							<tr data-for-option="random-push">
 								<td>Variable demand level (around):</td>
-								<td><input type="text" value="5.5" data-property="demand"/> items/day</td>
+								<td><input type="text" value="5.5" data-model="tasks.arrivalStrategy.configs.random-push.demand"/> items/day</td>
 							</tr>
 							<tr data-for-option="random-push">
 								<td>Expected batch size (around):</td>
-								<td><input type="text" value="1" data-property="batch-size"/> items</td>
+								<td><input type="text" value="1" data-model="tasks.arrivalStrategy.configs.random-push.batch-size"/> items</td>
 							</tr>
 							<tr data-for-option="scrum">
 								<td>Iteration length:</td>
-								<td><input type="text" value="10" data-property="length"/> days</td>
+								<td><input type="text" value="10" data-model="tasks.arrivalStrategy.configs.scrum.length"/> days</td>
 							</tr>
 							<tr data-for-option="scrum">
 								<td>Tasks per iteration:</td>
-								<td><input type="text" value="55" data-property="tasks"/> tasks</td>
+								<td><input type="text" value="55" data-model="tasks.arrivalStrategy.configs.scrum.tasks"/> tasks</td>
 							</tr>
 							<tr data-for-option="scrum">
 								<td>Substract existing WIP from new tasks number?</td>
-								<td><input type="checkbox" data-property="include-existing"/></td>
+								<td><input type="checkbox" data-model="tasks.arrivalStrategy.configs.scrum.include-existing"/></td>
 							</tr>
 						</table>
 					</div>

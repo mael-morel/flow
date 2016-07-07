@@ -99,7 +99,6 @@ function GUI(hookSelector, simulation, cache, configuration) {
 	
 	this.updateColumnsAvailabilityCheckboxes = function() {
 		this.configuration.pauseListeners();
-		//$$(".headcount input[type=checkbox]").removeAttr('checked');
 		var specialisations = ['analysis', 'development', 'qa', 'deployment'];
 		for (var i=0; i < specialisations.length; i++) {
 			var checkboxes = $$(".headcount input[type=checkbox][data-column-permissions-specialist=" + specialisations[i] + "]");
@@ -129,34 +128,15 @@ function GUI(hookSelector, simulation, cache, configuration) {
 		this.configuration.onChange("team.qa.columns", this.updateColumnsAvailabilityCheckboxes.bind(this));
 		this.configuration.onChange("team.deployment.columns", this.updateColumnsAvailabilityCheckboxes.bind(this));
 		this.configuration.afterChange("stats.noOfDaysForMovingAverage", this.updateDiagramsDependingOnRunningAverage.bind(this));
+		this.configuration.onChange("tasks.arrivalStrategy.current", this.arrivalStrategyChanged.bind(this));
 	}
 	
 
 	
-	$$(".backlog-settings-temporal .backlog-settings-temporal-strategy").change(function(event) {
-		var newValue = event.target.value;
+	this.arrivalStrategyChanged = function(newValue) {
 		$$(".backlog-settings-temporal [data-for-option]").hide();
 		$$(".backlog-settings-temporal [data-for-option='" + newValue + "']").show();
-		var properties = {};
-		$$(".backlog-settings-temporal [data-for-option='" + newValue + "'] input").each(function() {
-			properties[this.dataset['property']] = this.type == 'checkbox' ? this.checked : this.value;
-		});
-		simulation.temporalTaskStrategyChanged(newValue, properties);
-		ga('send', {
-		  hitType: 'event',
-		  eventCategory: 'Backlog settings',
-		  eventAction: 'temporal',
-		  eventLabel: 'Temporal strategy',
-		});
-	});	
-	$$(".backlog-settings-temporal [data-for-option] input").change(function(event) {
-		var strategy = $(event.target).closest("[data-for-option]")[0].dataset["forOption"];
-		var properties = {};
-		$$(".backlog-settings-temporal [data-for-option='" + strategy + "'] input").each(function() {
-			properties[this.dataset['property']] = this.type == 'checkbox' ? this.checked : this.value;
-		});
-		simulation.temporalTaskStrategyChanged(strategy, properties);
-	});
+	}
 	
 	$$(".backlog-settings-task-size .backlog-settings-task-size-strategy").change(function(event) {
 		var newValue = event.target.value;
@@ -668,9 +648,17 @@ function GUI(hookSelector, simulation, cache, configuration) {
 	for (var i=0; i<bindedElements.length; i++) {
 		var $input = $(bindedElements[i]);
 		var key = $input.data("model");
-		$input.val(this.configuration.get(key));
+		if (bindedElements[i].type == "checkbox") {
+			if (this.configuration.get(key)) {
+				$input.attr("checked", "checked");
+			} else {
+				$input.removeAttr('checked');
+			}
+		} else {
+			$input.val(this.configuration.get(key));
+		}
 		$input.change(function(event) {
-			var newValue = event.target.value;
+			var newValue = event.target.type == "checkbox" ? event.target.checked : event.target.value;
 			var property = $(event.target).data("model");
 			this.configuration.set(property, newValue);
 			ga('send', {
