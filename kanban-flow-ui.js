@@ -15,12 +15,6 @@ function GUI(hookSelector, simulation, cache, configuration) {
 	
 	this.cache.put(hookSelector +' allColumns', $($$('.tasks td').get().reverse()).toArray());
 	this.renderTasks = true;
-	this.bindings = {
-		"input[type=text].headcount[data-headcount-for=analysis]": "team.analysis.headcount",
-		"input[type=text].headcount[data-headcount-for=development]": "team.development.headcount",
-		"input[type=text].headcount[data-headcount-for=qa]": "team.qa.headcount",
-		"input[type=text].headcount[data-headcount-for=deployment]": "team.deployment.headcount",
-	};
 
 	$$('.timescale').slider({
 		min: 50,
@@ -682,22 +676,7 @@ function GUI(hookSelector, simulation, cache, configuration) {
 		});
 		return html;
 	}
-	
-	for (var key in this.bindings) {
-		if (this.bindings.hasOwnProperty(key)) {
-			$$(key).val(this.configuration.get(this.bindings[key]));
-			$$(key).change({key: key}, function(event) {
-				var newValue = event.target.value;
-				var key = event.data.key;
-				this.configuration.set(this.bindings[key], newValue);
-				ga('send', {
-				  hitType: 'event',
-				  eventCategory: 'Configuration change',
-				  eventAction: this.bindings[key],
-				});
-			}.bind(this));
-		}
-	}
+
 	var bindedElements = $$("[data-model]");
 	for (var i=0; i<bindedElements.length; i++) {
 		var $input = $(bindedElements[i]);
@@ -705,11 +684,12 @@ function GUI(hookSelector, simulation, cache, configuration) {
 		$input.val(this.configuration.get(key));
 		$input.change(function(event) {
 			var newValue = event.target.value;
-			this.configuration.set($(event.target).data("model"), newValue);
+			var property = $(event.target).data("model");
+			this.configuration.set(property, newValue);
 			ga('send', {
 			  hitType: 'event',
 			  eventCategory: 'Configuration change',
-			  eventAction: this.bindings[key],
+			  eventAction: property,
 			});
 		}.bind(this));
 	}
