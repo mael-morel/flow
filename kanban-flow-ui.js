@@ -102,14 +102,48 @@ function GUI(hookSelector, simulation, cache, configuration) {
 		var checked = event.target.checked;
 		var column = $(event.target).data("columnPermissionsColumn");
 		var specialisation = $(event.target).data("columnPermissionsSpecialist");
-		simulation.updateColumnsAvailabilityForSpecialisation(specialisation, column, checked);
+		var collumnsAllowedToWorkIn = this.configuration.get("team."+specialisation+".columns");
+		var newArray;
+		if (checked) {
+			newArray = collumnsAllowedToWorkIn.slice();
+			newArray.push(column);
+		} else {
+			newArray = collumnsAllowedToWorkIn.slice();
+			newArray.splice(collumnsAllowedToWorkIn.indexOf(column), 1);
+		}
+		this.configuration.set("team." + specialisation + ".columns", newArray);
 		ga('send', {
 		  hitType: 'event',
-		  eventCategory: 'Column',
-		  eventAction: 'policy',
-		  eventLabel: 'Columns working policy',
+		  eventCategory: 'Configuration change',
+		  eventAction: "team."+specialisation+".columns",
 		});
-	});
+	}.bind(this));
+	
+	this.updateColumnsAvailabilityCheckboxes = function() {
+		this.configuration.pauseListeners();
+		//$$(".headcount input[type=checkbox]").removeAttr('checked');
+		var specialisations = ['analysis', 'development', 'qa', 'deployment'];
+		for (var i=0; i < specialisations.length; i++) {
+			var checkboxes = $$(".headcount input[type=checkbox][data-column-permissions-specialist=" + specialisations[i] + "]");
+			var checkboxesToCheck = this.configuration.get("team." + specialisations[i] + ".columns");
+			for (var j=0; j<checkboxes.length; j++) {
+				var checkbox = $(checkboxes[j]);//.filter("[data-column-permissions-column=" + checkboxesToCheck[j] + "]");
+				if (checkboxesToCheck.indexOf(checkbox.data("columnPermissionsColumn"))>=0) {
+					checkbox.attr('checked','checked');
+				} else {
+					checkbox.removeAttr('checked');
+				}
+				
+			}
+		}
+		this.configuration.activateListeners();
+	}
+	this.configuration.onChange("team.analysis.columns", this.updateColumnsAvailabilityCheckboxes.bind(this));
+	this.configuration.onChange("team.development.columns", this.updateColumnsAvailabilityCheckboxes.bind(this));
+	this.configuration.onChange("team.qa.columns", this.updateColumnsAvailabilityCheckboxes.bind(this));
+	this.configuration.onChange("team.deployment.columns", this.updateColumnsAvailabilityCheckboxes.bind(this));
+	
+	
 
 	$$(".simulation-settings-general .settings-no-of-days-for-stats").change(function(event) {
 		lastUpdatedLittlesDay = -1;

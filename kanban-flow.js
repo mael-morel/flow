@@ -32,19 +32,24 @@ function Simulation(hookSelector) {
 			team: {
 				analysis: {
 					headcount: 2,
+					columns: ['analysis'],
 				},
 				development: {
 					headcount: 5,
+					columns: ['development'],
 				},
 				qa: {
 					headcount: 3,
+					columns: ['qa'],
 				},
 				deployment: {
 					headcount: 1,
+					columns: ['deployment'],
 				},
 			}
 		};
 		this.listeners = {};
+		this.listenersActive = true;
 		
 		this.set = function(property, newValue) {
 			var path = property.split(".");
@@ -54,7 +59,7 @@ function Simulation(hookSelector) {
 			}
 			var oldValue = enclosingObject[path[path.length - 1]];
 			enclosingObject[path[path.length - 1]] = newValue;
-			if (oldValue != newValue && this.listeners[property]) {
+			if (this.listenersActive && oldValue != newValue && this.listeners[property]) {
 				for (var i=0; i< this.listeners[property].length; i++) {
 					this.listeners[property][i](newValue, property);
 				}
@@ -75,6 +80,13 @@ function Simulation(hookSelector) {
 				this.listeners[property] = listenersForProperty;
 			}
 			listenersForProperty.push(listenerFun);
+		}
+		
+		this.pauseListeners = function() {
+			this.listenersActive = false;
+		}
+		this.activateListeners = function() {
+			this.listenersActive = true;
 		}
 	}
 	this.configuration = new Configuration();
@@ -97,7 +109,8 @@ function Simulation(hookSelector) {
 		this.stats = new Stats(this, this.configuration);
 		this.team.initHeadcount();
 		this.gui.update(this.board, this.stats, true);
-		this.team.allowedToWorkIn = this.gui.getColumnsAvailability();
+		this.gui.updateColumnsAvailabilityCheckboxes();
+		//this.team.allowedToWorkIn = this.gui.getColumnsAvailability();
 		this.gui.initialiseBacklogStrategies();
 	}
 
@@ -380,12 +393,6 @@ function Simulation(hookSelector) {
 function Team(configuration) {
 	this.members = [];
 	this.removedButWorking = [];
-	this.allowedToWorkIn = {
-		'analysis': ['analysis'],
-		'development': ['development'],
-		'qa': ['qa'],
-		'deployment': ['deployment']
-	};
 	this.configuration = configuration;
 	
 	this.doWork = function(ticksPerHour) {
@@ -459,15 +466,6 @@ function Team(configuration) {
 		return result;
 	}
 	
-	this.updateColumnsAvailabilityForSpecialisation = function(specialisation, column, allowFlag) {
-		var collumnsAllowedToWorkIn = this.allowedToWorkIn[specialisation];
-		if (allowFlag) {
-			collumnsAllowedToWorkIn.push(column);
-		} else {
-			collumnsAllowedToWorkIn.splice(collumnsAllowedToWorkIn.indexOf(column), 1);
-		}
-	}
-	
 	this.updateHeadcount = function(newHeadcount, attributeChanged) {
 		var specialisation = attributeChanged.split(".")[1];
 		var specialists = this.members.filter(function (person) {
@@ -529,7 +527,7 @@ function Person(specialisation, team, configuration) {
 	}
 	
 	this.isAllowedToWorkIn = function(columnName) {
-		return this.team.allowedToWorkIn[this.specialisation].indexOf(columnName) != -1;
+		return this.configuration.get("team." + this.specialisation + ".columns").indexOf(columnName) != -1;
 	}
 } 
 
