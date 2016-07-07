@@ -1,9 +1,18 @@
 $(document).ready(function() {
-	new Simulation(".kanban-board");
+	var urlParam = function(name){
+		var results = new RegExp('[#]' + name + '=([^&#]*)').exec(window.location.href);
+		return results ? results[1] || null : null;
+	}
+	var config = {};
+	var configEncoded = urlParam("simulation-config");
+	if (configEncoded != null && configEncoded.length > 0) {
+		config = JSON.parse(atob(configEncoded));
+	}
+	new Simulation(".kanban-board", config);
 });
 
-function Simulation(hookSelector) {
-	function Configuration() {
+function Simulation(hookSelector, externalConfig) {
+	function Configuration(externalConfig) {
 		this.data = {
 			maxTasksOnOnePerson: 2,
 			maxPeopleOnOneTask: 2,
@@ -99,7 +108,8 @@ function Simulation(hookSelector) {
 					}
 				}
 			}
-		};
+		}
+		$.extend(this.data, externalConfig);
 			
 		this.listeners = {};
 		this.listenersAfter = {};
@@ -159,7 +169,7 @@ function Simulation(hookSelector) {
 			this.listenersAfter = {};
 		}
 	}
-	this.configuration = new Configuration();
+	this.configuration = new Configuration(externalConfig);
 	
 	this.hourLengthInSeconds = 1;
 	this.ticksPerHour = 12;

@@ -8,11 +8,19 @@
 
 </head>
 <body>
-	
+
 	<div class="iframe-div" >
-    	<iframe src="board.html" scrolling="no" frameborder="0" id="board-iframe"> </iframe>
+    	<iframe src="" scrolling="no" frameborder="0" id="board-iframe"> </iframe>
 
 	</div>
+	<script>
+	var urlParam = function(name){
+		var results = new RegExp('[#]' + name + '=([^&#]*)').exec(window.location.href);
+		return results ? results[1] || null : null;
+	}
+	var param = urlParam("simulation-config");
+	document.getElementById("board-iframe").src = "board.html#simulation-config=" + (param || "");
+	</script>
 	<script>
 	iFrameResize();
 	</script>
