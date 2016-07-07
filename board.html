@@ -52,11 +52,11 @@
 						<table>
 							<tr>
 								<td>Max WIP for a single person</td>
-								<td><input type="text" maxlength="2" value="2" class="settings-no-of-tasks"/></td>
+								<td><input type="text" maxlength="2" value="2" class="settings-no-of-tasks" data-model="maxTasksOnOnePerson"/></td>
 							</tr>
 							<tr>
 								<td>Max no. of people working on a single task</td>
-								<td><input type="text" maxlength="2" value="2" class="settings-no-of-people"/></td>
+								<td><input type="text" maxlength="2" value="2" class="settings-no-of-people" data-model="maxPeopleOnOneTask"/></td>
 							</tr>
 							<tr>
 								<td>Productivity when a person works in different column than their specialisation (%)</td>
@@ -68,7 +68,7 @@
 							</tr>
 							<tr>
 								<td>Prioritisation method</td>
-								<td><select class="settings-prioritisation-method">
+								<td><select class="settings-prioritisation-method" data-model="columns.prioritisationStrategy">
 								  <option value="fifo">FIFO</option>
 								  <option value="value">Value</option>
 								  <option value="cd3">CD3</option>
@@ -82,7 +82,7 @@
 	<div class="board-wrapper board-wrapper-max-height">
 	<table class="board">
 		<tr>
-			<th rowspan="2" class="inputHeader">Backlog <input type="text" class="wiplimit" maxlength="2" value=""/>
+			<th rowspan="2" class="inputHeader">Backlog <input type="text" class="wiplimit" maxlength="2" value="" data-model="columns.limits.input"/>
 				<br/>
 				<button type="button" class="btn backlog-settings"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span></button>
 				<div class="backlog-settings-div" style="display: none">
@@ -226,7 +226,7 @@
 					</div>
 				</div>
 			</th>
-			<th colspan="2" class="analysis analysisWithQueueHeader column-settings-header">Analysis <input type="text" class="wiplimit" maxlength="2" value="5"/><br/>
+			<th colspan="2" class="analysis analysisWithQueueHeader column-settings-header">Analysis <input type="text" class="wiplimit" maxlength="2" value="5" data-model="columns.limits.analysisWithQueue"/><br/>
 			 	<div class="column-settings"><span class="glyphicon glyphicon-user analysis"></span>X<input type="text" maxlength="2" value="2" class="headcount" data-headcount-for="analysis"/>
 				<div class="headcount-surrounding"><span class="headcount analysis"><input type="checkbox" checked data-column-permissions-column="analysis" data-column-permissions-specialist="analysis"/></span><span 
 					class="headcount development"><input type="checkbox" data-column-permissions-column="development" data-column-permissions-specialist="analysis"/></span><span 
@@ -234,7 +234,7 @@
 					class="headcount deployment"><input type="checkbox" class="deployment" data-column-permissions-column="deployment" data-column-permissions-specialist="analysis"/></span></div>
 			</div>
 		 	</th>
-			<th colspan="2" class="development developmentWithQueueHeader column-settings-header">Development <input type="text" class="wiplimit" maxlength="2" value="5"/><br/>
+			<th colspan="2" class="development developmentWithQueueHeader column-settings-header">Development <input type="text" class="wiplimit" maxlength="2" value="5" data-model="columns.limits.developmentWithQueue"/><br/>
 			 	<div class="column-settings"><span class="glyphicon glyphicon-user development"></span>X<input type="text" maxlength="2" value="5" class="headcount" data-headcount-for="development"/>
 				<div class="headcount-surrounding"><span class="headcount analysis"><input type="checkbox" data-column-permissions-column="analysis" data-column-permissions-specialist="development"/></span><span 
 					class="headcount development"><input type="checkbox" checked  data-column-permissions-column="development" data-column-permissions-specialist="development"/></span><span 
@@ -242,7 +242,7 @@
 					class="headcount deployment"><input type="checkbox" class="deployment" data-column-permissions-column="deployment" data-column-permissions-specialist="development"/></span></div>
 			</div>
 			</th>
-			<th colspan="2" class="qa qaWithQueueHeader column-settings-header">QA <input type="text" class="wiplimit" maxlength="2" value="3"/><br/>
+			<th colspan="2" class="qa qaWithQueueHeader column-settings-header">QA <input type="text" class="wiplimit" maxlength="2" value="3" data-model="columns.limits.qaWithQueue"/><br/>
 		 	<div class="column-settings"><span class="glyphicon glyphicon-user qa"></span>X<input type="text" maxlength="2" value="3" class="headcount" data-headcount-for="qa"/>
 			<div class="headcount-surrounding"><span class="headcount analysis"><input type="checkbox"  data-column-permissions-column="analysis" data-column-permissions-specialist="qa"/></span><span 
 				class="headcount development"><input type="checkbox" data-column-permissions-column="development" data-column-permissions-specialist="qa"/></span><span 
@@ -260,13 +260,13 @@
 			</th>
 		</tr>
 		<tr>
-			<th class="analysis analysisHeader">Doing <input type="text" class="wiplimit" maxlength="2"/></th>
-			<th class="analysis analysisDoneHeader">Done <input type="text" class="wiplimit" maxlength="2"/></th>
-			<th class="development developmentHeader">Doing <input type="text" class="wiplimit" maxlength="2"/></th>
-			<th class="development developmentDoneHeader">Done <input type="text" class="wiplimit" maxlength="2"/></th>
-			<th class="qa qaHeader">Doing <input type="text" class="wiplimit" maxlength="2"/></th>
-			<th class="qa qaDoneHeader">Done <input type="text" class="wiplimit" maxlength="2"/></th>
-			<th class="deployment deploymentHeader">Doing <input type="text" class="wiplimit" maxlength="2" value="5"/></th>
+			<th class="analysis analysisHeader">Doing <input type="text" class="wiplimit" maxlength="2" data-model="columns.limits.analysis"/></th>
+			<th class="analysis analysisDoneHeader">Done <input type="text" class="wiplimit" maxlength="2" data-model="columns.limits.analysisDone"/></th>
+			<th class="development developmentHeader">Doing <input type="text" class="wiplimit" maxlength="2" data-model="columns.limits.development"/></th>
+			<th class="development developmentDoneHeader">Done <input type="text" class="wiplimit" maxlength="2" data-model="columns.limits.developmentDone"/></th>
+			<th class="qa qaHeader">Doing <input type="text" class="wiplimit" maxlength="2" data-model="columns.limits.qa"/></th>
+			<th class="qa qaDoneHeader">Done <input type="text" class="wiplimit" maxlength="2" data-model="columns.limits.qaDone"/></th>
+			<th class="deployment deploymentHeader">Doing <input type="text" class="wiplimit" maxlength="2" value="5" data-model="columns.limits.deployment"/></th>
 			<th class="deployment">Done</th>
 		</tr>
 	

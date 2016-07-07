@@ -16,22 +16,6 @@ function GUI(hookSelector, simulation, cache, configuration) {
 	this.cache.put(hookSelector +' allColumns', $($$('.tasks td').get().reverse()).toArray());
 	this.renderTasks = true;
 	this.bindings = {
-		//".simulation-settings-general .settings-no-of-days-for-stats": "stats.noOfDaysForMovingAverage",
-		".simulation-settings-general .settings-no-of-tasks": "maxTasksOnOnePerson",
-		".simulation-settings-general .settings-no-of-people": "maxPeopleOnOneTask",
-		//".simulation-settings-general .settings-productivity-of-working-not-in-specialisation": "team.workingOutOfSpecialisationCoefficient",
-		".simulation-settings-general .settings-prioritisation-method": "columns.prioritisationStrategy",
-		".inputHeader input.wiplimit": "columns.limits.input",
-		".analysisHeader input.wiplimit": "columns.limits.analysis",
-		".analysisDoneHeader input.wiplimit": "columns.limits.analysisDone",
-		".analysisWithQueueHeader input.wiplimit": "columns.limits.analysisWithQueue",
-		".developmentHeader input.wiplimit": "columns.limits.development",
-		".developmentDoneHeader input.wiplimit": "columns.limits.developmentDone",
-		".developmentWithQueueHeader input.wiplimit": "columns.limits.developmentWithQueue",
-		".qaHeader input.wiplimit": "columns.limits.qa",
-		".qaDoneHeader input.wiplimit": "columns.limits.qaDone",
-		".qaWithQueueHeader input.wiplimit": "columns.limits.qaWithQueue",
-		".deploymentHeader input.wiplimit": "columns.limits.deployment",
 		"input[type=text].headcount[data-headcount-for=analysis]": "team.analysis.headcount",
 		"input[type=text].headcount[data-headcount-for=development]": "team.development.headcount",
 		"input[type=text].headcount[data-headcount-for=qa]": "team.qa.headcount",
