@@ -145,11 +145,13 @@ function GUI(hookSelector, simulation, cache, configuration) {
 		updateCod(this.simulation.time, this.simulation.stats, true);
 	}
 	
-	this.configuration.onChange("team.analysis.columns", this.updateColumnsAvailabilityCheckboxes.bind(this));
-	this.configuration.onChange("team.development.columns", this.updateColumnsAvailabilityCheckboxes.bind(this));
-	this.configuration.onChange("team.qa.columns", this.updateColumnsAvailabilityCheckboxes.bind(this));
-	this.configuration.onChange("team.deployment.columns", this.updateColumnsAvailabilityCheckboxes.bind(this));
-	this.configuration.afterChange("stats.noOfDaysForMovingAverage", this.updateDiagramsDependingOnRunningAverage.bind(this));
+	this.registerConfigurationOnChangeListeners = function() {
+		this.configuration.onChange("team.analysis.columns", this.updateColumnsAvailabilityCheckboxes.bind(this));
+		this.configuration.onChange("team.development.columns", this.updateColumnsAvailabilityCheckboxes.bind(this));
+		this.configuration.onChange("team.qa.columns", this.updateColumnsAvailabilityCheckboxes.bind(this));
+		this.configuration.onChange("team.deployment.columns", this.updateColumnsAvailabilityCheckboxes.bind(this));
+		this.configuration.afterChange("stats.noOfDaysForMovingAverage", this.updateDiagramsDependingOnRunningAverage.bind(this));
+	}
 	
 
 	

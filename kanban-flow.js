@@ -99,6 +99,10 @@ function Simulation(hookSelector) {
 		this.activateListeners = function() {
 			this.listenersActive = true;
 		}
+		this.clearListeners = function() {
+			this.listeners = {};
+			this.listenersAfter = {};
+		}
 	}
 	this.configuration = new Configuration();
 	
@@ -113,12 +117,14 @@ function Simulation(hookSelector) {
 	this.team;
 
 	this.initBasics = function() {
+		this.configuration.clearListeners();
 		this.time = 0;
 		this.taskCounter = 1;
 		this.team = new Team(this.configuration);
 		this.board = new Board(this.ticksPerHour, this);
 		this.stats = new Stats(this, this.configuration);
 		this.team.initHeadcount();
+		this.gui.registerConfigurationOnChangeListeners();
 		this.gui.update(this.board, this.stats, true);
 		this.gui.updateColumnsAvailabilityCheckboxes();
 		//this.team.allowedToWorkIn = this.gui.getColumnsAvailability();
