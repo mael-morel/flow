@@ -127,7 +127,6 @@ function Simulation(hookSelector) {
 		this.gui.registerConfigurationOnChangeListeners();
 		this.gui.update(this.board, this.stats, true);
 		this.gui.updateColumnsAvailabilityCheckboxes();
-		//this.team.allowedToWorkIn = this.gui.getColumnsAvailability();
 		this.gui.initialiseBacklogStrategies();
 	}
 

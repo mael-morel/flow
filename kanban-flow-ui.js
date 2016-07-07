@@ -105,7 +105,7 @@ function GUI(hookSelector, simulation, cache, configuration) {
 			var checkboxes = $$(".headcount input[type=checkbox][data-column-permissions-specialist=" + specialisations[i] + "]");
 			var checkboxesToCheck = this.configuration.get("team." + specialisations[i] + ".columns");
 			for (var j=0; j<checkboxes.length; j++) {
-				var checkbox = $(checkboxes[j]);//.filter("[data-column-permissions-column=" + checkboxesToCheck[j] + "]");
+				var checkbox = $(checkboxes[j]);
 				if (checkboxesToCheck.indexOf(checkbox.data("columnPermissionsColumn"))>=0) {
 					checkbox.attr('checked','checked');
 				} else {
@@ -495,19 +495,6 @@ function GUI(hookSelector, simulation, cache, configuration) {
 	$$(".board th.column-settings-header").mouseleave(function() {
 		$$('.column-settings').hide();
 	});
-	
-	this.getColumnsAvailability = function() {
-		var checkboxes = $$(".headcount input[type=checkbox]").toArray();
-		var result = {'development': [], 'analysis': [], 'qa': [], 'deployment': []};
-		checkboxes.forEach(function (checkbox) {
-			if(checkbox.checked) {
-				var column = $(checkbox).data("columnPermissionsColumn");
-				var specialisation = $(checkbox).data("columnPermissionsSpecialist");
-				result[specialisation].push(column);
-			}	
-		});
-		return result;
-	}
 	
 	this.update = function(board, stats, force) {
 		var now = Date.now();
