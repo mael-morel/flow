@@ -75,22 +75,15 @@ function GUI(hookSelector, simulation, cache, configuration) {
 		window.top.location = "https://mgajdzik.com/kanban-flow-simulator/help/";
 	});
 	
-	$$(".simulation-get-link").click(function() {
+	this.updateURL = function() {
 		var url = "" + window.top.location;
 		url = url.replace(/simulation-config=[a-zA-Z=0-9]*/, "");
 		if (url.indexOf("#") == -1) url = url + "#";
 		url = url + "simulation-config=";
 		url = url + btoa(JSON.stringify(this.configuration.data));
-		var copy = function (text) {
-		  var $temp = $("<input>");
-		  $("body").append($temp);
-		  $temp.val(text).select();
-		  document.execCommand("copy");
-		  $temp.remove();
-		}
-		copy(url);
-	}.bind(this));
-
+		window.top.location = url;
+	}
+	
 	$$(".headcount input[type=checkbox]").change(function(event){
 		var checkbox = event.target;
 		var checked = event.target.checked;
@@ -106,6 +99,7 @@ function GUI(hookSelector, simulation, cache, configuration) {
 			newArray.splice(collumnsAllowedToWorkIn.indexOf(column), 1);
 		}
 		this.configuration.set("team." + specialisation + ".columns", newArray);
+		this.updateURL();
 		ga('send', {
 		  hitType: 'event',
 		  eventCategory: 'Configuration change',
@@ -659,6 +653,7 @@ function GUI(hookSelector, simulation, cache, configuration) {
 			}
 			var property = $(event.target).data("model");
 			this.configuration.set(property, newValue);
+			this.updateURL();
 			ga('send', {
 			  hitType: 'event',
 			  eventCategory: 'Configuration change',
@@ -666,8 +661,6 @@ function GUI(hookSelector, simulation, cache, configuration) {
 			});
 		}.bind(this));
 	}
-	
-	$$('[data-toggle="tooltip"]').tooltip();
 }
 
 function Cache() {
