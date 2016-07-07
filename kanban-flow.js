@@ -182,7 +182,7 @@ function Simulation(hookSelector) {
 		this.time += 60/this.ticksPerHour;
 	}
 					
-	this.temporalTaskStrategies = {
+	this.taskArrivalStrategies = {
 		"scrum": function(createTaskFunction) {
 			var length = this.configuration.get('tasks.arrivalStrategy.configs.scrum.length');
 			var tasks = this.configuration.get('tasks.arrivalStrategy.configs.scrum.tasks');
@@ -293,7 +293,7 @@ function Simulation(hookSelector) {
 	};
 
 	this.addNewTasks = function() {
-		this.temporalTaskStrategies[this.configuration.get("tasks.arrivalStrategy.current")](this.taskSizeStrategies[this.taskSizeStrategy]);
+		this.taskArrivalStrategies[this.configuration.get("tasks.arrivalStrategy.current")](this.taskSizeStrategies[this.taskSizeStrategy]);
 	}
 	this.moveTasks = function(columns) {
 		var changed = true;
