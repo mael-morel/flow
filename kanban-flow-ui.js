@@ -129,43 +129,22 @@ function GUI(hookSelector, simulation, cache, configuration) {
 		this.configuration.onChange("team.deployment.columns", this.updateColumnsAvailabilityCheckboxes.bind(this));
 		this.configuration.afterChange("stats.noOfDaysForMovingAverage", this.updateDiagramsDependingOnRunningAverage.bind(this));
 		this.configuration.onChange("tasks.arrivalStrategy.current", this.arrivalStrategyChanged.bind(this));
+		this.configuration.onChange("tasks.sizeStrategy.current", this.sizeStrategyChanged.bind(this));
 	}
-	
-
 	
 	this.arrivalStrategyChanged = function(newValue) {
 		$$(".backlog-settings-temporal [data-for-option]").hide();
 		$$(".backlog-settings-temporal [data-for-option='" + newValue + "']").show();
 	}
 	
-	$$(".backlog-settings-task-size .backlog-settings-task-size-strategy").change(function(event) {
-		var newValue = event.target.value;
+	this.sizeStrategyChanged = function(newValue) {
 		$$(".backlog-settings-task-size [data-for-option]").hide();
 		$$(".backlog-settings-task-size [data-for-option='" + newValue + "']").show();
-		var properties = {};
-		$$(".backlog-settings-task-size [data-for-option='" + newValue + "'] input").each(function() {
-			properties[this.dataset['property']] = this.type == 'checkbox' ? this.checked : this.value;
-		});
-		simulation.taskSizeStrategyChanged(newValue, properties);
-		ga('send', {
-		  hitType: 'event',
-		  eventCategory: 'Backlog settings',
-		  eventAction: 'size',
-		  eventLabel: 'Size strategy',
-		});
-	});	
-	
-	$$(".backlog-settings-task-size [data-for-option] input").change(function(event) {
-		var strategy = $(event.target).closest("[data-for-option]")[0].dataset["forOption"];
-		var properties = {};
-		$$(".backlog-settings-task-size [data-for-option='" + strategy + "'] input").each(function() {
-			properties[this.dataset['property']] = this.type == 'checkbox' ? this.checked : this.value;
-		});
-		simulation.taskSizeStrategyChanged(strategy, properties);
-	});
-	
+	}	
+
 	this.initialiseBacklogStrategies = function() {
-		$$(".backlog-settings-task-size .backlog-settings-task-size-strategy").change();
+		this.arrivalStrategyChanged(this.configuration.get("tasks.arrivalStrategy.current"));
+		this.sizeStrategyChanged(this.configuration.get("tasks.sizeStrategy.current"));
 	}
 	
 	var currentlySelected = 0;
@@ -659,6 +638,9 @@ function GUI(hookSelector, simulation, cache, configuration) {
 		}
 		$input.change(function(event) {
 			var newValue = event.target.type == "checkbox" ? event.target.checked : event.target.value;
+			if (typeof newValue == "string" && !isNaN(parseFloat(newValue))) {
+				newValue = parseFloat(newValue);
+			}
 			var property = $(event.target).data("model");
 			this.configuration.set(property, newValue);
 			ga('send', {

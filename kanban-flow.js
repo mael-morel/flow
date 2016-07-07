@@ -62,10 +62,45 @@ function Simulation(hookSelector) {
 							"batch-size": 1,
 						}
 					}
+				},
+				sizeStrategy: {
+					current: "constant",
+					configs: {
+						constant: {
+							analysis: 2,
+							development: 7,
+							qa: 4,
+							deployment: 1,
+						},
+						normal: {
+							analysis: 2,
+							development: 7,
+							qa: 4,
+							deployment: 1,
+							"analysis-variation": 2,
+							"development-variation": 4,
+							"qa-variation": 3,
+							"deployment-variation": 2,
+						},
+						tshirt: {
+							analysis: 14,
+							development: 50,
+							qa: 28,
+							deployment: 8,
+							"small-probability": 45,
+							"medium-probability": 30,
+							"large-probability": 20,
+							"xlarge-probability": 5,
+							"small-effort": 3,
+							"medium-effort": 10,
+							"large-effort": 25,
+							"xlarge-effort": 75,
+						}
+					}
 				}
-				
 			}
 		};
+			
 		this.listeners = {};
 		this.listenersAfter = {};
 		this.listenersActive = true;
@@ -241,26 +276,29 @@ function Simulation(hookSelector) {
 	
 	this.taskSizeStrategies = {
 		"constant": function(id, time) {
-			return new Task(id, time, this.taskSizeStrategyProperties["analysis"], this.taskSizeStrategyProperties["development"], this.taskSizeStrategyProperties["qa"], this.taskSizeStrategyProperties["deployment"]);
+			var conf = this.configuration.get("tasks.sizeStrategy.configs.constant");
+			return new Task(id, time, conf.analysis, conf.development, conf.qa, conf.deployment);
 		}.bind(this), 
 		"normal": function(id, time) {
-			return new Task(id, time, normal_random(this.taskSizeStrategyProperties["analysis"], this.taskSizeStrategyProperties["analysis-variation"]), normal_random(this.taskSizeStrategyProperties["development"], this.taskSizeStrategyProperties["development-variation"]), normal_random(this.taskSizeStrategyProperties["qa"], this.taskSizeStrategyProperties["qa-variation"]), normal_random(this.taskSizeStrategyProperties["deployment"], this.taskSizeStrategyProperties["deployment-variation"]));
+			var conf = this.configuration.get("tasks.sizeStrategy.configs.normal");
+			return new Task(id, time, normal_random(conf["analysis"], conf["analysis-variation"]), normal_random(conf["development"], conf["development-variation"]), normal_random(conf["qa"], conf["qa-variation"]), normal_random(conf["deployment"], conf["deployment-variation"]));
 		}.bind(this),
 		"tshirt": function(id, time) {
-			var smallProbability = parseFloat(this.taskSizeStrategyProperties["small-probability"]);
-			var mediumProbability = parseFloat(this.taskSizeStrategyProperties["medium-probability"]);
-			var largeProbability = parseFloat(this.taskSizeStrategyProperties["large-probability"]);
-			var xlargeProbability = parseFloat(this.taskSizeStrategyProperties["xlarge-probability"]);
+			var conf = this.configuration.get("tasks.sizeStrategy.configs.tshirt");
+			var smallProbability = parseFloat(conf["small-probability"]);
+			var mediumProbability = parseFloat(conf["medium-probability"]);
+			var largeProbability = parseFloat(conf["large-probability"]);
+			var xlargeProbability = parseFloat(conf["xlarge-probability"]);
 			var tshirtSizeRandom = Math.random() * (smallProbability + mediumProbability + largeProbability + xlargeProbability);
 			var size = "small";
 			if (tshirtSizeRandom > smallProbability) size = "medium";
 			if (tshirtSizeRandom > smallProbability + mediumProbability) size = "large";
 			if (tshirtSizeRandom > smallProbability + mediumProbability + largeProbability) size = "xlarge";
-			var totalSize = parseFloat(this.taskSizeStrategyProperties[size + "-effort"]);
-			var analysis = parseFloat(this.taskSizeStrategyProperties["analysis"]);
-			var development = parseFloat(this.taskSizeStrategyProperties["development"]);
-			var qa = parseFloat(this.taskSizeStrategyProperties["qa"]);
-			var deployment = parseFloat(this.taskSizeStrategyProperties["deployment"]);
+			var totalSize = parseFloat(conf[size + "-effort"]);
+			var analysis = parseFloat(conf["analysis"]);
+			var development = parseFloat(conf["development"]);
+			var qa = parseFloat(conf["qa"]);
+			var deployment = parseFloat(conf["deployment"]);
 			var sum = analysis + development + qa + deployment;
 			analysis = totalSize * analysis / sum;
 			development = totalSize * development / sum;
@@ -269,13 +307,6 @@ function Simulation(hookSelector) {
 			return new Task(id, time, normal_random(analysis, analysis / 2), normal_random(development, development / 2),normal_random(qa, qa / 2),normal_random(deployment, deployment / 2));
 		}.bind(this),
 	};
-	this.taskSizeStrategy = "constant";
-	this.taskSizeStrategyProperties = {};
-	
-	this.taskSizeStrategyChanged = function(newStrategy, properties) {
-		this.taskSizeStrategy = newStrategy;
-		this.taskSizeStrategyProperties = properties;
-	}
 	
 	this.prioritisationStrategies = {
 		fifo: function(tasksList) {
@@ -293,7 +324,9 @@ function Simulation(hookSelector) {
 	};
 
 	this.addNewTasks = function() {
-		this.taskArrivalStrategies[this.configuration.get("tasks.arrivalStrategy.current")](this.taskSizeStrategies[this.taskSizeStrategy]);
+		var sizeStrategy = this.configuration.get("tasks.sizeStrategy.current");
+		var arrivalStrategy = this.configuration.get("tasks.arrivalStrategy.current");
+		this.taskArrivalStrategies[arrivalStrategy](this.taskSizeStrategies[sizeStrategy]);
 	}
 	this.moveTasks = function(columns) {
 		var changed = true;
