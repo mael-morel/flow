@@ -47,6 +47,7 @@ function Simulation(hookSelector) {
 			}
 		};
 		this.listeners = {};
+		this.listenersAfter = {};
 		this.listenersActive = true;
 		
 		this.set = function(property, newValue) {
@@ -57,10 +58,16 @@ function Simulation(hookSelector) {
 			}
 			var oldValue = enclosingObject[path[path.length - 1]];
 			enclosingObject[path[path.length - 1]] = newValue;
-			if (this.listenersActive && oldValue != newValue && this.listeners[property]) {
-				for (var i=0; i< this.listeners[property].length; i++) {
-					this.listeners[property][i](newValue, property);
+			if (this.listenersActive && oldValue != newValue) {
+				var launchListeners = function(list) {
+					if (list[property]) {
+						for (var i=0; i<list[property].length; i++) {
+							list[property][i](newValue, property);
+						}
+					}
 				}
+				launchListeners(this.listeners);
+				launchListeners(this.listenersAfter);
 			}
 		}
 		this.get = function(property) {
@@ -72,10 +79,16 @@ function Simulation(hookSelector) {
 			return enclosingObject[path[path.length - 1]];
 		}
 		this.onChange = function(property, listenerFun) {
-			var listenersForProperty = this.listeners[property];
+			this._onChange(property, listenerFun, this.listeners);
+		}
+		this.afterChange = function(property, listenerFun) {
+			this._onChange(property, listenerFun, this.listenersAfter);
+		}
+		this._onChange = function(property, listenerFun, list) {
+			var listenersForProperty = list[property];
 			if (!listenersForProperty) {
 				listenersForProperty = [];
-				this.listeners[property] = listenersForProperty;
+				list[property] = listenersForProperty;
 			}
 			listenersForProperty.push(listenerFun);
 		}
@@ -244,10 +257,6 @@ function Simulation(hookSelector) {
 	this.taskSizeStrategyChanged = function(newStrategy, properties) {
 		this.taskSizeStrategy = newStrategy;
 		this.taskSizeStrategyProperties = properties;
-	}
-	
-	this.changeNoOfDaysForCountingAverages = function(newNoOfDays) {
-		this.stats.changeNoOfDaysForCountingAverages(newNoOfDays);
 	}
 	
 	this.prioritisationStrategies = {

@@ -16,10 +16,10 @@ function GUI(hookSelector, simulation, cache, configuration) {
 	this.cache.put(hookSelector +' allColumns', $($$('.tasks td').get().reverse()).toArray());
 	this.renderTasks = true;
 	this.bindings = {
-		".simulation-settings-general .settings-no-of-days-for-stats": "stats.noOfDaysForMovingAverage",
+		//".simulation-settings-general .settings-no-of-days-for-stats": "stats.noOfDaysForMovingAverage",
 		".simulation-settings-general .settings-no-of-tasks": "maxTasksOnOnePerson",
 		".simulation-settings-general .settings-no-of-people": "maxPeopleOnOneTask",
-		".simulation-settings-general .settings-productivity-of-working-not-in-specialisation": "team.workingOutOfSpecialisationCoefficient",
+		//".simulation-settings-general .settings-productivity-of-working-not-in-specialisation": "team.workingOutOfSpecialisationCoefficient",
 		".simulation-settings-general .settings-prioritisation-method": "columns.prioritisationStrategy",
 		".inputHeader input.wiplimit": "columns.limits.input",
 		".analysisHeader input.wiplimit": "columns.limits.analysis",
@@ -138,19 +138,20 @@ function GUI(hookSelector, simulation, cache, configuration) {
 		}
 		this.configuration.activateListeners();
 	}
-	this.configuration.onChange("team.analysis.columns", this.updateColumnsAvailabilityCheckboxes.bind(this));
-	this.configuration.onChange("team.development.columns", this.updateColumnsAvailabilityCheckboxes.bind(this));
-	this.configuration.onChange("team.qa.columns", this.updateColumnsAvailabilityCheckboxes.bind(this));
-	this.configuration.onChange("team.deployment.columns", this.updateColumnsAvailabilityCheckboxes.bind(this));
-	
-	
-
-	$$(".simulation-settings-general .settings-no-of-days-for-stats").change(function(event) {
+	this.updateDiagramsDependingOnRunningAverage = function() {
 		lastUpdatedLittlesDay = -1;
 		updateLittles(this.simulation.time, this.simulation.stats);
 		lastUpdatedCodDay = -1;
 		updateCod(this.simulation.time, this.simulation.stats, true);
-	}.bind(this));
+	}
+	
+	this.configuration.onChange("team.analysis.columns", this.updateColumnsAvailabilityCheckboxes.bind(this));
+	this.configuration.onChange("team.development.columns", this.updateColumnsAvailabilityCheckboxes.bind(this));
+	this.configuration.onChange("team.qa.columns", this.updateColumnsAvailabilityCheckboxes.bind(this));
+	this.configuration.onChange("team.deployment.columns", this.updateColumnsAvailabilityCheckboxes.bind(this));
+	this.configuration.afterChange("stats.noOfDaysForMovingAverage", this.updateDiagramsDependingOnRunningAverage.bind(this));
+	
+
 	
 	$$(".backlog-settings-temporal .backlog-settings-temporal-strategy").change(function(event) {
 		var newValue = event.target.value;
@@ -528,15 +529,6 @@ function GUI(hookSelector, simulation, cache, configuration) {
 		return result;
 	}
 	
-	this.getGeneralSettings = function() {
-		var result = {};
-		result['maxTasksOnOnePerson'] = $$(".simulation-settings-general .settings-no-of-tasks")[0].value;
-		result['maxPeopleOnOneTask'] = $$(".simulation-settings-general .settings-no-of-people")[0].value;
-		result['noOfDaysForCountingAverages'] = $$(".simulation-settings-general .settings-no-of-days-for-stats")[0].value;
-		result['productivityOfWorkingNotInSpecialisation'] = $$(".simulation-settings-general .settings-productivity-of-working-not-in-specialisation")[0].value;
-		return result;
-	}
-	
 	this.update = function(board, stats, force) {
 		var now = Date.now();
 		if (!force && now - this.lastUpdated < 1000/this.fps) return;
@@ -719,6 +711,21 @@ function GUI(hookSelector, simulation, cache, configuration) {
 				});
 			}.bind(this));
 		}
+	}
+	var bindedElements = $$("[data-model]");
+	for (var i=0; i<bindedElements.length; i++) {
+		var $input = $(bindedElements[i]);
+		var key = $input.data("model");
+		$input.val(this.configuration.get(key));
+		$input.change(function(event) {
+			var newValue = event.target.value;
+			this.configuration.set($(event.target).data("model"), newValue);
+			ga('send', {
+			  hitType: 'event',
+			  eventCategory: 'Configuration change',
+			  eventAction: this.bindings[key],
+			});
+		}.bind(this));
 	}
 }
 
