@@ -15,7 +15,22 @@ function GUI(hookSelector, simulation, cache, configuration) {
 	
 	this.cache.put(hookSelector +' allColumns', $($$('.tasks td').get().reverse()).toArray());
 	this.renderTasks = true;
+	var animate = true;
 
+	function adjustTempo(sliderValue) {
+		simulation.hourLengthInSeconds = 100 / sliderValue;
+		if (simulation.hourLengthInSeconds < 0.3) {
+			if (animate) {
+				turnOffAnimations();
+			}
+			animate = false;
+		} else {
+			if (!animate) {
+				turnOnAnimations();
+			}
+			animate = true;
+		}
+	}
 	$$('.timescale').slider({
 		min: 50,
 		max: 100000,
@@ -24,9 +39,9 @@ function GUI(hookSelector, simulation, cache, configuration) {
 		value: 100,
 		tooltip: 'hide',
 	}).on("slide", function(event) {
-		simulation.hourLengthInSeconds = 100 / event.value;
+		adjustTempo(event.value);
 	}).on("slideStop", function(event) {
-		simulation.hourLengthInSeconds = 100 / event.value;
+		adjustTempo(event.value);
 		ga('send', {
 		  hitType: 'event',
 		  eventCategory: 'Control',
@@ -35,6 +50,13 @@ function GUI(hookSelector, simulation, cache, configuration) {
 		  eventValue: simulation.hourLengthInSeconds
 		});
 	});
+	
+	function turnOffAnimations() {
+		$$(".task").removeClass("task-animation");
+	}
+	function turnOnAnimations() {
+		$$(".task").addClass("task-animation");
+	}
 
 	$$(".stop").click(function() {
 		simulation.stop();
@@ -619,7 +641,7 @@ function GUI(hookSelector, simulation, cache, configuration) {
 	};
 	
 	function createTaskDiv(task) {
-		var html = "<div class='task " + task.id + "'>" + task.label + " <div class='task-status'>" + createStatusSpan(task.peopleAssigned)+ "</div><div class='progress'><div class='progress-bar progress-bar-info' style='width:100%'/></div></div>";
+		var html = "<div class='task " + task.id + (animate?" task-animation" : "") + "'>" + task.label + " <div class='task-status'>" + createStatusSpan(task.peopleAssigned)+ "</div><div class='progress'><div class='progress-bar progress-bar-info' style='width:100%'/></div></div>";
 		return $(html).data("taskReference", task);
 	}
 	function createStatusSpan(peopleWorkingOn) {

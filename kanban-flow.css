@@ -47,17 +47,24 @@
 	    border-color: black;
 	    border-width: thin;
 		text-align: center;
-	    -webkit-animation-name: taskAnimation; /* Chrome, Safari, Opera */
-	     -webkit-animation-duration: .2s; /* Chrome, Safari, Opera */
-	     animation-name: taskAnimation;
-	     animation-duration: .2s;
 		 position:relative;
 	}
+.task-animation {
+    -webkit-animation-name: taskAnimation; /* Chrome, Safari, Opera */
+     -webkit-animation-duration: .2s; /* Chrome, Safari, Opera */
+     animation-name: taskAnimation;
+     animation-duration: .2s;
+}
 .task .progress {
     height: 6px;
     margin-bottom: 0px;
 }
-.task .progress-bar {
+.progress-bar {
+    -webkit-transition: width 0s ease;
+    -o-transition: width 0s ease;
+    transition: width 0s ease;
+}
+.task-animation .progress-bar {
     -webkit-transition: width .1s ease;
     -o-transition: width .1s ease;
     transition: width 0.1s ease;
