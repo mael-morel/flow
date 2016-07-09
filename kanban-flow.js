@@ -114,8 +114,10 @@ function Simulation(hookSelector, externalConfig) {
 		this.listeners = {};
 		this.listenersAfter = {};
 		this.listenersActive = true;
+		this.cache = {};
 		
 		this.set = function(property, newValue) {
+			this.cache = {};
 			var path = property.split(".");
 			var enclosingObject = this.data;
 			for (var i=0; i < path.length - 1; i++) {
@@ -136,12 +138,18 @@ function Simulation(hookSelector, externalConfig) {
 			}
 		}
 		this.get = function(property) {
+			var cached = this.cache[property];
+			if (cached != undefined) {
+				return cached;
+			} 
 			var path = property.split(".");
 			var enclosingObject = this.data;
 			for (var i=0; i < path.length - 1; i++) {
 				enclosingObject = enclosingObject[path[i]];
 			}
-			return enclosingObject[path[path.length - 1]];
+			var value = enclosingObject[path[path.length - 1]];
+			this.cache[property] = value;
+			return value;
 		}
 		this.onChange = function(property, listenerFun) {
 			this._onChange(property, listenerFun, this.listeners);
@@ -219,7 +227,6 @@ function Simulation(hookSelector, externalConfig) {
 		this.doWork();
 		this.moveTasks(this.board.columns);
 		this.assignTeamMembersToTasks();
-		this.board.accumulateCod();
 		this.stats.recalculateStats(this);
 		this.removeDoneTasks();
 		this.gui.update(this.board, this.stats);
@@ -342,8 +349,10 @@ function Simulation(hookSelector, externalConfig) {
 		var changed = true;
 		while (changed) {
 			changed = false;
-			columns.forEach(function(column) {
-				column.tasks.forEach(function(task) {
+			for (var i=0; i<columns.length; i++) {
+				var column = columns[i];
+				for (var j=0; j<column.tasks.length; j++) {
+					var task = column.tasks[j];
 					if (task.finished()) {
 						var nextColumn = this.findNextColumn(task, columns);
 						if (nextColumn != column) {
@@ -351,8 +360,8 @@ function Simulation(hookSelector, externalConfig) {
 							column.moveTaskTo(task, nextColumn);
 						}
 					}
-				}.bind(this));
-			}.bind(this));
+				}
+			}
 		}
 	}
 	
@@ -362,7 +371,7 @@ function Simulation(hookSelector, externalConfig) {
 
 	this.findNextColumn = function(task, columns) {
 		var column = task.column;
-		var index = columns.indexOf(column);
+		var index = column.index;
 		while (column && task.finished(column) && (!columns[index + 1] || columns[index + 1].availableSpace(task))) {
 			column = columns[++index];
 		}
@@ -664,22 +673,12 @@ function Board(ticksPerHour, simulation) {
 	
 	this.getCostOfDelay = function() {
 		var cod = 0;
-		var cumulated = 0;
 		this.columns.slice(0, this.columns.length - 1).forEach(function(column) {
 			column.tasks.forEach(function(task) {
 				cod += task.value.costOfDelay(simulation.time);
-				cumulated += task.costOfDelayCumulated;
 			}.bind(this));
 		}.bind(this));
-		return {cod: cod, cumulated: cumulated};
-	}
-	
-	this.accumulateCod = function() {
-		this.columns.slice(0, this.columns.length - 1).forEach(function(column) {
-			column.tasks.forEach(function(task) {
-				task.costOfDelayCumulated += task.value.costOfDelay(simulation.time);
-			});
-		});
+		return cod;
 	}
 	
 	this.removeTasksOverLimitFromBacklog = function() {
@@ -873,8 +872,10 @@ function Column(name, queue, simulation, label, shortLabel) {
 	
 	this.limit = function() {
 		var limit = this.configuration.get("columns.limits." + this.name);
-		var parsed = parseInt(limit);
-		return !parsed ? Number.POSITIVE_INFINITY : Math.abs(parsed)
+		if (typeof limit == "string") {
+			limit = parseInt(limit);
+		}
+		return !limit ? Number.POSITIVE_INFINITY : Math.abs(limit)
 	}
 	
 	this.isFirstColumn = function() {
@@ -983,7 +984,7 @@ function Stats(simulation, configuration) {
 		
 		if (simulation.time % (60*8) == 0) {
 			var cod = simulation.board.getCostOfDelay();
-			this.costOfDelay.addEvent(cod['cod']);
+			this.costOfDelay.addEvent(cod);
 			var tasksDone = simulation.board.getDoneTasks();
 			var valueDelivered = 0;
 			for (var i=0; i< tasksDone.length; i++) {
