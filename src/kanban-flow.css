@@ -1,0 +1,346 @@
+.board-overlay {
+	display:inline-block;
+	font-family: arial;
+	position: relative;
+	width: 100%;
+	border-width: 1px;
+	border-style: solid;
+}
+.board-overlay>* {
+    background: #eee; /* For browsers that do not support gradients */
+    background: -webkit-linear-gradient(135deg, #fff, #eee); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(135deg, #fff, #eee); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(135deg, #fff, #eee); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(135deg, #fff, #eee); /* Standard syntax */
+	border-style:solid;
+	border-width: 1px 0px 0px;
+}
+.board-overlay>div:first-of-type {
+	border-width: 0px;
+}
+.board {
+	background: #ccc;
+	border-collapse: collapse;
+	height:100%;
+    table-layout: fixed;
+    width: 100%;
+}
+
+.board-wrapper-max-height {
+    height: 500pt;
+}
+
+.tasks {
+    height: 100%;
+}
+.tasks td {
+	text-align: center;
+	border: 1px solid black;
+	vertical-align: top;
+}
+.task {
+	    background: yellow;
+	    border-radius: 6pt;
+	    padding: 3pt;
+	    margin: 3pt;
+	    border-style: solid;
+	    border-color: black;
+	    border-width: thin;
+		text-align: center;
+		 position:relative;
+	}
+.task-animation {
+    -webkit-animation-name: taskAnimation; /* Chrome, Safari, Opera */
+     -webkit-animation-duration: .2s; /* Chrome, Safari, Opera */
+     animation-name: taskAnimation;
+     animation-duration: .2s;
+}
+.task .progress {
+    height: 6px;
+    margin-bottom: 0px;
+}
+.progress-bar {
+    -webkit-transition: width 0s ease;
+    -o-transition: width 0s ease;
+    transition: width 0s ease;
+}
+.task-animation .progress-bar {
+    -webkit-transition: width .1s ease;
+    -o-transition: width .1s ease;
+    transition: width 0.1s ease;
+}
+
+.task .task-status {
+	display:inline-block;
+}
+.board th {
+	text-align: center;
+	border: 1px solid black;
+	background-color: #eea;
+}
+
+
+/* Standard syntax */
+@keyframes taskAnimation {
+    from {border-color: white;box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);}
+    to {border-color: black;}
+}
+/* Chrome, Safari, Opera */
+@-webkit-keyframes taskAnimation {
+    from {border-color: white;box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);}
+    to {border-color: black;}
+}
+
+.top-toolbar {
+    display: -ms-flexbox;
+    display: -webkit-flex;	
+	display: flex;
+}
+
+.top-toolbar>div{
+    -webkit-flex-shrink: 1;
+    -ms-flex-shrink: 1;
+	flex-shrink: 1;
+    padding: 3pt;
+    padding-left: 10pt;
+    padding-right: 10pt;
+    display: inline-block;
+    vertical-align: top;
+    border: 0pt;
+    border-style: solid;
+}
+.top-toolbar>div:not(:first-child) {
+	border-left: 1px;
+	border-style: solid;
+}
+
+.bottom-menu {
+}
+
+.actions {
+	position: relative;
+}
+
+.simulation-settings-div {
+    position: absolute;
+    right: 17px;
+    z-index: 100;
+    background-color: #eee;
+    border-style: solid;
+    border-width: 1px;
+	border-radius: 6px 6px 6px 6px;
+	box-shadow: 10px 10px 5px rgba(150, 150, 150, 0.8);
+	width: 290pt;
+	padding: 5pt;
+}
+
+.simulation-settings-div>div{
+    padding: 3pt;
+    padding-left: 10pt;
+    padding-right: 10pt;
+    display: inline-block;
+    vertical-align: top;
+    border: 1pt;
+    border-style: solid;
+    background-color: papayawhip;
+	width: 100%;
+}
+
+.backlog-settings-div {
+    position: absolute;
+    left: 17px;
+    z-index: 100;
+    background-color: #eee;
+    border-style: solid;
+    border-width: 1px;
+	border-radius: 6px 6px 6px 6px;
+	box-shadow: 10px 10px 5px rgba(150, 150, 150, 0.8);
+	width: 290pt;
+	padding: 5pt;
+}
+
+.backlog-settings-div>div{
+    padding: 3pt;
+    padding-left: 10pt;
+    padding-right: 10pt;
+    display: inline-block;
+    vertical-align: top;
+    border: 1pt;
+    border-style: solid;
+    background-color: papayawhip;
+	width: 100%;
+}
+.backlog-settings-div table {
+	table-layout: fixed;
+}
+.backlog-settings-div table tr:not(:first-child) {
+	display:none;
+}
+.backlog-settings-div table tr td {
+	text-align: right;
+	padding-right: 3pt;
+}
+.backlog-settings-div table tr td:not(:first-child) {
+	text-align: left;
+	font-weight: normal;
+}
+
+.title {
+	flex: 1;
+	-webkit-flex: 1;
+    font-weight: bold;
+    font-size: large;
+    text-align: center;
+}
+
+.title p:nth-child(2) {
+	font-size: x-large;
+}
+
+.title p {
+	margin: 0;
+}
+
+#timescaleSlider .slider-selection {
+	background: #BABABA;
+}
+
+.slider.slider-horizontal {
+	width: 140px;
+}
+
+.board-wrapper { 
+    overflow-y: hidden;
+    overflow-x: hidden;
+    max-height: 210pt;
+	border-width: 0px;
+}
+
+.board input[type="text"] {
+	width: 20pt;
+	border-width: 0;
+}
+
+.general-stats {
+	padding: 5px;
+}
+
+.simulation-settings-general input[type="text"] {
+	width: 20pt;
+}
+
+.column-settings {
+	display:none;
+}
+
+.board th span.headcount {
+    padding: 2pt;
+    padding-left: 4pt;
+    padding-right: 4pt;
+}
+
+.board th div.headcount-surrounding {
+	display:inline-block;
+}
+.board th input {
+	margin-top: 3pt;
+    margin-bottom: 3pt;
+}
+.board th input[type='checkbox'] {
+	margin-top: 8pt;
+	margin-bottom: 4pt;
+}
+
+th.analysis {
+	background: #cce;
+}
+td.analysis, td.analysisDone, .board th span.headcount.analysis {
+	background: #aac;
+}
+span.analysis {
+	color: #00f;
+}
+
+th.development {
+	background: #cec;
+}
+td.development, td.developmentDone, .board th span.headcount.development {
+	background: #aca;
+}
+span.development {
+	color: #0c0;
+}
+
+th.qa {
+	background: #ece;
+}
+td.qa, td.qaDone, .board th span.headcount.qa {
+	background: #cac;
+}
+span.qa {
+	color: #f0f;
+}
+
+th.deployment {
+	background: #cee;
+}
+td.deployment, td.deploymentDone, .board th span.headcount.deployment {
+	background: #acc;
+}
+span.deployment {
+	color: #aad;
+}
+
+.board .person {
+	text-shadow: 1px 1px 2px #000000;
+	letter-spacing: -6pt;
+}
+
+.board .waiting {
+	text-shadow: 1px 1px 2px #000000;
+}
+
+.board-overlay .person {
+	text-shadow: 1px 1px 2px #000000;
+}
+
+.nav li {
+	cursor: pointer;
+}
+
+.simulation-cfd-tab, .simulation-littles-tab, .simulation-cod-tab, .simulation-scatterplot-tab {
+	height:300px;
+	width: 100%;
+}
+.simulation-cfd-tab {
+	display:flex;
+	display: -webkit-flex;
+}
+.simulation-cfd {
+	height: 100%;
+	flex:1;
+	-webkit-flex: 1
+}
+.simulation-cfd-settings {
+	height: 100%;
+	flex-shrink:1;
+	-webkit-flex-shrink:1;
+	padding: 10pt;
+	background-color: #ddd;
+}
+
+.simulation-cfd-settings div{
+	
+}
+
+.tasksDivOverlay { 
+	display: none; 
+	background-color:rgba(255, 255, 255, 0.1); 
+	text-align:center;
+	position:absolute; 
+	z-index:10; 
+} 
+
+.copyright {
+	text-align: right;
+}

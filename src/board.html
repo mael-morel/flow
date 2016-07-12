@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" href="libs/bootstrap.min.css">
+	<link rel="stylesheet" href="libs/bootstrap-slider.min.css">
+	<link rel="stylesheet" href="kanban-flow.css">
+	<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+	  ga('create', 'UA-42132556-3', 'auto');
+	  ga('send', 'pageview');
+
+	</script>
+	<script src="libs/jquery-2.2.3.min.js"></script>
+	<script src="libs/bootstrap.min.js"></script>
+	<script src="libs/bootstrap-slider.min.js"></script>
+	<script src="libs/jquery.canvasjs.min.js"></script>
+	<script src="libs/iframeResizer.contentWindow.min.js"></script>
+	<script src="kanban-flow-ui.js"></script>
+	<script src="kanban-flow.js"></script>
+</head>
+<body>
+<div class="kanban-board" style="display:inline-block">	
+	<div class="board-overlay">
+		
+		<div class="top-toolbar">
+			<div class="time-and-buttons">
+				Day: <span class="day"></span>, time: <span class="hour"></span>
+				<div class=buttons> 
+					<button type="button" class="btn btn-success play"><span class="glyphicon glyphicon-play" aria-hidden="true"></span></button>
+					<button type="button" class="btn btn-info pause"><span class="glyphicon glyphicon-pause" aria-hidden="true"></span></button>
+					<button type="button" class="btn btn-danger stop"><span class="glyphicon glyphicon-stop" aria-hidden="true"></span></button>
+				</div>
+			</div>
+			<div class="timescale-wrapper">
+				<div>Simulation speed:</div>
+				<input class="timescale" data-slider-id='timescaleSlider' type="text"/>
+			</div>
+			<div class="title">
+				<p>Kanban Flow</p>
+				<p>Simulator</p>
+			</div>
+			<div class="actions">
+				<button type="button" class="btn simulation-help"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></button>
+				<br/>
+				<button type="button" class="btn simulation-settings"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span></button>
+				<div class="simulation-settings-div" style="display: none">
+					<div class="simulation-settings-general">
+						<table>
+							<tr>
+								<td>Max WIP for a single person</td>
+								<td><input type="text" maxlength="2" value="2" class="settings-no-of-tasks" data-model="maxTasksOnOnePerson"/></td>
+							</tr>
+							<tr>
+								<td>Max no. of people working on a single task</td>
+								<td><input type="text" maxlength="2" value="2" class="settings-no-of-people" data-model="maxPeopleOnOneTask"/></td>
+							</tr>
+							<tr>
+								<td>Productivity when a person works in different column than their specialisation (%)</td>
+								<td><input type="text" maxlength="3" value="50" class="settings-productivity-of-working-not-in-specialisation" data-model="team.workingOutOfSpecialisationCoefficient"/></td>
+							</tr>
+							<tr>
+								<td>No. of days to calculate moving averages (stats)</td>
+								<td><input type="text" maxlength="3" value="5" class="settings-no-of-days-for-stats" data-model="stats.noOfDaysForMovingAverage"/></td>
+							</tr>
+							<tr>
+								<td>Prioritisation method</td>
+								<td><select class="settings-prioritisation-method" data-model="columns.prioritisationStrategy">
+								  <option value="fifo">FIFO</option>
+								  <option value="value">Value</option>
+								  <option value="cd3">CD3</option>
+								</select></td>
+							</tr>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	<div class="board-wrapper board-wrapper-max-height">
+	<table class="board">
+		<tr>
+			<th rowspan="2" class="inputHeader">Backlog <input type="text" class="wiplimit" maxlength="2" value="" data-model="columns.limits.input"/>
+				<br/>
+				<button type="button" class="btn backlog-settings"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span></button>
+				<div class="backlog-settings-div" style="display: none">
+					<div class="backlog-settings-temporal">
+						<table>
+							<tr>
+								<td>Task creation strategy</td>
+								<td><select class="backlog-settings-temporal-strategy" data-model="tasks.arrivalStrategy.current">
+								  <option value="up-to-limit">If Limit Allows</option>
+								  <option value="constant-push">Constant Push</option>
+								  <option value="random-push">Random Push</option>
+								  <option value="scrum">Scrum</option>
+								</select></td>
+							</tr>
+							<tr data-for-option="constant-push">
+								<td>Constant demand level:</td>
+								<td><input type="text" value="5.5" data-model="tasks.arrivalStrategy.configs.constant-push.demand"/> items/day</td>
+							</tr>
+							<tr data-for-option="random-push">
+								<td>Variable demand level (around):</td>
+								<td><input type="text" value="5.5" data-model="tasks.arrivalStrategy.configs.random-push.demand"/> items/day</td>
+							</tr>
+							<tr data-for-option="random-push">
+								<td>Expected batch size (around):</td>
+								<td><input type="text" value="1" data-model="tasks.arrivalStrategy.configs.random-push.batch-size"/> items</td>
+							</tr>
+							<tr data-for-option="scrum">
+								<td>Iteration length:</td>
+								<td><input type="text" value="10" data-model="tasks.arrivalStrategy.configs.scrum.length"/> days</td>
+							</tr>
+							<tr data-for-option="scrum">
+								<td>Tasks per iteration:</td>
+								<td><input type="text" value="55" data-model="tasks.arrivalStrategy.configs.scrum.tasks"/> tasks</td>
+							</tr>
+							<tr data-for-option="scrum">
+								<td>Substract existing WIP from new tasks number?</td>
+								<td><input type="checkbox" data-model="tasks.arrivalStrategy.configs.scrum.include-existing"/></td>
+							</tr>
+						</table>
+					</div>
+					<div class="backlog-settings-task-size">
+						<table>
+							<tr>
+								<td>Task size strategy</td>
+								<td colspan="2"><select class="backlog-settings-task-size-strategy" data-model="tasks.sizeStrategy.current">
+								  <option value="constant">Constant</option>
+								  <option value="normal">Normal Distribution</option>
+								  <option value="tshirt">S/M/L/XL</option>
+								</select></td>
+							</tr>
+							<tr data-for-option="constant">
+								<td>Analysis:</td>
+								<td><input type="text" value="2" data-model="tasks.sizeStrategy.configs.constant.analysis"/> hours</td>
+							</tr>
+							<tr data-for-option="constant">
+								<td>Development:</td>
+								<td><input type="text" value="7" data-model="tasks.sizeStrategy.configs.constant.development"/> hours</td>
+							</tr>
+							<tr data-for-option="constant">
+								<td>QA:</td>
+								<td><input type="text" value="4" data-model="tasks.sizeStrategy.configs.constant.qa"/> hours</td>
+							</tr>
+							<tr data-for-option="constant">
+								<td>Deployment:</td>
+								<td><input type="text" value="1" data-model="tasks.sizeStrategy.configs.constant.deployment"/> hours</td>
+							</tr>
+							<tr data-for-option="normal">
+								<td>Analysis mean:</td>
+								<td><input type="text" value="2" data-model="tasks.sizeStrategy.configs.normal.analysis"/> hours</td>
+							</tr>
+							<tr data-for-option="normal">
+								<td>Analysis variation:</td>
+								<td><input type="text" value="2" data-model="tasks.sizeStrategy.configs.normal.analysis-variation"/></td>
+							</tr>
+							<tr data-for-option="normal">
+								<td>Development mean:</td>
+								<td><input type="text" value="7" data-model="tasks.sizeStrategy.configs.normal.development"/> hours</td>
+							</tr>
+							<tr data-for-option="normal">
+								<td>Development variation:</td>
+								<td><input type="text" value="4" data-model="tasks.sizeStrategy.configs.normal.development-variation"/></td>
+							</tr>
+							<tr data-for-option="normal">
+								<td>QA mean:</td>
+								<td><input type="text" value="4" data-model="tasks.sizeStrategy.configs.normal.qa"/> hours</td>
+							</tr>
+							<tr data-for-option="normal">
+								<td>QA variation:</td>
+								<td><input type="text" value="3" data-model="tasks.sizeStrategy.configs.normal.qa-variation"/></td>
+							</tr>
+							<tr data-for-option="normal">
+								<td>Deployment mean:</td>
+								<td><input type="text" value="1" data-model="tasks.sizeStrategy.configs.normal.deployment"/> hours</td>
+							</tr>
+							<tr data-for-option="normal">
+								<td>Deployment variation:</td>
+								<td><input type="text" value="2" data-model="tasks.sizeStrategy.configs.normal.deployment-variation"/></td>
+							</tr>
+							<tr data-for-option="tshirt">
+								<td>Analysis:</td>
+								<td><input type="text" value="14" data-model="tasks.sizeStrategy.configs.tshirt.analysis"/> %</td>
+							</tr>
+							<tr data-for-option="tshirt">
+								<td>Development:</td>
+								<td><input type="text" value="50" data-model="tasks.sizeStrategy.configs.tshirt.development"/> %</td>
+							</tr>
+							<tr data-for-option="tshirt">
+								<td>QA:</td>
+								<td><input type="text" value="28" data-model="tasks.sizeStrategy.configs.tshirt.qa"/> %</td>
+							</tr>
+							<tr data-for-option="tshirt">
+								<td>Deployment:</td>
+								<td><input type="text" value="8" data-model="tasks.sizeStrategy.configs.tshirt.deployment"/> %</td>
+							</tr>
+							<tr data-for-option="tshirt">
+								<td></td>
+								<td>Effort(h)</td>
+								<td>Probability(%)</td>
+							</tr>
+							<tr data-for-option="tshirt">
+								<td>Small:</td>
+								<td><input type="text" value="3" data-model="tasks.sizeStrategy.configs.tshirt.small-effort"/></td>
+								<td><input type="text" value="45" data-model="tasks.sizeStrategy.configs.tshirt.small-probability"/></td>
+							</tr>
+							<tr data-for-option="tshirt">
+								<td>Medium:</td>
+								<td><input type="text" value="10" data-model="tasks.sizeStrategy.configs.tshirt.medium-effort"/></td>
+								<td><input type="text" value="30" data-model="tasks.sizeStrategy.configs.tshirt.medium-probability"/></td>
+							</tr>
+							<tr data-for-option="tshirt">
+								<td>Large:</td>
+								<td><input type="text" value="25" data-model="tasks.sizeStrategy.configs.tshirt.large-effort"/></td>
+								<td><input type="text" value="20" data-model="tasks.sizeStrategy.configs.tshirt.large-probability"/></td>
+							</tr>
+							<tr data-for-option="tshirt">
+								<td>XLarge:</td>
+								<td><input type="text" value="75" data-model="tasks.sizeStrategy.configs.tshirt.xlarge-effort"/></td>
+								<td><input type="text" value="5" data-model="tasks.sizeStrategy.configs.tshirt.xlarge-probability"/></td>
+							</tr>
+						</table>
+					</div>
+				</div>
+			</th>
+			<th colspan="2" class="analysis analysisWithQueueHeader column-settings-header">Analysis <input type="text" class="wiplimit" maxlength="2" value="5" data-model="columns.limits.analysisWithQueue"/><br/>
+			 	<div class="column-settings"><span class="glyphicon glyphicon-user analysis"></span>X<input type="text" maxlength="2" value="2" class="headcount" data-model="team.analysis.headcount"/>
+				<div class="headcount-surrounding"><span class="headcount analysis"><input type="checkbox" checked data-column-permissions-column="analysis" data-column-permissions-specialist="analysis"/></span><span 
+					class="headcount development"><input type="checkbox" data-column-permissions-column="development" data-column-permissions-specialist="analysis"/></span><span 
+					class="headcount qa"><input type="checkbox" class="qa" data-column-permissions-column="qa" data-column-permissions-specialist="analysis"/></span><span 
+					class="headcount deployment"><input type="checkbox" class="deployment" data-column-permissions-column="deployment" data-column-permissions-specialist="analysis"/></span></div>
+			</div>
+		 	</th>
+			<th colspan="2" class="development developmentWithQueueHeader column-settings-header">Development <input type="text" class="wiplimit" maxlength="2" value="5" data-model="columns.limits.developmentWithQueue"/><br/>
+			 	<div class="column-settings"><span class="glyphicon glyphicon-user development"></span>X<input type="text" maxlength="2" value="5" class="headcount" data-model="team.development.headcount"/>
+				<div class="headcount-surrounding"><span class="headcount analysis"><input type="checkbox" data-column-permissions-column="analysis" data-column-permissions-specialist="development"/></span><span 
+					class="headcount development"><input type="checkbox" checked  data-column-permissions-column="development" data-column-permissions-specialist="development"/></span><span 
+					class="headcount qa"><input type="checkbox" class="qa"  data-column-permissions-column="qa" data-column-permissions-specialist="development"/></span><span 
+					class="headcount deployment"><input type="checkbox" class="deployment" data-column-permissions-column="deployment" data-column-permissions-specialist="development"/></span></div>
+			</div>
+			</th>
+			<th colspan="2" class="qa qaWithQueueHeader column-settings-header">QA <input type="text" class="wiplimit" maxlength="2" value="3" data-model="columns.limits.qaWithQueue"/><br/>
+		 	<div class="column-settings"><span class="glyphicon glyphicon-user qa"></span>X<input type="text" maxlength="2" value="3" class="headcount" data-model="team.qa.headcount"/>
+			<div class="headcount-surrounding"><span class="headcount analysis"><input type="checkbox"  data-column-permissions-column="analysis" data-column-permissions-specialist="qa"/></span><span 
+				class="headcount development"><input type="checkbox" data-column-permissions-column="development" data-column-permissions-specialist="qa"/></span><span 
+				class="headcount qa"><input type="checkbox" class="qa" checked data-column-permissions-column="qa" data-column-permissions-specialist="qa"/></span><span 
+				class="headcount deployment"><input type="checkbox" class="deployment" data-column-permissions-column="deployment" data-column-permissions-specialist="qa"/></span></div>
+			</div>
+			</th>
+			<th colspan="2" class="deployment deploymentWithQueueHeader column-settings-header">Deployment<br/>
+		 	<div class="column-settings"><span class="glyphicon glyphicon-user deployment"></span>X<input type="text" maxlength="2" value="1" class="headcount" data-model="team.deployment.headcount"/>
+			<div class="headcount-surrounding"><span class="headcount analysis"><input type="checkbox" data-column-permissions-column="analysis" data-column-permissions-specialist="deployment"/></span><span 
+				class="headcount development"><input type="checkbox" data-column-permissions-column="development" data-column-permissions-specialist="deployment"/></span><span 
+				class="headcount qa"><input type="checkbox" class="qa" data-column-permissions-column="qa" data-column-permissions-specialist="deployment"/></span><span 
+				class="headcount deployment"><input type="checkbox" class="deployment" checked data-column-permissions-column="deployment" data-column-permissions-specialist="deployment"/></span></div>
+			</div>
+			</th>
+		</tr>
+		<tr>
+			<th class="analysis analysisHeader">Doing <input type="text" class="wiplimit" maxlength="2" data-model="columns.limits.analysis"/></th>
+			<th class="analysis analysisDoneHeader">Done <input type="text" class="wiplimit" maxlength="2" data-model="columns.limits.analysisDone"/></th>
+			<th class="development developmentHeader">Doing <input type="text" class="wiplimit" maxlength="2" data-model="columns.limits.development"/></th>
+			<th class="development developmentDoneHeader">Done <input type="text" class="wiplimit" maxlength="2" data-model="columns.limits.developmentDone"/></th>
+			<th class="qa qaHeader">Doing <input type="text" class="wiplimit" maxlength="2" data-model="columns.limits.qa"/></th>
+			<th class="qa qaDoneHeader">Done <input type="text" class="wiplimit" maxlength="2" data-model="columns.limits.qaDone"/></th>
+			<th class="deployment deploymentHeader">Doing <input type="text" class="wiplimit" maxlength="2" value="5" data-model="columns.limits.deployment"/></th>
+			<th class="deployment">Done</th>
+		</tr>
+	
+		<tr class="tasks">
+			<td class="input"></td>
+			<td class="analysis"></td>
+			<td class="analysisDone"></td>
+			<td class="development"></td>
+			<td class="developmentDone"></td>
+			<td class="qa"></td>
+			<td class="qaDone"></td>
+			<td class="deployment"></td>
+			<td class="deploymentDone"></td>
+		</tr>
+
+	</table>
+	<div class="tasksDivOverlay">Click to toggle the view</div>
+	</div>
+	<div class="general-stats">
+		<strong>Avg. WIP:</strong> <span class="stats-wip"></span> |
+		<strong>Avg. Lead Time:</strong> <span class="stats-lead-time"></span>d |
+		<strong>Avg. Throughput:</strong> <span class="stats-throughput"></span>/d |
+		<strong>WIP/Lead Time:</strong> <span class="stats-wip-lead-time"></span> |
+		<strong>Avg. utilisation:</strong> <span class="stats-utilisation"></span>%
+	</div>
+	<div class="bottom-menu">
+		<ul class="nav nav-tabs">
+			<li role="presentation" class="active"><a>WIP/LT/TH/UT</a></li>
+		 	<li role="presentation"><a>CFD</a></li>
+			<li role="presentation"><a>Scatterplot</a></li>
+			<li role="presentation"><a>Economics</a></li>
+		</ul>
+		<div class="simulation-littles-tab">
+		</div>
+		<div class="simulation-cfd-tab">
+			<div class="simulation-cfd"></div>
+			<div class="simulation-cfd-settings">
+				Column grouping settings:
+				<div><input type="checkbox" disabled checked/> Backlog </div>
+				<div><input type="checkbox" checked/> Analysis</div>
+				<div><input type="checkbox"/> Analysis Done</div>
+				<div><input type="checkbox" checked/> Development</div>
+				<div><input type="checkbox"/> Development Done</div>
+				<div><input type="checkbox" checked/> QA</div>
+				<div><input type="checkbox"/> QA Done</div>
+				<div><input type="checkbox" checked/> Deployment</div>
+				<div><input type="checkbox"/> Done</div>
+			</div>
+		</div>
+		<div class="simulation-scatterplot-tab">
+		</div>
+		<div class="simulation-cod-tab">
+		</div>
+	</div>
+	<div class="copyright">
+		<a href="https://raw.githubusercontent.com/mgajdzik/flow/master/LICENSE" target="_blank">Copyright (c) 2016 Mateusz Gajdzik</a>
+	</div>
+	</div>
+	</div>
+</div>
+</body>
+</html>
