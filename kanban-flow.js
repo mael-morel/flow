@@ -962,6 +962,7 @@ function Stats(simulation, configuration) {
 	
 	this.recalculateStats = function(simulation) {
 		this.calculateAvailablePeople(simulation);
+		this.calculateWip(simulation);
 		if (simulation.time % 60 != 0) return;
 		this.updateCfdData(simulation.board, simulation.time);
 		
@@ -972,7 +973,8 @@ function Stats(simulation, configuration) {
 		});
 		this.leadTime.addEvent(leadTimes);
 		
-		this.wip.addEvent(simulation.board.getCurrentWip());
+		this.wip.addEvent(this.currentWip / simulation.ticksPerHour);
+		this.currentWip = 0;
 		this.throughput.addEvent(simulation.board.getDoneTasksCount(simulation.time - 60, simulation.time));
 		
 		this.availablePeople.addEvent(this.notWorkingCountSummed / simulation.ticksPerHour);
@@ -1010,6 +1012,12 @@ function Stats(simulation, configuration) {
 		var teamSize = simulation.team.members.length;
 		this.notWorkingCountSummed += notWorkingCount;
 		this.busyCountSummed += teamSize - notWorkingCount;
+	}
+	
+	this.currentWip = 0;
+	this.calculateWip = function(simulation) {
+		var currentWip = simulation.board.getCurrentWip();
+		this.currentWip += currentWip;
 	}
 	
 	this.updateHistory = function(time) {
