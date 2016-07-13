@@ -6,7 +6,7 @@ module.exports = function(grunt) {
 		copy: {
 			build: {
 				cwd: 'src',
-				src: ['**'],
+				src: ['**', '!**/*.js'],
 				dest: 'dist/',
 				expand: true
 			},
@@ -28,6 +28,10 @@ module.exports = function(grunt) {
 				src: ['dist/**/*.js', '!dist/kanban-flow.js', '!dist/fonts/**', '!dist/libs/**']
 			},
 		},
+		cleanempty: {
+		    options: {},
+		    src: ['dist/**'],
+		},
 		uglify: {
 			build: {
 				options: {
@@ -36,7 +40,7 @@ module.exports = function(grunt) {
 					beautify:true,
 				},
 				files: {
-					'dist/kanban-flow.js': ['dist/**/*.js', '!dist/fonts/**', '!dist/libs/**']
+					'dist/kanban-flow.js': ['src/**/*.js']
 				}
 			}
 		},
@@ -55,6 +59,7 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.loadNpmTasks('grunt-cleanempty');
 
     grunt.registerTask(
       'scripts', 
@@ -64,7 +69,7 @@ module.exports = function(grunt) {
     grunt.registerTask(
       'build', 
       'Compiles all of the assets and copies the files to the build directory.', 
-      [ 'clean:build', 'copy', 'scripts' ]
+      [ 'clean:build', 'copy', 'scripts', 'cleanempty' ]
     );
 
     grunt.registerTask(
