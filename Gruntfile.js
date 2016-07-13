@@ -40,7 +40,7 @@ module.exports = function(grunt) {
 					beautify:true,
 				},
 				files: {
-					'dist/kanban-flow.js': ['src/**/*.js']
+					'dist/kanban-flow.js': ['src/js/**/*.js']
 				}
 			}
 		},
