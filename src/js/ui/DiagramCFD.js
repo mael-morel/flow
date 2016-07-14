@@ -92,8 +92,8 @@ function DiagramCFD(simulation) {
 	
 	this.lastUpdatedCFDDay = 0;
 	this.update = function() {
-		var time = this.simulation.time
-		var stats =  this.simulation.stats
+		var time = this.simulation.time;
+		var stats =  this.simulation.stats;
 		var tab = $$(".simulation-cfd-tab:visible", false);
 		if (tab.length == 0) {
 			return;

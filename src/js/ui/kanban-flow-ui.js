@@ -10,11 +10,12 @@ function GUI(hookSelectorParam, simulation, configuration) {
 	
 	var controls = new Controls(this.simulation, this);
 	this.cfdDiagram = new DiagramCFD(this.simulation);
+	this.littlesDiagram = new DiagramLittles(this.simulation);
 	
 	this.stop = function() {
 		this.simulation.stop();
 		this.cfdDiagram.redraw();
-		lastUpdatedLittlesDay = -1;
+		this.littlesDiagram.redraw();
 		lastUpdatedCodDay = -1;
 		lastUpdatedScatterPlotDay = -1;
 		this.update(this.simulation.board, this.simulation.stats, true);
@@ -94,8 +95,7 @@ function GUI(hookSelectorParam, simulation, configuration) {
 		this.configuration.activateListeners();
 	}
 	this.updateDiagramsDependingOnRunningAverage = function() {
-		lastUpdatedLittlesDay = -1;
-		updateLittles(this.simulation.time, this.simulation.stats);
+		this.littlesDiagram.redraw();
 		lastUpdatedCodDay = -1;
 		updateCod(this.simulation.time, this.simulation.stats, true);
 	}
@@ -147,53 +147,6 @@ function GUI(hookSelectorParam, simulation, configuration) {
 	$$(".backlog-settings").click(function() {
 		$$(".backlog-settings-div").slideFadeToggle();
 	});
-	
-	$$(".simulation-littles-tab").CanvasJSChart($.extend(true, {}, commonDiagramProperties, {
-	  axisX:{
-		  labelFormatter : function(e) {
-			  return "D:" + (Math.floor(e.value / 8) + 1) + " h:" + Math.floor(e.value % 8 + 9);
-		  }
-	  },
-	  axisY2:{
-		  maximum: 100
-	  },
-	  toolTip: {
-  		contentFormatter: function (e) {
-  			var content = "Day: <strong>" + Math.floor(e.entries[0].dataPoint.x / 8 + 1) + "</strong>, hour: <strong>" + (e.entries[0].dataPoint.x % 8 + 9) + "</strong><br/>";
-  			for (var i = 0; i< e.entries.length; i++) {
-				if (!isNaN(e.entries[i].dataPoint.y))
-					content += e.entries[i].dataSeries.name + ": <strong>" + e.entries[i].dataPoint.y.toFixed(1) + "</strong><br/>";
-  			}
-  			return content;
-  		},
-	  },
-      data: [{        
-          type: "line",
-		  name: "WIP",
-		  dataPoints: [],
-		  showInLegend: true,
-      },{        
-          type: "line",
-    	  name: "Throughput",
-          dataPoints: [],
-		  showInLegend: true,
-      },{        
-          type: "line",
-		  name: "Lead Time",
-          dataPoints: [],
-		  showInLegend: true,
-      },{        
-          type: "line",
-		  name: "Capacity Utilisation",
-          dataPoints: [],
-		  showInLegend: true,
-		  axisYType: "secondary",
-      },
-      ]
-    }));
-	$$(".simulation-littles-tab").bind('isVisible', function() {
-		updateLittles(this.simulation.time, this.simulation.stats)
-	}.bind(this));
 	
 	$$(".simulation-cod-tab").CanvasJSChart($.extend(true, {}, commonDiagramProperties, {
 	  axisX:{
@@ -326,7 +279,7 @@ function GUI(hookSelectorParam, simulation, configuration) {
 		updateStats(stats, this.cache);
 		this.updateBoard();
 		this.cfdDiagram.update();
-		updateLittles(this.simulation.time, stats);
+		this.littlesDiagram.update();
 		updateCod(this.simulation.time, stats, force);
 		updateScatterPlot(this.simulation.time, stats, force);
 	}
@@ -347,23 +300,6 @@ function GUI(hookSelectorParam, simulation, configuration) {
 		$$('.stats-lead-time').text(leadTimeAvg ? leadTimeAvg.toFixed(1) : '-');
 		$$('.stats-wip-lead-time').text(wipAvg && leadTimeAvg ? (wipAvg / leadTimeAvg).toFixed(1) : '-');
 		$$('.stats-utilisation').text(stats.capacityUtilisation.getAvg() ? stats.capacityUtilisation.getAvg().toFixed(1) : '-');
-	}
-	
-	var lastUpdatedLittlesDay = 0;
-	function updateLittles(time, stats) {
-		var tab = $$(".simulation-littles-tab:visible", false);
-		if (tab.length == 0) {
-			return;
-		}
-		var currentDay = Math.floor(time / (60 * 8));
-		if (currentDay <= lastUpdatedLittlesDay) return;
-		lastUpdatedLittlesDay = currentDay;
-		var diagramData = tab.CanvasJSChart().options.data;
-		diagramData[0].dataPoints = stats.wip.getAvgHistory();
-		diagramData[1].dataPoints = stats.throughput.getAvgHistory();
-		diagramData[2].dataPoints = stats.leadTime.getAvgHistory();;
-		diagramData[3].dataPoints = stats.capacityUtilisation.getAvgHistory();
-		tab.CanvasJSChart().render();
 	}
 	
 	var lastUpdatedCodDay = 0;
