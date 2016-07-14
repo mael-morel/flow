@@ -79,7 +79,7 @@ function DiagramCFD(simulation) {
 			model[groups.length - 1 - i] = { type: "stackedArea", dataPoints: [], name: name.trim(), showInLegend: true, color: colors[i], columnsToSum: columnsToSum};
 		}
 		$$(".simulation-cfd").CanvasJSChart().options.data = model;
-		this.lastUpdatedCFDDay = -1;
+		this.lastUpdatedDay = -1;
 		this.update();
 	};
 	$$(".simulation-cfd-settings input[type='checkbox']").change(this.updateConfiguration.bind(this));
@@ -90,7 +90,7 @@ function DiagramCFD(simulation) {
 		this.updateConfiguration();
 	}.bind(this));
 	
-	this.lastUpdatedCFDDay = 0;
+	this.lastUpdatedDay = 0;
 	this.update = function() {
 		var time = this.simulation.time;
 		var stats =  this.simulation.stats;
@@ -99,8 +99,8 @@ function DiagramCFD(simulation) {
 			return;
 		}
 		var currentDay = Math.floor(time / (60 * 8));
-		if (currentDay <= this.lastUpdatedCFDDay) return;
-		this.lastUpdatedCFDDay = currentDay;
+		if (currentDay <= this.lastUpdatedDay) return;
+		this.lastUpdatedDay = currentDay;
 		var model = $$(".simulation-cfd").CanvasJSChart().options.data;
 		for (var i=0; i<model.length; i++) {
 			var columnsToSum = model[i].columnsToSum;
@@ -115,7 +115,7 @@ function DiagramCFD(simulation) {
 		$$(".simulation-cfd").CanvasJSChart().render();
 	}
 	this.redraw = function() {
-		this.lastUpdatedCFDDay = -1;
+		this.lastUpdatedDay = -1;
 		this.updateConfiguration();
 		this.update();
 	}

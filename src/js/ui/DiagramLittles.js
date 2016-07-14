@@ -44,7 +44,7 @@ function DiagramLittles(simulation) {
       ]
     }));
 
-	this.lastUpdatedLittlesDay = 0;
+	this.lastUpdatedDay = 0;
 	this.update = function() {
 		var time = this.simulation.time;
 		var stats =  this.simulation.stats;
@@ -53,8 +53,8 @@ function DiagramLittles(simulation) {
 			return;
 		}
 		var currentDay = Math.floor(time / (60 * 8));
-		if (currentDay <= this.lastUpdatedLittlesDay) return;
-		this.lastUpdatedLittlesDay = currentDay;
+		if (currentDay <= this.lastUpdatedDay) return;
+		this.lastUpdatedDay = currentDay;
 		var diagramData = tab.CanvasJSChart().options.data;
 		diagramData[0].dataPoints = stats.wip.getAvgHistory();
 		diagramData[1].dataPoints = stats.throughput.getAvgHistory();
@@ -64,7 +64,7 @@ function DiagramLittles(simulation) {
 	}
 	
 	this.redraw = function() {
-		this.lastUpdatedLittlesDay = -1;
+		this.lastUpdatedDay = -1;
 		this.update();
 	}
 	
