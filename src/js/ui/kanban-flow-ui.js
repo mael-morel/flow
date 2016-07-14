@@ -1,83 +1,12 @@
-function GUI(hookSelector, simulation, cache, configuration) {
+function GUI(hookSelectorParam, simulation, configuration) {
+	hookSelector = hookSelectorParam;
+	cache.put(hookSelector +' allColumns', $($$('.tasks td').get().reverse()).toArray());
 	this.configuration = configuration;
-	this.cache = cache;
-	this.hookSelector = hookSelector;
-	function $$(selector, useCache) {
-		if (useCache == undefined || useCache) {
-			return cache.get(hookSelector +" " + selector);
-		}
-		return $(hookSelector +" " + selector);
-	};
-	
 	this.simulation = simulation;
 	this.fps = 4;
 	this.lastUpdated = Date.now();
-	
-	this.cache.put(hookSelector +' allColumns', $($$('.tasks td').get().reverse()).toArray());
 	this.renderTasks = true;
 	this.animate = true;
-	
-	function Controls(simulation, gui) {
-		this.simulation = simulation;
-		this.gui = gui;
-
-		this.adjustTempo = function(sliderValue) {
-			this.simulation.hourLengthInSeconds = 100 / sliderValue;
-			if (this.simulation.hourLengthInSeconds < 0.3) {
-				if (this.gui.animate) {
-					this.turnOffAnimations();
-				}
-				this.gui.animate = false;
-			} else {
-				if (!this.gui.animate) {
-					this.turnOnAnimations();
-				}
-				this.gui.animate = true;
-			}
-		}
-		$$('.timescale').slider({
-			min: 50,
-			max: 100000,
-			scale: 'logarithmic',
-			step: 5,
-			value: 100,
-			tooltip: 'hide',
-		}).on("slide", function(event) {
-			this.adjustTempo(event.value);
-		}.bind(this)).on("slideStop", function(event) {
-			this.adjustTempo(event.value);
-			ga('send', {
-			  hitType: 'event',
-			  eventCategory: 'Control',
-			  eventAction: 'speed',
-			  eventLabel: 'Speed Changed',
-			  eventValue: simulation.hourLengthInSeconds
-			});
-		}.bind(this));
-	
-		this.turnOffAnimations = function() {
-			$$(".task").removeClass("task-animation");
-		}
-		this.turnOnAnimations = function() {
-			$$(".task").addClass("task-animation");
-		}
-
-		$$(".stop").click(function() {
-			this.gui.stop();
-			ga('send', {
-			  hitType: 'event',
-			  eventCategory: 'Control',
-			  eventAction: 'stop',
-			  eventLabel: 'Stopped',
-			});
-		}.bind(this));
-		$$(".pause").click(function() {
-			this.gui.pause();
-		}.bind(this));
-		$$(".play").click(function() {
-			this.gui.play();
-		}.bind(this));
-	}
 	
 	var controls = new Controls(this.simulation, this);
 	
@@ -702,6 +631,15 @@ function GUI(hookSelector, simulation, cache, configuration) {
 			});
 		}.bind(this));
 	}
+}
+
+var cache = new Cache();
+var hookSelector = "";
+function $$(selector, useCache) {
+	if (useCache == undefined || useCache) {
+		return cache.get(hookSelector +" " + selector);
+	}
+	return $(hookSelector +" " + selector);
 }
 
 function Cache() {

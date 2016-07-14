@@ -171,7 +171,7 @@ function Simulation(hookSelector, externalConfig) {
 	this.time;
 	this.taskCounter;
 	this.timeoutHandler;
-	this.gui = new GUI(hookSelector, this, new Cache(), this.configuration);
+	this.gui = new GUI(hookSelector, this, this.configuration);
 	this.board;
 	this.stats;
 	this.team;
