@@ -15,66 +15,83 @@ function GUI(hookSelector, simulation, cache, configuration) {
 	
 	this.cache.put(hookSelector +' allColumns', $($$('.tasks td').get().reverse()).toArray());
 	this.renderTasks = true;
-	var animate = true;
-
-	function adjustTempo(sliderValue) {
-		simulation.hourLengthInSeconds = 100 / sliderValue;
-		if (simulation.hourLengthInSeconds < 0.3) {
-			if (animate) {
-				turnOffAnimations();
-			}
-			animate = false;
-		} else {
-			if (!animate) {
-				turnOnAnimations();
-			}
-			animate = true;
-		}
-	}
-	$$('.timescale').slider({
-		min: 50,
-		max: 100000,
-		scale: 'logarithmic',
-		step: 5,
-		value: 100,
-		tooltip: 'hide',
-	}).on("slide", function(event) {
-		adjustTempo(event.value);
-	}).on("slideStop", function(event) {
-		adjustTempo(event.value);
-		ga('send', {
-		  hitType: 'event',
-		  eventCategory: 'Control',
-		  eventAction: 'speed',
-		  eventLabel: 'Speed Changed',
-		  eventValue: simulation.hourLengthInSeconds
-		});
-	});
+	this.animate = true;
 	
-	function turnOffAnimations() {
-		$$(".task").removeClass("task-animation");
-	}
-	function turnOnAnimations() {
-		$$(".task").addClass("task-animation");
-	}
+	function Controls(simulation, gui) {
+		this.simulation = simulation;
+		this.gui = gui;
 
-	$$(".stop").click(function() {
-		simulation.stop();
+		this.adjustTempo = function(sliderValue) {
+			this.simulation.hourLengthInSeconds = 100 / sliderValue;
+			if (this.simulation.hourLengthInSeconds < 0.3) {
+				if (this.gui.animate) {
+					this.turnOffAnimations();
+				}
+				this.gui.animate = false;
+			} else {
+				if (!this.gui.animate) {
+					this.turnOnAnimations();
+				}
+				this.gui.animate = true;
+			}
+		}
+		$$('.timescale').slider({
+			min: 50,
+			max: 100000,
+			scale: 'logarithmic',
+			step: 5,
+			value: 100,
+			tooltip: 'hide',
+		}).on("slide", function(event) {
+			this.adjustTempo(event.value);
+		}.bind(this)).on("slideStop", function(event) {
+			this.adjustTempo(event.value);
+			ga('send', {
+			  hitType: 'event',
+			  eventCategory: 'Control',
+			  eventAction: 'speed',
+			  eventLabel: 'Speed Changed',
+			  eventValue: simulation.hourLengthInSeconds
+			});
+		}.bind(this));
+	
+		this.turnOffAnimations = function() {
+			$$(".task").removeClass("task-animation");
+		}
+		this.turnOnAnimations = function() {
+			$$(".task").addClass("task-animation");
+		}
+
+		$$(".stop").click(function() {
+			this.gui.stop();
+			ga('send', {
+			  hitType: 'event',
+			  eventCategory: 'Control',
+			  eventAction: 'stop',
+			  eventLabel: 'Stopped',
+			});
+		}.bind(this));
+		$$(".pause").click(function() {
+			this.gui.pause();
+		}.bind(this));
+		$$(".play").click(function() {
+			this.gui.play();
+		}.bind(this));
+	}
+	
+	var controls = new Controls(this.simulation, this);
+	
+	this.stop = function() {
+		this.simulation.stop();
 		lastUpdatedCFDDay = -1;
 		lastUpdatedLittlesDay = -1;
 		lastUpdatedCodDay = -1;
 		lastUpdatedScatterPlotDay = -1;
 		updateCFDConfiguration.bind(this)();
 		this.update(this.simulation.board, this.simulation.stats, true);
-		ga('send', {
-		  hitType: 'event',
-		  eventCategory: 'Control',
-		  eventAction: 'stop',
-		  eventLabel: 'Stopped',
-		});
-	}.bind(this));
-	$$(".pause").click(function() {
-		simulation.pause();
+	}
+	this.pause = function() {
+		this.simulation.pause();
 		this.update(this.simulation.board, this.simulation.stats, true);
 		ga('send', {
 		  hitType: 'event',
@@ -82,16 +99,16 @@ function GUI(hookSelector, simulation, cache, configuration) {
 		  eventAction: 'pause',
 		  eventLabel: 'Paused',
 		});
-	}.bind(this));
-	$$(".play").click(function() {
-		simulation.play();
+	}
+	this.play = function() {
+		this.simulation.play();
 		ga('send', {
 		  hitType: 'event',
 		  eventCategory: 'Control',
 		  eventAction: 'start',
 		  eventLabel: 'Started',
 		});
-	});
+	}
 	
 	$$(".simulation-help").click(function() {
 		window.top.location = "https://mgajdzik.com/kanban-flow-simulator/help/";
@@ -455,7 +472,7 @@ function GUI(hookSelector, simulation, cache, configuration) {
 			$$(".tasks-count", false).remove();
 		}
 		$$(".board-wrapper").toggleClass("board-wrapper-max-height");
-		updateBoard(this.simulation.board, this.renderTasks);
+		this.updateBoard();
 
 	}.bind(this));
 	
@@ -493,7 +510,7 @@ function GUI(hookSelector, simulation, cache, configuration) {
 		this.lastUpdated = now;
 		updateTime(this.simulation.time, this.cache);
 		updateStats(stats, this.cache);
-		updateBoard(board, this.renderTasks);
+		this.updateBoard();
 		updateCFD(this.simulation.time, stats);
 		updateLittles(this.simulation.time, stats);
 		updateCod(this.simulation.time, stats, force);
@@ -601,31 +618,33 @@ function GUI(hookSelector, simulation, cache, configuration) {
 		tab.CanvasJSChart().render();
 	}
 	
-	function updateBoard(board, renderTasks) {
+	this.updateBoard = function() {
+		var board = this.simulation.board;
+		var renderTasks = this.renderTasks;
 		$$('allColumns').forEach(function(columnVisual) {
 			var columnVisualId = columnVisual.className;
 			columnVisual = $(columnVisual);
 			if (!renderTasks) {
 				columnVisual.html("<span class='tasks-count'>" + board.getColumnByName(columnVisualId).tasks.length + "</span>");
 			} else {
-				columnVisual.children().each(function() {
-					var taskVisual = $(this);
-					var task = taskVisual.data("taskReference");
+				columnVisual.children().each(function(index, taskElement) {
+					var $task = $(taskElement);
+					var task = $task.data("taskReference");
 					if (task.column) {
-						taskVisual.find('.progress-bar').width((100 * task[task.column.name] / task[task.column.name + 'Original']).toFixed(1) + '%');
-						taskVisual.find('.task-status').html(createStatusSpan(task.peopleAssigned));
+						$task.find('.progress-bar').width((100 * task[task.column.name] / task[task.column.name + 'Original']).toFixed(1) + '%');
+						$task.find('.task-status').html(createStatusSpan(task.peopleAssigned));
 					}
 					if (!board.tasks[task.id]) {
-						taskVisual.remove();
+						$task.remove();
 					} else if (task.column && task.column.name != columnVisualId) {
-						taskVisual.remove();
-						var newTaskInstance = createTaskDiv(task);
+						$task.remove();
+						var newTaskInstance = this.createTaskDiv(task);
 						$$(".tasks td." + task.column.name).append(newTaskInstance);
-						taskVisual = newTaskInstance;
+						$task = newTaskInstance;
 					}
-				});
+				}.bind(this));
 			}
-		});
+		}.bind(this));
 		if (renderTasks) {
 			for (var key in board.tasks) {
 				if (!board.tasks.hasOwnProperty(key)) {
@@ -633,15 +652,15 @@ function GUI(hookSelector, simulation, cache, configuration) {
 				}
 				var task = board.tasks[key];
 				if ($$("." + task.id, false).length == 0) {
-					var newTask = createTaskDiv(task);
+					var newTask = this.createTaskDiv(task);
 					$$('.tasks td.' + task.column.name).append(newTask);
 				}
 			}
 		}
 	};
 	
-	function createTaskDiv(task) {
-		var html = "<div class='task " + task.id + (animate?" task-animation" : "") + "'>" + task.label + " <div class='task-status'>" + createStatusSpan(task.peopleAssigned)+ "</div><div class='progress'><div class='progress-bar progress-bar-info' style='width:100%'/></div></div>";
+	this.createTaskDiv = function(task) {
+		var html = "<div class='task " + task.id + (this.animate?" task-animation" : "") + "'>" + task.label + " <div class='task-status'>" + createStatusSpan(task.peopleAssigned)+ "</div><div class='progress'><div class='progress-bar progress-bar-info' style='width:100%'/></div></div>";
 		return $(html).data("taskReference", task);
 	}
 	function createStatusSpan(peopleWorkingOn) {
