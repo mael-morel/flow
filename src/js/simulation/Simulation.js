@@ -117,7 +117,12 @@ function Simulation(hookSelector, externalConfig) {
 	this.taskSizeStrategies = {
 		"constant": function(id, time) {
 			var conf = this.configuration.get("tasks.sizeStrategy.configs.constant");
-			return new Task(id, time, conf.analysis, conf.development, conf.qa, conf.deployment);
+			var activeStates = this.configuration.getActiveStates();
+			var taskConfig = {};
+			activeStates.forEach(function(element) {
+				taskConfig[element] = conf[element] * 60;
+			});
+			return new Task(id, time, taskConfig);
 		}.bind(this), 
 		"normal": function(id, time) {
 			var conf = this.configuration.get("tasks.sizeStrategy.configs.normal");

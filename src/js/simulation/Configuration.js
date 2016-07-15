@@ -9,51 +9,51 @@ function Configuration(externalConfig) {
 		columns: {
 			prioritisationStrategy: "fifo",
 			definitions: [
-				{name: "input", queue: true, label: "Backlog", cfdLabel: "Backlog", cfdShortLabel: "Bl"},
-				{name: "analysis", queue: false, label: "Doing", cfdLabel: "Analysis", cfdShortLabel: "An"},
-				{name: "analysisDone", queue: true, label: "Done", cfdLabel: "Analysis Done", cfdShortLabel: "An Done"},
-				{name: "development", queue: false, label: "Doing", cfdLabel: "Development", cfdShortLabel: "Dev"},
-				{name: "developmentDone", queue: true, label: "Done", cfdLabel: "Development Done", cfdShortLabel: "Dev Done"},
-				{name: "qa", queue: false, label: "Doing", cfdLabel: "QA", cfdShortLabel: "QA"},
-				{name: "qaDone", queue: true, label: "Done", cfdLabel: "QA Done", cfdShortLabel: "QA Done"},
-				{name: "deployment", queue: false, label: "Doing", cfdLabel: "Deployment", cfdShortLabel: "Depl"},
-				{name: "deploymentDone", queue: true, label: "Done", cfdLabel: "Deployment Done", cfdShortLabel: "Depl Done", ignoreLimit: true},
-				{name: "analysisWithQueue", label: "Analysis", children: ["analysis", "analysisDone"]},
-				{name: "developmentWithQueue", label: "Development", children: ["development", "developmentDone"]},
-				{name: "qaWithQueue", label: "QA", children: ["qa", "qaDone"]},
-				{name: "deploymentWithQueue", label: "Deployment", children: ["deployment", "deploymentDone"]},
+				{name: "col0", queue: true, label: "Backlog", cfdLabel: "Backlog", cfdShortLabel: "Bl"},
+				{name: "col1", queue: false, label: "Doing", cfdLabel: "Analysis", cfdShortLabel: "An"},
+				{name: "col2", queue: true, label: "Done", cfdLabel: "Analysis Done", cfdShortLabel: "An Done"},
+				{name: "col3", queue: false, label: "Doing", cfdLabel: "Development", cfdShortLabel: "Dev"},
+				{name: "col4", queue: true, label: "Done", cfdLabel: "Development Done", cfdShortLabel: "Dev Done"},
+				{name: "col5", queue: false, label: "Doing", cfdLabel: "QA", cfdShortLabel: "QA"},
+				{name: "col6", queue: true, label: "Done", cfdLabel: "QA Done", cfdShortLabel: "QA Done"},
+				{name: "col7", queue: false, label: "Doing", cfdLabel: "Deployment", cfdShortLabel: "Depl"},
+				{name: "col8", queue: true, label: "Done", cfdLabel: "Deployment Done", cfdShortLabel: "Depl Done", ignoreLimit: true},
+				{name: "colgrp0", label: "Analysis", children: ["col1", "col2"]},
+				{name: "colgrp1", label: "Development", children: ["col3", "col4"]},
+				{name: "colgrp2", label: "QA", children: ["col5", "col6"]},
+				{name: "colgrp3", label: "Deployment", children: ["col7", "col8"]},
 			],
 			limits: {
-				input: null,
-				analysis: null,
-				analysisDone: null,
-				analysisWithQueue: 5,
-				development: null,
-				developmentDone: null,
-				developmentWithQueue: 5,
-				qa: null,
-				qaDone: null,
-				qaWithQueue: 3,
-				deployment: 5,
+				col0: null,
+				col1: null,
+				col2: null,
+				colgrp0: 5,
+				col3: null,
+				col4: null,
+				colgrp1: 5,
+				col5: null,
+				col6: null,
+				colgrp2: 3,
+				col7: 5,
 			},
 		},
 		team: {
 			workingOutOfSpecialisationCoefficient: 50,
-			analysis: {
+			col1: {
 				headcount: 2,
-				columns: ['analysis'],
+				columns: ['col1'],
 			},
-			development: {
+			col3: {
 				headcount: 5,
-				columns: ['development'],
+				columns: ['col3'],
 			},
-			qa: {
+			col5: {
 				headcount: 3,
-				columns: ['qa'],
+				columns: ['col5'],
 			},
-			deployment: {
+			col7: {
 				headcount: 1,
-				columns: ['deployment'],
+				columns: ['col7'],
 			},
 		},
 		tasks: {
@@ -78,26 +78,26 @@ function Configuration(externalConfig) {
 				current: "constant",
 				configs: {
 					constant: {
-						analysis: 2,
-						development: 7,
-						qa: 4,
-						deployment: 1,
+						col1: 2,
+						col3: 7,
+						col5: 4,
+						col7: 1,
 					},
 					normal: {
-						analysis: 2,
-						development: 7,
-						qa: 4,
-						deployment: 1,
-						"analysis-variation": 2,
-						"development-variation": 4,
-						"qa-variation": 3,
-						"deployment-variation": 2,
+						col1: 2,
+						col3: 7,
+						col5: 4,
+						col7: 1,
+						"col1-variation": 2,
+						"col3-variation": 4,
+						"col5-variation": 3,
+						"col7-variation": 2,
 					},
 					tshirt: {
-						analysis: 14,
-						development: 50,
-						qa: 28,
-						deployment: 8,
+						col1: 14,
+						col3: 50,
+						col5: 28,
+						col7: 8,
 						"small-probability": 45,
 						"medium-probability": 30,
 						"large-probability": 20,
@@ -120,6 +120,7 @@ function Configuration(externalConfig) {
 		}.bind(this),
 	};
 	this.loadExternalConfig = function(externalConfig) {
+		if (!externalConfig || Object.keys(externalConfig).length == 0) return;
 		var version = externalConfig.version;
 		if (!version) version = 1;
 		while (version != 2) {
@@ -166,7 +167,7 @@ function Configuration(externalConfig) {
 		for (var i=0; i < path.length - 1; i++) {
 			enclosingObject = enclosingObject[path[i]];
 		}
-		var value = enclosingObject[path[path.length - 1]];
+		var value = enclosingObject ? enclosingObject[path[path.length - 1]] : undefined;
 		this.cache[property] = value;
 		return value;
 	}
@@ -194,5 +195,15 @@ function Configuration(externalConfig) {
 	this.clearListeners = function() {
 		this.listeners = {};
 		this.listenersAfter = {};
+	}
+	this.getActiveStates = function() {
+		var definitions = this.get("columns.definitions");
+		var activeColumnNames = [];
+		definitions.forEach(function(element) {
+			if (!element.queue && (!element.children || element.children.length == 0)) {
+				activeColumnNames.push(element.name);
+			}
+		});
+		return activeColumnNames;
 	}
 }

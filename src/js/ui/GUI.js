@@ -80,7 +80,7 @@ function GUI(hookSelectorParam, simulation, configuration) {
 	
 	this.updateColumnsAvailabilityCheckboxes = function() {
 		this.configuration.pauseListeners();
-		var specialisations = ['analysis', 'development', 'qa', 'deployment'];
+		var specialisations = this.configuration.getActiveStates();
 		for (var i=0; i < specialisations.length; i++) {
 			var checkboxes = $$(".headcount input[type=checkbox][data-column-permissions-specialist=" + specialisations[i] + "]");
 			var checkboxesToCheck = this.configuration.get("team." + specialisations[i] + ".columns");
@@ -238,7 +238,7 @@ function GUI(hookSelectorParam, simulation, configuration) {
 					var $task = $(taskElement);
 					var task = $task.data("taskReference");
 					if (task.column) {
-						$task.find('.progress-bar').width((100 * task[task.column.name] / task[task.column.name + 'Original']).toFixed(1) + '%');
+						$task.find('.progress-bar').width((100 * task.size[task.column.name] / task.originalSize[task.column.name]).toFixed(1) + '%');
 						$task.find('.task-status').html(createStatusSpan(task.peopleAssigned));
 					}
 					if (!board.tasks[task.id]) {

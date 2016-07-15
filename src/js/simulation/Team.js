@@ -93,15 +93,15 @@ function Team(configuration) {
 			}
 		}
 	}
-	this.configuration.onChange("team.analysis.headcount", this.updateHeadcount.bind(this));
-	this.configuration.onChange("team.development.headcount", this.updateHeadcount.bind(this));
-	this.configuration.onChange("team.qa.headcount", this.updateHeadcount.bind(this));
-	this.configuration.onChange("team.deployment.headcount", this.updateHeadcount.bind(this));
+	var activeStates = this.configuration.getActiveStates();
+	activeStates.forEach(function(element) {
+		this.configuration.onChange("team." + element + ".headcount", this.updateHeadcount.bind(this));
+	}.bind(this));
 	
 	this.initHeadcount = function() {
-		this.updateHeadcount(this.configuration.get("team.analysis.headcount"), "team.analysis.headcount");
-		this.updateHeadcount(this.configuration.get("team.development.headcount"), "team.development.headcount");
-		this.updateHeadcount(this.configuration.get("team.qa.headcount"), "team.qa.headcount");
-		this.updateHeadcount(this.configuration.get("team.deployment.headcount"), "team.deployment.headcount");
+		var activeStates = this.configuration.getActiveStates();
+		activeStates.forEach(function(element) {
+			this.updateHeadcount(this.configuration.get("team." + element + ".headcount"), "team." + element + ".headcount");
+		}.bind(this));
 	}
 }

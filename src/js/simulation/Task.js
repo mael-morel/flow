@@ -1,15 +1,9 @@
-function Task(taskId, time, analysis, development, qa, deployment) {
+function Task(taskId, time, size) {
 	this.id = "Task" + taskId;
 	this.label = "#" + taskId;
 	this.created = time;
-	this.analysis = analysis*60;
-	this.development = development*60;
-	this.qa = qa*60;
-	this.deployment = deployment*60;
-	this.analysisOriginal = this.analysis;
-	this.developmentOriginal = this.development;
-	this.qaOriginal = this.qa;
-	this.deploymentOriginal = this.deployment;
+	this.size = $.extend({}, size);
+	this.originalSize = $.extend({}, size);
 	this.column = null;
 	this.peopleAssigned = [];
 	this.arrivalTime = {};
@@ -54,15 +48,19 @@ function Task(taskId, time, analysis, development, qa, deployment) {
 		if (!column) {
 			column = this.column;
 		}
-		return this[column.name] <= 0 || !this[column.name];
+		return this.size[column.name] <= 0 || !this.size[column.name];
 	}
 	
 	this.getRemainingWork = function(){
-		return Math.max(0, this.analysis) + Math.max(0, this.development) + Math.max(0, this.qa) + Math.max(0, this.deployment);
+		var sizeSummed = 0;
+		Object.keys(this.size).forEach(function(key) {
+			sizeSummed += Math.max(0, this.size[key]);
+		}.bind(this));
+		return sizeSummed;
 	}
 	
 	this.work = function(amount) {
-		this[this.column.name] -= amount;
+		this.size[this.column.name] -= amount;
 	}
 	
 	this.unassignPeople = function() {
