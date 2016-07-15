@@ -8,6 +8,21 @@ function Simulation(hookSelector, externalConfig) {
 			},
 			columns: {
 				prioritisationStrategy: "fifo",
+				definitions: [
+					{name: "input", queue: true, label: "Backlog", cfdLabel: "Backlog", cfdShortLabel: "Bl"},
+					{name: "analysis", queue: false, label: "Doing", cfdLabel: "Analysis", cfdShortLabel: "An"},
+					{name: "analysisDone", queue: true, label: "Done", cfdLabel: "Analysis Done", cfdShortLabel: "An Done"},
+					{name: "development", queue: false, label: "Doing", cfdLabel: "Development", cfdShortLabel: "Dev"},
+					{name: "developmentDone", queue: true, label: "Done", cfdLabel: "Development Done", cfdShortLabel: "Dev Done"},
+					{name: "qa", queue: false, label: "Doing", cfdLabel: "QA", cfdShortLabel: "QA"},
+					{name: "qaDone", queue: true, label: "Done", cfdLabel: "QA Done", cfdShortLabel: "QA Done"},
+					{name: "deployment", queue: false, label: "Doing", cfdLabel: "Deployment", cfdShortLabel: "Depl"},
+					{name: "deploymentDone", queue: true, label: "Done", cfdLabel: "Deployment Done", cfdShortLabel: "Depl Done", ignoreLimit: true},
+					{name: "analysisWithQueue", label: "Analysis", children: ["analysis", "analysisDone"]},
+					{name: "developmentWithQueue", label: "Development", children: ["development", "developmentDone"]},
+					{name: "qaWithQueue", label: "QA", children: ["qa", "qaDone"]},
+					{name: "deploymentWithQueue", label: "Deployment", children: ["deployment", "deploymentDone"]},
+				],
 				limits: {
 					input: null,
 					analysis: null,
@@ -96,7 +111,7 @@ function Simulation(hookSelector, externalConfig) {
 				}
 			}
 		}
-		$.extend(this.data, externalConfig);
+		//$.extend(this.data, externalConfig);
 			
 		this.listeners = {};
 		this.listenersAfter = {};

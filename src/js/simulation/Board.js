@@ -4,8 +4,6 @@ function Board(ticksPerHour, simulation) {
 	this.ticksPerHour = ticksPerHour;
 	this.droppedTasks = [];
 	
-	createColumns(this, simulation);
-	
 	this.reprioritiseTasks = function(sortTasksFun) {
 		for (var i=0; i<this.columns.length -2; i++) {
 			sortTasksFun(this.columns[i].tasks);
@@ -81,28 +79,43 @@ function Board(ticksPerHour, simulation) {
 		}.bind(this));
 	}
 	
-	function createColumns(board, simulation) {
-		board.columns = [];
-		var columns = board.columns;
-		columns.push(new Column("input", true, simulation, "Backlog"));
-		Array.prototype.push.apply(columns, createColumnWithChildren("analysis", simulation, "Analysis", "An").children);
-		Array.prototype.push.apply(columns, createColumnWithChildren("development", simulation, "Development", "Dev").children);
-		Array.prototype.push.apply(columns, createColumnWithChildren("qa", simulation, "QA", "QA").children);
-		Array.prototype.push.apply(columns, createColumnWithChildren("deployment", simulation, "Deployment", "Depl").children);
-		board.columns[board.columns.length - 1].ignoreLimit = true;
-		for (var i=0; i< columns.length; i++) {
-			columns[i].index = i;
+	this.createColumns = function() {
+		var definitions = simulation.configuration.get("columns.definitions");
+		var parentDefinitions = definitions.filter(function(element) {
+			return element.children && element.children.length > 0;
+		});
+		var childrenDefinitions = definitions.filter(function(element) {
+			return !element.children || element.children.length == 0;
+		});
+		var parentColumns = this.createParentColumns(parentDefinitions);
+		this.columns = this.createColumnInstances(childrenDefinitions, parentDefinitions, parentColumns);
+	}
+	
+	this.createParentColumns = function(parentDefinitions) {
+		var result = {};
+		for (var i=0; i<parentDefinitions.length; i++) {
+			var definition = parentDefinitions[i];
+			result[definition.name] = new Column(definition, simulation);
 		}
+		return result;
 	}
-
-	function createColumnWithChildren(name, simulation, label, shortLabel) {
-		var parentColumn = new Column(name + "WithQueue", false, simulation);
-		var column = new Column(name, false, simulation, label, shortLabel);
-		column.parent = parentColumn;
-		var done = new Column(name + "Done", true, simulation, label + " Done", shortLabel + " D");
-		done.parent = parentColumn;
-		parentColumn.children.push(column);
-		parentColumn.children.push(done);
-		return parentColumn;
+	
+	this.createColumnInstances = function(childrenDefinitions, parentDefinitions, parentColumns) {
+		var result = [];
+		for (var i=0; i<childrenDefinitions.length; i++) {
+			var definition = childrenDefinitions[i];
+			var column = new Column(definition, simulation);
+			column.index = i;
+			for (var j=0; j<parentDefinitions.length; j++) {
+				if (parentDefinitions[j].children.indexOf(definition.name) != -1) {
+					column.parent = parentColumns[parentDefinitions[j].name];
+					parentColumns[parentDefinitions[j].name].children.push(column);
+				}
+			}
+			result.push(column);
+		}
+		return result;
 	}
+	
+	this.createColumns();
 }

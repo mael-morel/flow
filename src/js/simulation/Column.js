@@ -1,13 +1,14 @@
-function Column(name, queue, simulation, label, shortLabel) {
-	this.name = name;
+function Column(definition, simulation) {
+	this.name = definition.name;
 	this.tasks = [];
 	this.children = [];
 	this.parent = null;
-	this.ignoreLimit = false;
-	this.queue = queue;
+	this.ignoreLimit = definition.ignoreLimit;
+	this.queue = definition.queue;
 	this.simulation = simulation;
-	this.label = label;
-	this.shortLabel = shortLabel;
+	this.label = definition.cfdLabel;
+	this.shortLabel = definition.cfdShortLabel;
+	this.boardLabel = definition.label;
 	this.index = -1;
 	this.configuration = simulation.configuration;
 	
@@ -37,7 +38,7 @@ function Column(name, queue, simulation, label, shortLabel) {
 	}
 	
 	this.isQueue = function() {
-		return queue;
+		return this.queue == true;
 	}
 	
 	this.addTask = function(task) {
