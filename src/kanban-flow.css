@@ -218,15 +218,6 @@
 	padding: 5px;
 }
 
-.board th span.headcount {
-    padding: 2pt;
-    padding-left: 4pt;
-    padding-right: 4pt;
-}
-
-.board th div.headcount-surrounding {
-	display:inline-block;
-}
 .board th input {
 	margin-top: 3pt;
     margin-bottom: 3pt;
