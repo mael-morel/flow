@@ -136,21 +136,21 @@
 	width: 40pt;
 }
 
-.simulation-settings-modal .modal-body table {
+.settings-table {
 	table-layout: fixed;
 	width: 100%;
 }
 
-.simulation-settings-modal .modal-body table tr:hover {
+.settings-table tr:hover {
 	background-color: #eee;
 }
 
-.simulation-settings-modal .modal-body table tr td {
+.settings-table tr td {
 	text-align: left;
 	font-weight: normal;
 	padding:3px;
 }
-.simulation-settings-modal .modal-body table tr td:first-child {
+.settings-table tr td:first-child {
 	text-align: right;
 	padding-right: 3pt;
 }
@@ -165,10 +165,17 @@
     -webkit-flex: 1;
 	-ms-flex: 1;
 	vertical-align: top;
-	
 }
-.backlog-settings>div table {
-	
+.simulation-settings-team {
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+}
+.simulation-settings-team>div {
+    flex: 1;
+    -webkit-flex: 1;
+	-ms-flex: 1;
+	vertical-align: top;
 }
 
 .title {
@@ -211,10 +218,6 @@
 	padding: 5px;
 }
 
-.column-settings {
-	display:none;
-}
-
 .board th span.headcount {
     padding: 2pt;
     padding-left: 4pt;
@@ -231,46 +234,6 @@
 .board th input[type='checkbox'] {
 	margin-top: 8pt;
 	margin-bottom: 4pt;
-}
-
-th.analysis {
-	background: #cce;
-}
-td.analysis, td.analysisDone, .board th span.headcount.analysis {
-	background: #aac;
-}
-span.analysis {
-	color: #00f;
-}
-
-th.development {
-	background: #cec;
-}
-td.development, td.developmentDone, .board th span.headcount.development {
-	background: #aca;
-}
-span.development {
-	color: #0c0;
-}
-
-th.qa {
-	background: #ece;
-}
-td.qa, td.qaDone, .board th span.headcount.qa {
-	background: #cac;
-}
-span.qa {
-	color: #f0f;
-}
-
-th.deployment {
-	background: #cee;
-}
-td.deployment, td.deploymentDone, .board th span.headcount.deployment {
-	background: #acc;
-}
-span.deployment {
-	color: #aad;
 }
 
 .board .person {

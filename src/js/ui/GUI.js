@@ -65,7 +65,7 @@ function GUI(hookSelectorParam, simulation, configuration) {
 		window.top.location = url;
 	}
 	
-	$$(".headcount input[type=checkbox]").change(function(event){
+	$$(".who-works-where input[type=checkbox]").change(function(event){
 		var checkbox = event.target;
 		var checked = event.target.checked;
 		var column = $(event.target).data("columnPermissionsColumn");
@@ -92,7 +92,7 @@ function GUI(hookSelectorParam, simulation, configuration) {
 		this.configuration.pauseListeners();
 		var specialisations = this.configuration.getActiveStates();
 		for (var i=0; i < specialisations.length; i++) {
-			var checkboxes = $$(".headcount input[type=checkbox][data-column-permissions-specialist=" + specialisations[i] + "]");
+			var checkboxes = $$(".who-works-where input[type=checkbox][data-column-permissions-specialist=" + specialisations[i] + "]");
 			var checkboxesToCheck = this.configuration.get("team." + specialisations[i] + ".columns");
 			for (var j=0; j<checkboxes.length; j++) {
 				var checkbox = $(checkboxes[j]);
@@ -217,13 +217,6 @@ function GUI(hookSelectorParam, simulation, configuration) {
         var divOverlay = $$('.tasksDivOverlay');
         divOverlay.hide();
     });
-	
-	$$(".board th.column-settings-header").mouseover(function() {
-		$$('.column-settings').show();
-	});
-	$$(".board th.column-settings-header").mouseleave(function() {
-		$$('.column-settings').hide();
-	});
 	
 	this.update = function(board, stats, force) {
 		var now = Date.now();

@@ -37,24 +37,83 @@
 	  			<li role="presentation"><a>Stats</a></li>
 	  			<li role="presentation"><a>Board</a></li>
 	  		</ul>
-			<div class="simulation-settings-general">
-				<table>
-					<tr>
-						<td>Max WIP for a single person</td>
-						<td><input type="text" maxlength="2" data-model="maxTasksOnOnePerson"/></td>
-					</tr>
-					<tr>
-						<td>Max no. of people working on a single task</td>
-						<td><input type="text" maxlength="2" data-model="maxPeopleOnOneTask"/></td>
-					</tr>
-					<tr>
-						<td>Productivity when a person works in different column than their specialisation (%)</td>
-						<td><input type="text" maxlength="3" data-model="team.workingOutOfSpecialisationCoefficient"/></td>
-					</tr>
-				</table>
+			<div>
+				<div class="simulation-settings-team">
+					<div>
+						<table class="settings-table">
+							<tr>
+								<td>Max WIP for a single person</td>
+								<td><input type="text" maxlength="2" data-model="maxTasksOnOnePerson"/></td>
+							</tr>
+							<tr>
+								<td>Max no. of people working on a single task</td>
+								<td><input type="text" maxlength="2" data-model="maxPeopleOnOneTask"/></td>
+							</tr>
+							<tr>
+								<td>Productivity when a person works in different column than their specialisation (%)</td>
+								<td><input type="text" maxlength="3" data-model="team.workingOutOfSpecialisationCoefficient"/></td>
+							</tr>
+							<tr>
+								<td>Analysis headcount</td>
+								<td><input type="text" maxlength="3" data-model="team.col1.headcount"/></td>
+							</tr>
+							<tr>
+								<td>Development headcount</td>
+								<td><input type="text" maxlength="3" data-model="team.col3.headcount"/></td>
+							</tr>
+							<tr>
+								<td>QA headcount</td>
+								<td><input type="text" maxlength="3" data-model="team.col5.headcount"/></td>
+							</tr>
+							<tr>
+								<td>Deployment headcount</td>
+								<td><input type="text" maxlength="3" data-model="team.col7.headcount"/></td>
+							</tr>
+						</table>
+					</div>
+					<div>
+						<table class="settings-table who-works-where">
+							<tr>
+								<td></td>
+								<td>An</td>
+								<td>Dev</td>
+								<td>QA</td>
+								<td>Dep</td>
+							</tr>
+							<tr>
+								<td>Analysis</td>
+								<td><input type="checkbox" data-column-permissions-column="col1" data-column-permissions-specialist="col1"/></td>
+								<td><input type="checkbox" data-column-permissions-column="col3" data-column-permissions-specialist="col1"/></td>
+								<td><input type="checkbox" data-column-permissions-column="col5" data-column-permissions-specialist="col1"/></td>
+								<td><input type="checkbox" data-column-permissions-column="col7" data-column-permissions-specialist="col1"/></td>
+							</tr>
+							<tr>
+								<td>Development</td>
+								<td><input type="checkbox" data-column-permissions-column="col1" data-column-permissions-specialist="col3"/></td>
+								<td><input type="checkbox" data-column-permissions-column="col3" data-column-permissions-specialist="col3"/></td>
+								<td><input type="checkbox" data-column-permissions-column="col5" data-column-permissions-specialist="col3"/></td>
+								<td><input type="checkbox" data-column-permissions-column="col7" data-column-permissions-specialist="col3"/></td>
+							</tr>
+							<tr>
+								<td>QA</td>
+								<td><input type="checkbox" data-column-permissions-column="col1" data-column-permissions-specialist="col5"/></td>
+								<td><input type="checkbox" data-column-permissions-column="col3" data-column-permissions-specialist="col5"/></td>
+								<td><input type="checkbox" data-column-permissions-column="col5" data-column-permissions-specialist="col5"/></td>
+								<td><input type="checkbox" data-column-permissions-column="col7" data-column-permissions-specialist="col5"/></td>
+							</tr>
+							<tr>
+								<td>Deployment</td>
+								<td><input type="checkbox" data-column-permissions-column="col1" data-column-permissions-specialist="col7"/></td>
+								<td><input type="checkbox" data-column-permissions-column="col3" data-column-permissions-specialist="col7"/></td>
+								<td><input type="checkbox" data-column-permissions-column="col5" data-column-permissions-specialist="col7"/></td>
+								<td><input type="checkbox" data-column-permissions-column="col7" data-column-permissions-specialist="col7"/></td>
+							</tr>
+						</table>
+					</div>
+				</div>
 			</div>
 			<div>
-				<table>
+				<table class="settings-table">
 					<tr>
 						<td>Prioritisation method</td>
 						<td><select data-model="columns.prioritisationStrategy">
@@ -66,7 +125,7 @@
 				</table>
 				<div class="backlog-settings">
 					<div class="backlog-settings-temporal">
-						<table>
+						<table class="settings-table">
 							<tr>
 								<td>Task creation strategy</td>
 								<td><select data-model="tasks.arrivalStrategy.current">
@@ -103,7 +162,7 @@
 						</table>
 					</div>
 					<div class="backlog-settings-task-size">
-					<table>
+					<table class="settings-table">
 						<tr>
 							<td>Task size strategy</td>
 							<td colspan="2"><select data-model="tasks.sizeStrategy.current">
@@ -206,7 +265,7 @@
 				</div>
 			</div>
 			<div>
-				<table>
+				<table class="settings-table">
 					<tr>
 						<td>No. of days to calculate moving averages</td>
 						<td><input type="text" maxlength="3" data-model="stats.noOfDaysForMovingAverage"/></td>
@@ -247,40 +306,11 @@
 	<div class="board-wrapper board-wrapper-max-height">
 	<table class="board">
 		<tr>
-			<th rowspan="2" class="inputHeader">Backlog <input type="text" class="wiplimit" maxlength="2" data-model="columns.limits.col0"/>
-			</th>
-			<th colspan="2" class="analysis analysisWithQueueHeader column-settings-header">Analysis <input type="text" class="wiplimit" maxlength="2" value="5" data-model="columns.limits.colgrp0"/><br/>
-			 	<div class="column-settings"><span class="glyphicon glyphicon-user analysis"></span>X<input type="text" maxlength="2" value="2" class="headcount" data-model="team.analysis.headcount"/>
-				<div class="headcount-surrounding"><span class="headcount analysis"><input type="checkbox" checked data-column-permissions-column="analysis" data-column-permissions-specialist="analysis"/></span><span 
-					class="headcount development"><input type="checkbox" data-column-permissions-column="development" data-column-permissions-specialist="analysis"/></span><span 
-					class="headcount qa"><input type="checkbox" class="qa" data-column-permissions-column="qa" data-column-permissions-specialist="analysis"/></span><span 
-					class="headcount deployment"><input type="checkbox" class="deployment" data-column-permissions-column="deployment" data-column-permissions-specialist="analysis"/></span></div>
-			</div>
-		 	</th>
-			<th colspan="2" class="development developmentWithQueueHeader column-settings-header">Development <input type="text" class="wiplimit" maxlength="2" value="5" data-model="columns.limits.colgrp1"/><br/>
-			 	<div class="column-settings"><span class="glyphicon glyphicon-user development"></span>X<input type="text" maxlength="2" value="5" class="headcount" data-model="team.development.headcount"/>
-				<div class="headcount-surrounding"><span class="headcount analysis"><input type="checkbox" data-column-permissions-column="analysis" data-column-permissions-specialist="development"/></span><span 
-					class="headcount development"><input type="checkbox" checked  data-column-permissions-column="development" data-column-permissions-specialist="development"/></span><span 
-					class="headcount qa"><input type="checkbox" class="qa"  data-column-permissions-column="qa" data-column-permissions-specialist="development"/></span><span 
-					class="headcount deployment"><input type="checkbox" class="deployment" data-column-permissions-column="deployment" data-column-permissions-specialist="development"/></span></div>
-			</div>
-			</th>
-			<th colspan="2" class="qa qaWithQueueHeader column-settings-header">QA <input type="text" class="wiplimit" maxlength="2" value="3" data-model="columns.limits.colgrp2"/><br/>
-		 	<div class="column-settings"><span class="glyphicon glyphicon-user qa"></span>X<input type="text" maxlength="2" value="3" class="headcount" data-model="team.qa.headcount"/>
-			<div class="headcount-surrounding"><span class="headcount analysis"><input type="checkbox"  data-column-permissions-column="analysis" data-column-permissions-specialist="qa"/></span><span 
-				class="headcount development"><input type="checkbox" data-column-permissions-column="development" data-column-permissions-specialist="qa"/></span><span 
-				class="headcount qa"><input type="checkbox" class="qa" checked data-column-permissions-column="qa" data-column-permissions-specialist="qa"/></span><span 
-				class="headcount deployment"><input type="checkbox" class="deployment" data-column-permissions-column="deployment" data-column-permissions-specialist="qa"/></span></div>
-			</div>
-			</th>
-			<th colspan="2" class="deployment deploymentWithQueueHeader column-settings-header">Deployment<br/>
-		 	<div class="column-settings"><span class="glyphicon glyphicon-user deployment"></span>X<input type="text" maxlength="2" value="1" class="headcount" data-model="team.deployment.headcount"/>
-			<div class="headcount-surrounding"><span class="headcount analysis"><input type="checkbox" data-column-permissions-column="analysis" data-column-permissions-specialist="deployment"/></span><span 
-				class="headcount development"><input type="checkbox" data-column-permissions-column="development" data-column-permissions-specialist="deployment"/></span><span 
-				class="headcount qa"><input type="checkbox" class="qa" data-column-permissions-column="qa" data-column-permissions-specialist="deployment"/></span><span 
-				class="headcount deployment"><input type="checkbox" class="deployment" checked data-column-permissions-column="deployment" data-column-permissions-specialist="deployment"/></span></div>
-			</div>
-			</th>
+			<th rowspan="2">Backlog <input type="text" class="wiplimit" maxlength="2" data-model="columns.limits.col0"/></th>
+			<th colspan="2">Analysis <input type="text" class="wiplimit" maxlength="2" data-model="columns.limits.colgrp0"/></th>
+			<th colspan="2">Development <input type="text" class="wiplimit" maxlength="2" data-model="columns.limits.colgrp1"/></th>
+			<th colspan="2">QA <input type="text" class="wiplimit" maxlength="2" data-model="columns.limits.colgrp2"/></th>
+			<th colspan="2">Deployment</th>
 		</tr>
 		<tr>
 			<th class="analysis">Doing <input type="text" class="wiplimit" maxlength="2" data-model="columns.limits.col1"/></th>
