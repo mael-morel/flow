@@ -113,10 +113,6 @@ function GUI(hookSelectorParam, simulation, configuration) {
 	}
 	
 	this.registerConfigurationOnChangeListeners = function() {
-		this.configuration.onChange("team.analysis.columns", this.updateColumnsAvailabilityCheckboxes.bind(this));
-		this.configuration.onChange("team.development.columns", this.updateColumnsAvailabilityCheckboxes.bind(this));
-		this.configuration.onChange("team.qa.columns", this.updateColumnsAvailabilityCheckboxes.bind(this));
-		this.configuration.onChange("team.deployment.columns", this.updateColumnsAvailabilityCheckboxes.bind(this));
 		this.configuration.afterChange("stats.noOfDaysForMovingAverage", this.updateComponentsDependingOnRunningAverage.bind(this));
 		this.configuration.onChange("tasks.arrivalStrategy.current", this.arrivalStrategyChanged.bind(this));
 		this.configuration.onChange("tasks.sizeStrategy.current", this.sizeStrategyChanged.bind(this));
