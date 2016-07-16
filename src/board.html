@@ -23,8 +23,204 @@
 </head>
 <body>
 <div class="kanban-board" style="display:inline-block">	
+	<div class="modal fade simulation-settings-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	  <div class="modal-dialog modal-lg" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	        <h4 class="modal-title" id="myModalLabel">Simulation Settings</h4>
+	      </div>
+	      <div class="modal-body">
+	  		<ul class="nav nav-tabs">
+	  			<li role="presentation" class="active"><a>Team</a></li>
+	  		 	<li role="presentation"><a>Backlog</a></li>
+	  			<li role="presentation"><a>Stats</a></li>
+	  			<li role="presentation"><a>Board</a></li>
+	  		</ul>
+			<div class="simulation-settings-general">
+				<table>
+					<tr>
+						<td>Max WIP for a single person</td>
+						<td><input type="text" maxlength="2" data-model="maxTasksOnOnePerson"/></td>
+					</tr>
+					<tr>
+						<td>Max no. of people working on a single task</td>
+						<td><input type="text" maxlength="2" data-model="maxPeopleOnOneTask"/></td>
+					</tr>
+					<tr>
+						<td>Productivity when a person works in different column than their specialisation (%)</td>
+						<td><input type="text" maxlength="3" data-model="team.workingOutOfSpecialisationCoefficient"/></td>
+					</tr>
+				</table>
+			</div>
+			<div>
+				<table>
+					<tr>
+						<td>Prioritisation method</td>
+						<td><select data-model="columns.prioritisationStrategy">
+						  <option value="fifo">FIFO</option>
+						  <option value="value">Value</option>
+						  <option value="cd3">CD3</option>
+						</select></td>
+					</tr>
+				</table>
+				<div class="backlog-settings">
+					<div class="backlog-settings-temporal">
+						<table>
+							<tr>
+								<td>Task creation strategy</td>
+								<td><select data-model="tasks.arrivalStrategy.current">
+								  <option value="up-to-limit">If Limit Allows</option>
+								  <option value="constant-push">Constant Push</option>
+								  <option value="random-push">Random Push</option>
+								  <option value="scrum">Scrum</option>
+								</select></td>
+							</tr>
+							<tr data-for-option="constant-push">
+								<td>Constant demand level:</td>
+								<td><input type="text" data-model="tasks.arrivalStrategy.configs.constant-push.demand"/> items/day</td>
+							</tr>
+							<tr data-for-option="random-push">
+								<td>Variable demand level (around):</td>
+								<td><input type="text" data-model="tasks.arrivalStrategy.configs.random-push.demand"/> items/day</td>
+							</tr>
+							<tr data-for-option="random-push">
+								<td>Expected batch size (around):</td>
+								<td><input type="text" data-model="tasks.arrivalStrategy.configs.random-push.batch-size"/> items</td>
+							</tr>
+							<tr data-for-option="scrum">
+								<td>Iteration length:</td>
+								<td><input type="text" data-model="tasks.arrivalStrategy.configs.scrum.length"/> days</td>
+							</tr>
+							<tr data-for-option="scrum">
+								<td>Tasks per iteration:</td>
+								<td><input type="text" data-model="tasks.arrivalStrategy.configs.scrum.tasks"/> tasks</td>
+							</tr>
+							<tr data-for-option="scrum">
+								<td>Substract existing WIP from new tasks number?</td>
+								<td><input type="checkbox" data-model="tasks.arrivalStrategy.configs.scrum.include-existing"/></td>
+							</tr>
+						</table>
+					</div>
+					<div class="backlog-settings-task-size">
+					<table>
+						<tr>
+							<td>Task size strategy</td>
+							<td colspan="2"><select data-model="tasks.sizeStrategy.current">
+							  <option value="constant">Constant</option>
+							  <option value="normal">Normal Distribution</option>
+							  <option value="tshirt">S/M/L/XL</option>
+							</select></td>
+						</tr>
+						<tr data-for-option="constant">
+							<td>Analysis:</td>
+							<td colspan="2"><input type="text" data-model="tasks.sizeStrategy.configs.constant.col1"/> hours</td>
+						</tr>
+						<tr data-for-option="constant">
+							<td>Development:</td>
+							<td colspan="2"><input type="text" data-model="tasks.sizeStrategy.configs.constant.col3"/> hours</td>
+						</tr>
+						<tr data-for-option="constant">
+							<td>QA:</td>
+							<td colspan="2"><input type="text" data-model="tasks.sizeStrategy.configs.constant.col5"/> hours</td>
+						</tr>
+						<tr data-for-option="constant">
+							<td>Deployment:</td>
+							<td colspan="2"><input type="text" data-model="tasks.sizeStrategy.configs.constant.col7"/> hours</td>
+						</tr>
+						<tr data-for-option="normal">
+							<td>Analysis mean:</td>
+							<td colspan="2"><input type="text" data-model="tasks.sizeStrategy.configs.normal.analysis"/> hours</td>
+						</tr>
+						<tr data-for-option="normal">
+							<td>Analysis variation:</td>
+							<td colspan="2"><input type="text" data-model="tasks.sizeStrategy.configs.normal.analysis-variation"/></td>
+						</tr>
+						<tr data-for-option="normal">
+							<td>Development mean:</td>
+							<td colspan="2"><input type="text" data-model="tasks.sizeStrategy.configs.normal.development"/> hours</td>
+						</tr>
+						<tr data-for-option="normal">
+							<td>Development variation:</td>
+							<td colspan="2"><input type="text" data-model="tasks.sizeStrategy.configs.normal.development-variation"/></td>
+						</tr>
+						<tr data-for-option="normal">
+							<td>QA mean:</td>
+							<td colspan="2"><input type="text" data-model="tasks.sizeStrategy.configs.normal.qa"/> hours</td>
+						</tr>
+						<tr data-for-option="normal">
+							<td>QA variation:</td>
+							<td colspan="2"><input type="text" data-model="tasks.sizeStrategy.configs.normal.qa-variation"/></td>
+						</tr>
+						<tr data-for-option="normal">
+							<td>Deployment mean:</td>
+							<td colspan="2"><input type="text" data-model="tasks.sizeStrategy.configs.normal.deployment"/> hours</td>
+						</tr>
+						<tr data-for-option="normal">
+							<td>Deployment variation:</td>
+							<td colspan="2"><input type="text" data-model="tasks.sizeStrategy.configs.normal.deployment-variation"/></td>
+						</tr>
+						<tr data-for-option="tshirt">
+							<td>Analysis:</td>
+							<td colspan="2"><input type="text" data-model="tasks.sizeStrategy.configs.tshirt.analysis"/> %</td>
+						</tr>
+						<tr data-for-option="tshirt">
+							<td>Development:</td>
+							<td colspan="2"><input type="text" data-model="tasks.sizeStrategy.configs.tshirt.development"/> %</td>
+						</tr>
+						<tr data-for-option="tshirt">
+							<td>QA:</td>
+							<td colspan="2"><input type="text" data-model="tasks.sizeStrategy.configs.tshirt.qa"/> %</td>
+						</tr>
+						<tr data-for-option="tshirt">
+							<td>Deployment:</td>
+							<td colspan="2"><input type="text" data-model="tasks.sizeStrategy.configs.tshirt.deployment"/> %</td>
+						</tr>
+						<tr data-for-option="tshirt">
+							<td></td>
+							<td>Effort(h)</td>
+							<td>Probability(%)</td>
+						</tr>
+						<tr data-for-option="tshirt">
+							<td>Small:</td>
+							<td><input type="text" data-model="tasks.sizeStrategy.configs.tshirt.small-effort"/></td>
+							<td><input type="text" data-model="tasks.sizeStrategy.configs.tshirt.small-probability"/></td>
+						</tr>
+						<tr data-for-option="tshirt">
+							<td>Medium:</td>
+							<td><input type="text" data-model="tasks.sizeStrategy.configs.tshirt.medium-effort"/></td>
+							<td><input type="text" data-model="tasks.sizeStrategy.configs.tshirt.medium-probability"/></td>
+						</tr>
+						<tr data-for-option="tshirt">
+							<td>Large:</td>
+							<td><input type="text" data-model="tasks.sizeStrategy.configs.tshirt.large-effort"/></td>
+							<td><input type="text" data-model="tasks.sizeStrategy.configs.tshirt.large-probability"/></td>
+						</tr>
+						<tr data-for-option="tshirt">
+							<td>XLarge:</td>
+							<td><input type="text" data-model="tasks.sizeStrategy.configs.tshirt.xlarge-effort"/></td>
+							<td><input type="text" data-model="tasks.sizeStrategy.configs.tshirt.xlarge-probability"/></td>
+						</tr>
+					</table>
+				</div>
+				</div>
+			</div>
+			<div>
+				<table>
+					<tr>
+						<td>No. of days to calculate moving averages</td>
+						<td><input type="text" maxlength="3" data-model="stats.noOfDaysForMovingAverage"/></td>
+					</tr>
+				</table>
+			</div>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
 	<div class="board-overlay">
-		
 		<div class="top-toolbar">
 			<div class="time-and-buttons">
 				Day: <span class="day"></span>, time: <span class="hour"></span>
@@ -45,185 +241,13 @@
 			<div class="actions">
 				<button type="button" class="btn simulation-help"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></button>
 				<br/>
-				<button type="button" class="btn simulation-settings"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span></button>
-				<div class="simulation-settings-div" style="display: none">
-					<div class="simulation-settings-general">
-						<table>
-							<tr>
-								<td>Max WIP for a single person</td>
-								<td><input type="text" maxlength="2" value="2" class="settings-no-of-tasks" data-model="maxTasksOnOnePerson"/></td>
-							</tr>
-							<tr>
-								<td>Max no. of people working on a single task</td>
-								<td><input type="text" maxlength="2" value="2" class="settings-no-of-people" data-model="maxPeopleOnOneTask"/></td>
-							</tr>
-							<tr>
-								<td>Productivity when a person works in different column than their specialisation (%)</td>
-								<td><input type="text" maxlength="3" value="50" class="settings-productivity-of-working-not-in-specialisation" data-model="team.workingOutOfSpecialisationCoefficient"/></td>
-							</tr>
-							<tr>
-								<td>No. of days to calculate moving averages (stats)</td>
-								<td><input type="text" maxlength="3" value="5" class="settings-no-of-days-for-stats" data-model="stats.noOfDaysForMovingAverage"/></td>
-							</tr>
-							<tr>
-								<td>Prioritisation method</td>
-								<td><select class="settings-prioritisation-method" data-model="columns.prioritisationStrategy">
-								  <option value="fifo">FIFO</option>
-								  <option value="value">Value</option>
-								  <option value="cd3">CD3</option>
-								</select></td>
-							</tr>
-						</table>
-					</div>
-				</div>
+				<button type="button" class="btn simulation-settings" data-toggle="modal" data-target=".simulation-settings-modal"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span></button>
 			</div>
 		</div>
 	<div class="board-wrapper board-wrapper-max-height">
 	<table class="board">
 		<tr>
-			<th rowspan="2" class="inputHeader">Backlog <input type="text" class="wiplimit" maxlength="2" value="" data-model="columns.limits.input"/>
-				<br/>
-				<button type="button" class="btn backlog-settings"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span></button>
-				<div class="backlog-settings-div" style="display: none">
-					<div class="backlog-settings-temporal">
-						<table>
-							<tr>
-								<td>Task creation strategy</td>
-								<td><select class="backlog-settings-temporal-strategy" data-model="tasks.arrivalStrategy.current">
-								  <option value="up-to-limit">If Limit Allows</option>
-								  <option value="constant-push">Constant Push</option>
-								  <option value="random-push">Random Push</option>
-								  <option value="scrum">Scrum</option>
-								</select></td>
-							</tr>
-							<tr data-for-option="constant-push">
-								<td>Constant demand level:</td>
-								<td><input type="text" value="5.5" data-model="tasks.arrivalStrategy.configs.constant-push.demand"/> items/day</td>
-							</tr>
-							<tr data-for-option="random-push">
-								<td>Variable demand level (around):</td>
-								<td><input type="text" value="5.5" data-model="tasks.arrivalStrategy.configs.random-push.demand"/> items/day</td>
-							</tr>
-							<tr data-for-option="random-push">
-								<td>Expected batch size (around):</td>
-								<td><input type="text" value="1" data-model="tasks.arrivalStrategy.configs.random-push.batch-size"/> items</td>
-							</tr>
-							<tr data-for-option="scrum">
-								<td>Iteration length:</td>
-								<td><input type="text" value="10" data-model="tasks.arrivalStrategy.configs.scrum.length"/> days</td>
-							</tr>
-							<tr data-for-option="scrum">
-								<td>Tasks per iteration:</td>
-								<td><input type="text" value="55" data-model="tasks.arrivalStrategy.configs.scrum.tasks"/> tasks</td>
-							</tr>
-							<tr data-for-option="scrum">
-								<td>Substract existing WIP from new tasks number?</td>
-								<td><input type="checkbox" data-model="tasks.arrivalStrategy.configs.scrum.include-existing"/></td>
-							</tr>
-						</table>
-					</div>
-					<div class="backlog-settings-task-size">
-						<table>
-							<tr>
-								<td>Task size strategy</td>
-								<td colspan="2"><select class="backlog-settings-task-size-strategy" data-model="tasks.sizeStrategy.current">
-								  <option value="constant">Constant</option>
-								  <option value="normal">Normal Distribution</option>
-								  <option value="tshirt">S/M/L/XL</option>
-								</select></td>
-							</tr>
-							<tr data-for-option="constant">
-								<td>Analysis:</td>
-								<td><input type="text" value="2" data-model="tasks.sizeStrategy.configs.constant.analysis"/> hours</td>
-							</tr>
-							<tr data-for-option="constant">
-								<td>Development:</td>
-								<td><input type="text" value="7" data-model="tasks.sizeStrategy.configs.constant.development"/> hours</td>
-							</tr>
-							<tr data-for-option="constant">
-								<td>QA:</td>
-								<td><input type="text" value="4" data-model="tasks.sizeStrategy.configs.constant.qa"/> hours</td>
-							</tr>
-							<tr data-for-option="constant">
-								<td>Deployment:</td>
-								<td><input type="text" value="1" data-model="tasks.sizeStrategy.configs.constant.deployment"/> hours</td>
-							</tr>
-							<tr data-for-option="normal">
-								<td>Analysis mean:</td>
-								<td><input type="text" value="2" data-model="tasks.sizeStrategy.configs.normal.analysis"/> hours</td>
-							</tr>
-							<tr data-for-option="normal">
-								<td>Analysis variation:</td>
-								<td><input type="text" value="2" data-model="tasks.sizeStrategy.configs.normal.analysis-variation"/></td>
-							</tr>
-							<tr data-for-option="normal">
-								<td>Development mean:</td>
-								<td><input type="text" value="7" data-model="tasks.sizeStrategy.configs.normal.development"/> hours</td>
-							</tr>
-							<tr data-for-option="normal">
-								<td>Development variation:</td>
-								<td><input type="text" value="4" data-model="tasks.sizeStrategy.configs.normal.development-variation"/></td>
-							</tr>
-							<tr data-for-option="normal">
-								<td>QA mean:</td>
-								<td><input type="text" value="4" data-model="tasks.sizeStrategy.configs.normal.qa"/> hours</td>
-							</tr>
-							<tr data-for-option="normal">
-								<td>QA variation:</td>
-								<td><input type="text" value="3" data-model="tasks.sizeStrategy.configs.normal.qa-variation"/></td>
-							</tr>
-							<tr data-for-option="normal">
-								<td>Deployment mean:</td>
-								<td><input type="text" value="1" data-model="tasks.sizeStrategy.configs.normal.deployment"/> hours</td>
-							</tr>
-							<tr data-for-option="normal">
-								<td>Deployment variation:</td>
-								<td><input type="text" value="2" data-model="tasks.sizeStrategy.configs.normal.deployment-variation"/></td>
-							</tr>
-							<tr data-for-option="tshirt">
-								<td>Analysis:</td>
-								<td><input type="text" value="14" data-model="tasks.sizeStrategy.configs.tshirt.analysis"/> %</td>
-							</tr>
-							<tr data-for-option="tshirt">
-								<td>Development:</td>
-								<td><input type="text" value="50" data-model="tasks.sizeStrategy.configs.tshirt.development"/> %</td>
-							</tr>
-							<tr data-for-option="tshirt">
-								<td>QA:</td>
-								<td><input type="text" value="28" data-model="tasks.sizeStrategy.configs.tshirt.qa"/> %</td>
-							</tr>
-							<tr data-for-option="tshirt">
-								<td>Deployment:</td>
-								<td><input type="text" value="8" data-model="tasks.sizeStrategy.configs.tshirt.deployment"/> %</td>
-							</tr>
-							<tr data-for-option="tshirt">
-								<td></td>
-								<td>Effort(h)</td>
-								<td>Probability(%)</td>
-							</tr>
-							<tr data-for-option="tshirt">
-								<td>Small:</td>
-								<td><input type="text" value="3" data-model="tasks.sizeStrategy.configs.tshirt.small-effort"/></td>
-								<td><input type="text" value="45" data-model="tasks.sizeStrategy.configs.tshirt.small-probability"/></td>
-							</tr>
-							<tr data-for-option="tshirt">
-								<td>Medium:</td>
-								<td><input type="text" value="10" data-model="tasks.sizeStrategy.configs.tshirt.medium-effort"/></td>
-								<td><input type="text" value="30" data-model="tasks.sizeStrategy.configs.tshirt.medium-probability"/></td>
-							</tr>
-							<tr data-for-option="tshirt">
-								<td>Large:</td>
-								<td><input type="text" value="25" data-model="tasks.sizeStrategy.configs.tshirt.large-effort"/></td>
-								<td><input type="text" value="20" data-model="tasks.sizeStrategy.configs.tshirt.large-probability"/></td>
-							</tr>
-							<tr data-for-option="tshirt">
-								<td>XLarge:</td>
-								<td><input type="text" value="75" data-model="tasks.sizeStrategy.configs.tshirt.xlarge-effort"/></td>
-								<td><input type="text" value="5" data-model="tasks.sizeStrategy.configs.tshirt.xlarge-probability"/></td>
-							</tr>
-						</table>
-					</div>
-				</div>
+			<th rowspan="2" class="inputHeader">Backlog <input type="text" class="wiplimit" maxlength="2" data-model="columns.limits.col0"/>
 			</th>
 			<th colspan="2" class="analysis analysisWithQueueHeader column-settings-header">Analysis <input type="text" class="wiplimit" maxlength="2" value="5" data-model="columns.limits.colgrp0"/><br/>
 			 	<div class="column-settings"><span class="glyphicon glyphicon-user analysis"></span>X<input type="text" maxlength="2" value="2" class="headcount" data-model="team.analysis.headcount"/>

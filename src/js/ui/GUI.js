@@ -137,30 +137,53 @@ function GUI(hookSelectorParam, simulation, configuration) {
 		this.sizeStrategyChanged(this.configuration.get("tasks.sizeStrategy.current"));
 	}
 	
-	var currentlySelected = 0;
+	var bottomMenuSelectedTab = 0;
 	$$(".bottom-menu .nav li").click(function() {
 		var navElement = $(this);
 		if (navElement.hasClass('active')) return;
-		$$(".bottom-menu .nav li:nth-child(" + (currentlySelected +1) + ")").toggleClass("active", false);
-		$$(".bottom-menu>div:nth-of-type(" + (currentlySelected +1) + ")").hide(0, function(){
+		$$(".bottom-menu .nav li:nth-child(" + (bottomMenuSelectedTab +1) + ")").toggleClass("active", false);
+		$$(".bottom-menu>div:nth-of-type(" + (bottomMenuSelectedTab +1) + ")").hide(0, function(){
     		$(this).trigger('isHidden');
 		});
-		currentlySelected = navElement.index();
-		$$(".bottom-menu .nav li:nth-child(" + (currentlySelected +1) + ")").toggleClass("active", true);
-		$$(".bottom-menu>div:nth-of-type(" + (currentlySelected +1) + ")").show(0, function(){
+		bottomMenuSelectedTab = navElement.index();
+		$$(".bottom-menu .nav li:nth-child(" + (bottomMenuSelectedTab +1) + ")").toggleClass("active", true);
+		$$(".bottom-menu>div:nth-of-type(" + (bottomMenuSelectedTab +1) + ")").show(0, function(){
+    		$(this).trigger('isVisible');
+		});
+	});
+	var settingsSelectedTab = 0;
+	$$(".simulation-settings-modal .modal-body .nav li").click(function() {
+		var navElement = $(this);
+		if (navElement.hasClass('active')) return;
+		$$(".simulation-settings-modal .modal-body .nav li:nth-child(" + (settingsSelectedTab +1) + ")").toggleClass("active", false);
+		$$(".simulation-settings-modal .modal-body>div:nth-of-type(" + (settingsSelectedTab +1) + ")").hide(0, function(){
+    		$(this).trigger('isHidden');
+		});
+		settingsSelectedTab = navElement.index();
+		$$(".simulation-settings-modal .modal-body .nav li:nth-child(" + (settingsSelectedTab +1) + ")").toggleClass("active", true);
+		$$(".simulation-settings-modal .modal-body>div:nth-of-type(" + (settingsSelectedTab +1) + ")").show(0, function(){
     		$(this).trigger('isVisible');
 		});
 	});
 	
-	$$(".simulation-settings").click(function() {
-		$$(".simulation-settings-div").slideFadeToggle();
-	});
-	
-	$$(".backlog-settings").click(function() {
-		$$(".backlog-settings-div").slideFadeToggle();
-	});
-	
 	$$(".bottom-menu>div:not(:nth-of-type(1))").hide();
+	$$(".simulation-settings-modal .modal-body>div:not(:nth-of-type(1))").hide();
+	
+	this.settingsOpened = function() {
+		this.wasRunningWhenSettingsOpened = false;
+		if (this.simulation.isRunning()) {
+			this.wasRunningWhenSettingsOpened = true;
+			this.pause();
+		}
+	}
+	this.settingsClosed = function() {
+		if (this.wasRunningWhenSettingsOpened) {
+			this.play();
+		}
+	}
+	
+	$$(".simulation-settings-modal").on("show.bs.modal", this.settingsOpened.bind(this));
+	$$(".simulation-settings-modal").on("hide.bs.modal", this.settingsClosed.bind(this));
 	
 	$$(".tasksDivOverlay").click(function() {
         var divOverlay = $$('.tasksDivOverlay');
@@ -322,7 +345,3 @@ function GUI(hookSelectorParam, simulation, configuration) {
 		}.bind(this));
 	}
 }
-
-$.fn.slideFadeToggle = function(easing, callback) {
-  return this.animate({ opacity: 'toggle', height: 'toggle' }, 'fast', easing, callback);
-};

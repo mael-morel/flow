@@ -41,7 +41,10 @@ function Simulation(hookSelector, externalConfig) {
 		clearTimeout(this.timeoutHandler);
 		this.timeoutHandler = null;
 	}
-
+	this.isRunning = function() {
+		return this.timeoutHandler != null;
+	}
+	
 	this.tick = function() {
 		this.timeoutHandler = null;
 		this.addNewTasks(this.board);

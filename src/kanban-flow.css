@@ -121,68 +121,54 @@
 	position: relative;
 }
 
-.simulation-settings-div {
-    position: absolute;
-    right: 17px;
-    z-index: 100;
-    background-color: #eee;
-    border-style: solid;
-    border-width: 1px;
-	border-radius: 6px 6px 6px 6px;
-	box-shadow: 10px 10px 5px rgba(150, 150, 150, 0.8);
-	width: 290pt;
-	padding: 5pt;
-}
 
-.simulation-settings-div>div{
+.simulation-settings-modal .modal-body>div{
     padding: 3pt;
     padding-left: 10pt;
     padding-right: 10pt;
     display: inline-block;
     vertical-align: top;
-    border: 1pt;
-    border-style: solid;
-    background-color: papayawhip;
 	width: 100%;
+	background-color: #f9f9f9;
 }
 
-.backlog-settings-div {
-    position: absolute;
-    left: 17px;
-    z-index: 100;
-    background-color: #eee;
-    border-style: solid;
-    border-width: 1px;
-	border-radius: 6px 6px 6px 6px;
-	box-shadow: 10px 10px 5px rgba(150, 150, 150, 0.8);
-	width: 290pt;
-	padding: 5pt;
+.simulation-settings-modal .modal-body input[type="text"] {
+	width: 40pt;
 }
 
-.backlog-settings-div>div{
-    padding: 3pt;
-    padding-left: 10pt;
-    padding-right: 10pt;
-    display: inline-block;
-    vertical-align: top;
-    border: 1pt;
-    border-style: solid;
-    background-color: papayawhip;
-	width: 100%;
-}
-.backlog-settings-div table {
+.simulation-settings-modal .modal-body table {
 	table-layout: fixed;
+	width: 100%;
 }
-.backlog-settings-div table tr:not(:first-child) {
-	display:none;
+
+.simulation-settings-modal .modal-body table tr:hover {
+	background-color: #eee;
 }
-.backlog-settings-div table tr td {
+
+.simulation-settings-modal .modal-body table tr td {
+	text-align: left;
+	font-weight: normal;
+	padding:3px;
+}
+.simulation-settings-modal .modal-body table tr td:first-child {
 	text-align: right;
 	padding-right: 3pt;
 }
-.backlog-settings-div table tr td:not(:first-child) {
-	text-align: left;
-	font-weight: normal;
+
+.backlog-settings {
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+}
+.backlog-settings>div {
+    flex: 1;
+    -webkit-flex: 1;
+	-ms-flex: 1;
+	vertical-align: top;
+	
+}
+.backlog-settings>div table {
+	
 }
 
 .title {
@@ -223,10 +209,6 @@
 
 .general-stats {
 	padding: 5px;
-}
-
-.simulation-settings-general input[type="text"] {
-	width: 20pt;
 }
 
 .column-settings {
