@@ -14,6 +14,16 @@ function GUI(hookSelectorParam, simulation, configuration) {
 	this.codDiagram = new DiagramCOD(this.simulation);
 	this.scatterplotDiagram = new DiagramScatterplot(this.simulation);
 	
+	this.colors = ['mediumaquamarine', 'lightskyblue', 'lightpink', 'lightgray', 'lightcoral', 'lightblue', 'burlywood', 'antiquewhite', 'silver'];
+	this.colorsForColumns = function() {
+		var result = {};
+		var columnDefs = this.configuration.get("columns.definitions");
+		for (var i=0; i<columnDefs.length; i++) {
+			result[columnDefs[i].name] = this.colors[i%this.colors.length];
+		}
+		return result;
+	}.bind(this)();
+	
 	this.stop = function() {
 		this.simulation.stop();
 		this.cfdDiagram.redraw();
@@ -239,7 +249,7 @@ function GUI(hookSelectorParam, simulation, configuration) {
 					var task = $task.data("taskReference");
 					if (task.column) {
 						$task.find('.progress-bar').width((100 * task.size[task.column.name] / task.originalSize[task.column.name]).toFixed(1) + '%');
-						$task.find('.task-status').html(createStatusSpan(task.peopleAssigned));
+						$task.find('.task-status').html(this.createStatusSpan(task.peopleAssigned));
 					}
 					if (!board.tasks[task.id]) {
 						$task.remove();
@@ -267,17 +277,19 @@ function GUI(hookSelectorParam, simulation, configuration) {
 	};
 	
 	this.createTaskDiv = function(task) {
-		var html = "<div class='task " + task.id + (this.animate?" task-animation" : "") + "'>" + task.label + " <div class='task-status'>" + createStatusSpan(task.peopleAssigned)+ "</div><div class='progress'><div class='progress-bar progress-bar-info' style='width:100%'/></div></div>";
+		var html = "<div class='task " + task.id + (this.animate?" task-animation" : "") + "'>" + task.label + " <div class='task-status'>" + this.createStatusSpan(task.peopleAssigned)+ "</div><div class='progress'><div class='progress-bar progress-bar-info' style='width:100%'/></div></div>";
 		return $(html).data("taskReference", task);
 	}
-	function createStatusSpan(peopleWorkingOn) {
+
+	this.createStatusSpan = function(peopleWorkingOn) {
 		if (peopleWorkingOn.length == 0) {
 			return "<span class='glyphicon glyphicon-hourglass waiting'/>";
 		}
 		var html = "";
 		peopleWorkingOn.forEach(function (person) {
-			html += "<span class='glyphicon glyphicon-user person " +person.specialisation + "'/>";
-		});
+			var color = this.colorsForColumns[person.specialisation];
+			html += "<span class='glyphicon glyphicon-user person' style='color: " + color + "'/>";
+		}.bind(this));
 		return html;
 	}
 
