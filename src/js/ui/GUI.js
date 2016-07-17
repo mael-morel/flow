@@ -28,6 +28,7 @@ function GUI(hookSelectorParam, simulation, configuration) {
 		if (!this.rendered) {
 			this.renderBoard();
 			this.cfdDiagram.renderCheckboxes();
+			this.renderHeadcountConfigInputs();
 			this.rendered = true;
 		}
 		this.bind();
@@ -82,6 +83,17 @@ function GUI(hookSelectorParam, simulation, configuration) {
 			var column = columns[i];
 			var html = "<td class='" + column.name + "' ></td>";
 			$$(".board tr:nth-child(3)").append(html);
+		}
+	}
+	
+	this.renderHeadcountConfigInputs = function() {
+		var columns = this.simulation.board.columns;
+		for (var i=0; i<columns.length; i++) {
+			var column = columns[i];
+			if (!column.isQueue()) {
+				var html = "<tr><td>" + column.label + " headcount</td><td><input type='text' maxlength='3' data-model='team." + column.name + ".headcount'/></td></tr>";
+				$$(".simulation-settings-team-headcount").append(html);
+			}
 		}
 	}
 	
