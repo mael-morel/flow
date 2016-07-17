@@ -276,7 +276,17 @@
 	position:absolute; 
 	z-index:10; 
 } 
-
+.footer {
+	width:100%;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+}
+.footer>div {
+    flex: 1;
+    -webkit-flex: 1;
+    -ms-flex: 1;
+}
 .copyright {
 	text-align: right;
 }
