@@ -23,8 +23,13 @@ function GUI(hookSelectorParam, simulation, configuration) {
 		return result;
 	}.bind(this)();
 	
+	this.rendered = false;
 	this.init = function() {
-		this.renderBoard();
+		if (!this.rendered) {
+			this.renderBoard();
+			this.cfdDiagram.renderCheckboxes();
+			this.rendered = true;
+		}
 		this.bind();
 		this.registerConfigurationOnChangeListeners();
 		this.update(this.simulation.board, this.simulation.stats, true);

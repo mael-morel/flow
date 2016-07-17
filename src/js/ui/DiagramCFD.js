@@ -33,7 +33,7 @@ function DiagramCFD(simulation) {
 	this.updateConfiguration = function() {
 		var groups = [];
 		var group = [];
-		var checkboxes = $$(".simulation-cfd-settings input[type='checkbox']");
+		var checkboxes = $$(".simulation-cfd-settings input[type='checkbox']", false);
 		for (var i=0; i<checkboxes.length; i++) {
 			var checkbox = checkboxes[i];
 			var checked = checkbox.checked;
@@ -82,13 +82,6 @@ function DiagramCFD(simulation) {
 		this.lastUpdatedDay = -1;
 		this.update();
 	};
-	$$(".simulation-cfd-settings input[type='checkbox']").change(this.updateConfiguration.bind(this));
-	$$(".simulation-cfd-settings div:not(:first-child)").click(function(event) {
-		var checkbox = $(event.target).find("input[type='checkbox']")[0];
-		if (!checkbox) return;
-		checkbox.checked = !checkbox.checked;
-		this.updateConfiguration();
-	}.bind(this));
 	
 	this.lastUpdatedDay = 0;
 	this.update = function() {
@@ -118,5 +111,30 @@ function DiagramCFD(simulation) {
 		this.lastUpdatedDay = -1;
 		this.updateConfiguration();
 		this.update();
+	}
+	
+	this.renderCheckboxes = function() {
+		$$(".simulation-cfd-settings-checkboxes").empty();
+		var html = "";
+		var previousParent = null;
+		for (var i=0; i<this.simulation.board.columns.length; i++) {
+			var column = this.simulation.board.columns[i];
+			html += "<div><input type='checkbox' ";
+			if (column.index == 0) {
+				html += "disabled checked";
+			} else if (!column.parent || column.parent != previousParent) {
+				previousParent = column.parent;
+				html += "checked";
+			}
+			html += "/> " + column.label + "</div>";
+		}
+		$$(".simulation-cfd-settings-checkboxes").append(html);
+		$$(".simulation-cfd-settings-checkboxes input[type='checkbox']").change(this.updateConfiguration.bind(this));
+		$$(".simulation-cfd-settings-checkboxes div:not(:first-child)").click(function(event) {
+			var checkbox = $(event.target).find("input[type='checkbox']")[0];
+			if (!checkbox) return;
+			checkbox.checked = !checkbox.checked;
+			this.updateConfiguration();
+		}.bind(this));
 	}
 }
