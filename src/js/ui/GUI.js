@@ -1,6 +1,5 @@
 function GUI(hookSelectorParam, simulation, configuration) {
 	hookSelector = hookSelectorParam;
-	cache.put(hookSelector +' allColumns', $($$('.tasks td').get().reverse()).toArray());
 	this.configuration = configuration;
 	this.simulation = simulation;
 	this.fps = 4;
@@ -23,6 +22,63 @@ function GUI(hookSelectorParam, simulation, configuration) {
 		}
 		return result;
 	}.bind(this)();
+	
+	this.init = function() {
+		this.renderBoard();
+		this.bind();
+		this.registerConfigurationOnChangeListeners();
+		this.update(this.simulation.board, this.simulation.stats, true);
+		this.updateColumnsAvailabilityCheckboxes();
+		this.initialiseBacklogStrategies();
+	}
+	
+	this.renderBoard = function() {
+		$$(".board tr").empty();
+		var columns = this.simulation.board.columns;
+		var firstRowHeader = [];
+		var secondRowHeader = [];
+		for (var i=0; i<columns.length; i++) {
+			var column = columns[i];
+			if (column.parent) {
+				if (firstRowHeader.indexOf(column.parent) < 0) {
+					firstRowHeader.push(column.parent);
+				}
+				secondRowHeader.push(column);
+			} else {
+				firstRowHeader.push(column);
+			}
+		}
+		for (var i=0; i<firstRowHeader.length; i++) {
+			var column = firstRowHeader[i];
+			var html = "<th ";
+			if (column.children.length > 0) {
+				html += "colspan='" + column.children.length +"' ";
+			} else {
+				html += "rowspan='2' ";
+			}
+			html += ">" + column.boardLabel;
+			if (!column.ignoreLimit) {
+				html += " <input type='text' data-model='columns.limits." + column.name + "'/>";
+			}
+			html += "</th>";
+			$$(".board tr:nth-child(1)").append(html);
+		}
+		for (var i=0; i<secondRowHeader.length; i++) {
+			var column = secondRowHeader[i];
+			var html = "<th>";
+			html += column.boardLabel;
+			if (!column.ignoreLimit) {
+				html += " <input type='text' data-model='columns.limits." + column.name + "'/>";
+			}
+			html += "</th>";
+			$$(".board tr:nth-child(2)").append(html);
+		}
+		for (var i=0; i<columns.length; i++) {
+			var column = columns[i];
+			var html = "<td class='" + column.name + "' ></td>";
+			$$(".board tr:nth-child(3)").append(html);
+		}
+	}
 	
 	this.stop = function() {
 		this.simulation.stop();
@@ -250,7 +306,8 @@ function GUI(hookSelectorParam, simulation, configuration) {
 	this.updateBoard = function() {
 		var board = this.simulation.board;
 		var renderTasks = this.renderTasks;
-		$$('allColumns').forEach(function(columnVisual) {
+		var allVisualColumns = $($$('.tasks td', false).get().reverse()).toArray();
+		allVisualColumns.forEach(function(columnVisual) {
 			var columnVisualId = columnVisual.className;
 			columnVisual = $(columnVisual);
 			if (!renderTasks) {
@@ -268,7 +325,7 @@ function GUI(hookSelectorParam, simulation, configuration) {
 					} else if (task.column && task.column.name != columnVisualId) {
 						$task.remove();
 						var newTaskInstance = this.createTaskDiv(task);
-						$$(".tasks td." + task.column.name).append(newTaskInstance);
+						$$(".tasks td." + task.column.name, false).append(newTaskInstance);
 						$task = newTaskInstance;
 					}
 				}.bind(this));
@@ -282,7 +339,7 @@ function GUI(hookSelectorParam, simulation, configuration) {
 				var task = board.tasks[key];
 				if ($$("." + task.id, false).length == 0) {
 					var newTask = this.createTaskDiv(task);
-					$$('.tasks td.' + task.column.name).append(newTask);
+					$$('.tasks td.' + task.column.name, false).append(newTask);
 				}
 			}
 		}
@@ -305,32 +362,35 @@ function GUI(hookSelectorParam, simulation, configuration) {
 		return html;
 	}
 
-	var bindedElements = $$("[data-model]");
-	for (var i=0; i<bindedElements.length; i++) {
-		var $input = $(bindedElements[i]);
-		var key = $input.data("model");
-		if (bindedElements[i].type == "checkbox") {
-			if (this.configuration.get(key)) {
-				$input.attr("checked", "checked");
+	this.bind = function() {
+		var bindedElements = $$("[data-model]:not([data-binded])", false);
+		for (var i=0; i<bindedElements.length; i++) {
+			var $input = $(bindedElements[i]);
+			var key = $input.data("model");
+			if (bindedElements[i].type == "checkbox") {
+				if (this.configuration.get(key)) {
+					$input.attr("checked", "checked");
+				} else {
+					$input.removeAttr('checked');
+				}
 			} else {
-				$input.removeAttr('checked');
+				$input.val(this.configuration.get(key));
 			}
-		} else {
-			$input.val(this.configuration.get(key));
+			$input.change(function(event) {
+				var newValue = event.target.type == "checkbox" ? event.target.checked : event.target.value;
+				if (typeof newValue == "string" && !isNaN(parseFloat(newValue))) {
+					newValue = parseFloat(newValue);
+				}
+				var property = $(event.target).data("model");
+				this.configuration.set(property, newValue);
+				this.updateURL();
+				ga('send', {
+				  hitType: 'event',
+				  eventCategory: 'Configuration change',
+				  eventAction: property,
+				});
+			}.bind(this));
+			$input.data("binded", true);
 		}
-		$input.change(function(event) {
-			var newValue = event.target.type == "checkbox" ? event.target.checked : event.target.value;
-			if (typeof newValue == "string" && !isNaN(parseFloat(newValue))) {
-				newValue = parseFloat(newValue);
-			}
-			var property = $(event.target).data("model");
-			this.configuration.set(property, newValue);
-			this.updateURL();
-			ga('send', {
-			  hitType: 'event',
-			  eventCategory: 'Configuration change',
-			  eventAction: property,
-			});
-		}.bind(this));
 	}
 }

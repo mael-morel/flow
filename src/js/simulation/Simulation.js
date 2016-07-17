@@ -20,10 +20,7 @@ function Simulation(hookSelector, externalConfig) {
 		this.board = new Board(this.ticksPerHour, this);
 		this.stats = new Stats(this, this.configuration);
 		this.team.initHeadcount();
-		this.gui.registerConfigurationOnChangeListeners();
-		this.gui.update(this.board, this.stats, true);
-		this.gui.updateColumnsAvailabilityCheckboxes();
-		this.gui.initialiseBacklogStrategies();
+		this.gui.init();
 	}
 
 	this.play = function() {
