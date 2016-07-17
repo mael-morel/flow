@@ -88,13 +88,31 @@ function GUI(hookSelectorParam, simulation, configuration) {
 	
 	this.renderHeadcountConfigInputs = function() {
 		var columns = this.simulation.board.columns;
+		var activeColumns = [];
 		for (var i=0; i<columns.length; i++) {
 			var column = columns[i];
 			if (!column.isQueue()) {
+				activeColumns.push(column);
 				var html = "<tr><td>" + column.label + " headcount</td><td><input type='text' maxlength='3' data-model='team." + column.name + ".headcount'/></td></tr>";
 				$$(".simulation-settings-team-headcount").append(html);
 			}
 		}
+		var html = "<tr><td></td>";
+		for (var i=0; i<activeColumns.length; i++) {
+			var column = activeColumns[i];
+			html += "<td>" + column.shortLabel + "</td>";
+		}
+		html += "</tr>";
+		for (var i=0; i<activeColumns.length; i++) {
+			var row = activeColumns[i];
+			html += "<tr><td>" + row.label + "</td>";
+			for (var j=0; j<activeColumns.length; j++) {
+				var column = activeColumns[j];
+				html += "<td><input type='checkbox' data-column-permissions-column='" + column.name +"' data-column-permissions-specialist='" + row.name + "'/></td>";
+			}
+			html += "</tr>";
+		}
+		$$(".who-works-where").append(html);
 	}
 	
 	this.stop = function() {
@@ -137,29 +155,6 @@ function GUI(hookSelectorParam, simulation, configuration) {
 		url = url + btoa(JSON.stringify(this.configuration.data));
 		window.top.location = url;
 	}
-	
-	$$(".who-works-where input[type=checkbox]").change(function(event){
-		var checkbox = event.target;
-		var checked = event.target.checked;
-		var column = $(event.target).data("columnPermissionsColumn");
-		var specialisation = $(event.target).data("columnPermissionsSpecialist");
-		var collumnsAllowedToWorkIn = this.configuration.get("team."+specialisation+".columns");
-		var newArray;
-		if (checked) {
-			newArray = collumnsAllowedToWorkIn.slice();
-			newArray.push(column);
-		} else {
-			newArray = collumnsAllowedToWorkIn.slice();
-			newArray.splice(collumnsAllowedToWorkIn.indexOf(column), 1);
-		}
-		this.configuration.set("team." + specialisation + ".columns", newArray);
-		this.updateURL();
-		ga('send', {
-		  hitType: 'event',
-		  eventCategory: 'Configuration change',
-		  eventAction: "team."+specialisation+".columns",
-		});
-	}.bind(this));
 	
 	this.updateColumnsAvailabilityCheckboxes = function() {
 		this.configuration.pauseListeners();
@@ -409,5 +404,27 @@ function GUI(hookSelectorParam, simulation, configuration) {
 			}.bind(this));
 			$input.data("binded", true);
 		}
+		$$(".who-works-where input[type=checkbox]", false).change(function(event){
+			var checkbox = event.target;
+			var checked = event.target.checked;
+			var column = $(event.target).data("columnPermissionsColumn");
+			var specialisation = $(event.target).data("columnPermissionsSpecialist");
+			var collumnsAllowedToWorkIn = this.configuration.get("team."+specialisation+".columns");
+			var newArray;
+			if (checked) {
+				newArray = collumnsAllowedToWorkIn.slice();
+				newArray.push(column);
+			} else {
+				newArray = collumnsAllowedToWorkIn.slice();
+				newArray.splice(collumnsAllowedToWorkIn.indexOf(column), 1);
+			}
+			this.configuration.set("team." + specialisation + ".columns", newArray);
+			this.updateURL();
+			ga('send', {
+			  hitType: 'event',
+			  eventCategory: 'Configuration change',
+			  eventAction: "team."+specialisation+".columns",
+			});
+		}.bind(this));
 	}
 }
