@@ -124,10 +124,17 @@ function Simulation(hookSelector, externalConfig) {
 			});
 			return new Task(id, time, taskConfig);
 		}.bind(this), 
+		
 		"normal": function(id, time) {
 			var conf = this.configuration.get("tasks.sizeStrategy.configs.normal");
-			return new Task(id, time, normal_random(conf["analysis"], conf["analysis-variation"]), normal_random(conf["development"], conf["development-variation"]), normal_random(conf["qa"], conf["qa-variation"]), normal_random(conf["deployment"], conf["deployment-variation"]));
+			var activeStates = this.configuration.getActiveStates();
+			var taskConfig = {};
+			activeStates.forEach(function(element) {
+				taskConfig[element] = normal_random(conf[element], conf[element + "-variation"]) * 60;
+			});
+			return new Task(id, time, taskConfig);
 		}.bind(this),
+		
 		"tshirt": function(id, time) {
 			var conf = this.configuration.get("tasks.sizeStrategy.configs.tshirt");
 			var smallProbability = parseFloat(conf["small-probability"]);
@@ -140,16 +147,18 @@ function Simulation(hookSelector, externalConfig) {
 			if (tshirtSizeRandom > smallProbability + mediumProbability) size = "large";
 			if (tshirtSizeRandom > smallProbability + mediumProbability + largeProbability) size = "xlarge";
 			var totalSize = parseFloat(conf[size + "-effort"]);
-			var analysis = parseFloat(conf["analysis"]);
-			var development = parseFloat(conf["development"]);
-			var qa = parseFloat(conf["qa"]);
-			var deployment = parseFloat(conf["deployment"]);
-			var sum = analysis + development + qa + deployment;
-			analysis = totalSize * analysis / sum;
-			development = totalSize * development / sum;
-			qa = totalSize * qa / sum;
-			deployment = totalSize * deployment / sum;
-			return new Task(id, time, normal_random(analysis, analysis / 2), normal_random(development, development / 2),normal_random(qa, qa / 2),normal_random(deployment, deployment / 2));
+			var activeStates = this.configuration.getActiveStates();
+			var taskConfig = {};
+			var sum = 0;
+			activeStates.forEach(function(element) {
+				sum += conf[element];
+			});
+			activeStates.forEach(function(element) {
+				var percentage = parseFloat(conf[element]);
+				var effort = 60 * totalSize * percentage / sum;
+				taskConfig[element] = normal_random(effort, effort / 2);
+			});
+			return new Task(id, time, taskConfig);
 		}.bind(this),
 	};
 	
