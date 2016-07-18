@@ -29,6 +29,7 @@ function GUI(hookSelectorParam, simulation, configuration) {
 			this.renderBoard();
 			this.cfdDiagram.renderCheckboxes();
 			this.renderHeadcountConfigInputs();
+			this.renderTaskStrategies();
 			this.rendered = true;
 		}
 		this.bind();
@@ -113,6 +114,19 @@ function GUI(hookSelectorParam, simulation, configuration) {
 			html += "</tr>";
 		}
 		$$(".who-works-where").append(html);
+	}
+	
+	this.renderTaskStrategies = function() {
+		var columns = this.simulation.board.columns;
+		for (var i=0; i<columns.length; i++) {
+			var column = columns[i];
+			if (!column.isQueue()) {
+				var html = "<tr data-for-option='constant'><td>" + column.label + "</td><td colspan='2'><input type='text' data-model='tasks.sizeStrategy.configs.constant." + column.name + "'/> hours</td></tr>";
+				html+= "<tr data-for-option='normal'><td>" + column.label + " mean:</td><td colspan='2'><input type='text' data-model='tasks.sizeStrategy.configs.normal." + column.name + "'/> hours</td></tr><tr data-for-option='normal'><td>" + column.label + " variation:</td><td colspan='2'><input type='text' data-model='tasks.sizeStrategy.configs.normal." + column.name + "-variation'/></td></tr>";
+				html+= "<tr data-for-option='tshirt'><td>" + column.label + "</td><td colspan='2'><input type='text' data-model='tasks.sizeStrategy.configs.tshirt." + column.name + "'/> %</td></tr>";
+				$$(".task-size-strategies").append(html);
+			}
+		}
 	}
 	
 	this.stop = function() {
