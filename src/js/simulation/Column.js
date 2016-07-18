@@ -17,7 +17,7 @@ function Column(definition, simulation) {
 		this.tasks.forEach(function(task) {
 			if (task.peopleAssigned.every(function(person) {
 				return person.tasksWorkingOn.length == 1;
-				})) {
+				}) && !task.finished()) {
 					result.push(task);
 				}
 		});
@@ -30,7 +30,7 @@ function Column(definition, simulation) {
 	this.getNotAssignedTasks = function() {
 		var result = [];
 		this.tasks.forEach(function(task) {
-			if(task.peopleAssigned.length == 0) {
+			if(task.peopleAssigned.length == 0 && !task.finished()) {
 				result.push(task);
 			}
 		});
