@@ -60,6 +60,9 @@ function GUI(hookSelectorParam, simulation, configuration) {
 			html += "</td></tr>";
 		}
 		$$( ".board-config tr").after(html);
+		$$(".board-column-remove").click(function() {
+			$(this).parent().parent().remove();
+		});
 	}
 	
 	this.renderBoard = function() {
