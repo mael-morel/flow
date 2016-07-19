@@ -51,11 +51,11 @@ function GUI(hookSelectorParam, simulation, configuration) {
 			var column = columns[i];
 			html += (i == 0 || i==columns.length -1 ? "<tr><td>" : "<tr class='sortit'><td>");
 			html += (i == 0 || i==columns.length -1 ? "" : "<span class='glyphicon glyphicon-menu-hamburger' aria-hidden='true'></span>") + "</td><td>";
-			html += (i == 0 || i==columns.length -1 ? "" :"<input type='text' placeholder='Group name' value='" + (column.parent ? column.parent.boardLabel : "")+ "'/>");
-			html += "</td><td><input type='text' placeholder='Column name' value='" + column.boardLabel + "'/></td>";
-			html += "<td><input type='text' placeholder='Long name' value='" + column.label + "'/></td>"
-			html += "<td><input type='text' placeholder='Short name' value='" + column.shortLabel + "'/></td><td>";
-			html += (i == 0 || i==columns.length -1 ? "" : "<input type='checkbox' " + (column.isQueue()? "checked" :"" ) + "/>");
+			html += (i == 0 || i==columns.length -1 ? "" :"<input data-type='group' type='text' placeholder='Group name' value='" + (column.parent ? column.parent.boardLabel : "")+ "'/>");
+			html += "</td><td><input data-type='label' type='text' placeholder='Column name' value='" + column.boardLabel + "'/></td>";
+			html += "<td><input data-type='cfdLabel' type='text' placeholder='Long name' value='" + column.label + "'/></td>"
+			html += "<td><input data-type='cfdShortLabel' type='text' placeholder='Short name' value='" + column.shortLabel + "'/></td><td>";
+			html += (i == 0 || i==columns.length -1 ? "" : "<input data-type='queue' type='checkbox' " + (column.isQueue()? "checked" :"" ) + "/>");
 			html += "</td><td>" + (i == 0 || i==columns.length -1 ? "" : "<span class='glyphicon glyphicon-remove board-column-remove' aria-hidden='true'></span>");
 			html += "</td></tr>";
 		}
@@ -65,12 +65,66 @@ function GUI(hookSelectorParam, simulation, configuration) {
 		};
 		$$(".board-column-remove").click(removeListener);
 		$$(".board-config-add-column").click(function() {
-			var html = "<tr class='sortit'><td><span class='glyphicon glyphicon-menu-hamburger' aria-hidden='true'></span></td><td><input type='text' placeholder='Group name'></td><td><input type='text' placeholder='Column name'></td><td><input type='text' placeholder='Long name'></td><td><input type='text' placeholder='Short name'></td><td><input type='checkbox'></td><td><span class='glyphicon glyphicon-remove board-column-remove' aria-hidden='true'></span></td></tr>"
+			var html = "<tr class='sortit'><td><span class='glyphicon glyphicon-menu-hamburger' aria-hidden='true'></span></td><td><input data-type='group' type='text' placeholder='Group name'></td><td><input data-type='label' type='text' placeholder='Column name'></td><td><input data-type='cfdLabel' type='text' placeholder='Long name'></td><td><input data-type='cfdShortLabel' type='text' placeholder='Short name'></td><td><input data-type='queue' type='checkbox'></td><td><span class='glyphicon glyphicon-remove board-column-remove' aria-hidden='true'></span></td></tr>"
 			var rows = $$( ".board-config tr", false);
 			var newRow = $(html);
 			$(rows[rows.length-1]).before(newRow);
 			newRow.find(".board-column-remove").click(removeListener);
 		});
+		
+		$$(".board-config-save").click(function() {
+			var newConfig = [];
+			var groups = {};
+			$$(".board-config tr:visible", false).each(function(index, row) {
+				if (index == 0) return;
+				$row = $(row);
+				var column = {};
+				newConfig.push(column);
+				$row.find("input").each(function(index, input) {
+					var $input = $(input);
+					var value;
+					if (input.type == 'checkbox') {
+						value = input.checked;
+					} else {
+						value = input.value;
+					}
+					var type = $input.data("type");
+					if (type == "group" && value != "") {
+						var group = groups[value];
+						if (!group) {
+							group = {};
+							group['label'] = value;
+							group.children = [];
+							groups[value] = group;
+						}
+						group.children.push(column);
+					} else {
+						column[type] = value;
+					}
+				});
+			});
+			newConfig[newConfig.length - 1]["ignoreLimit"] = true;
+			newConfig[newConfig.length - 1]["queue"] = true;
+			newConfig[0]["queue"] = true;
+			for (var i=0; i<newConfig.length; i++) {
+				newConfig[i].name = "col" + i;
+			}
+			var groupNames = Object.keys(groups);
+			for (var i=0; i<groupNames.length; i++) {
+				var group = groups[groupNames[i]];
+				group.name = "colgrp" + i;
+				var childrenNames = [];
+				for (var j=0; j < group.children.length; j++) {
+					childrenNames.push(group.children[j].name);
+				}
+				group.children = childrenNames;
+				newConfig.push(group);
+			}
+			this.configuration.pauseListeners();
+			this.configuration.set("columns.definitions", newConfig);
+			this.updateURL();
+			location.reload();
+		}.bind(this));
 	}
 	
 	this.renderBoard = function() {
