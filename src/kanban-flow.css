@@ -132,7 +132,7 @@
 	background-color: #f9f9f9;
 }
 
-.simulation-settings-modal .modal-body input[type="text"] {
+.settings-table input[type="text"] {
 	width: 40pt;
 }
 
@@ -153,6 +153,28 @@
 .settings-table tr td:first-child {
 	text-align: right;
 	padding-right: 3pt;
+}
+
+.board-config-div {
+	text-align: center;
+}
+.board-config tr.sortit {
+	cursor:grab;
+	cursor:-moz-grab;
+	cursor:-webkit-grab;
+}
+.board-config, .board-config th {
+	text-align: center;
+}
+.board-config tr:hover {
+	background-color: #eee;
+}
+.board-config {
+	margin: 0 auto;
+}
+.board-column-remove {
+	color:red;
+	cursor: pointer;
 }
 
 .backlog-settings {

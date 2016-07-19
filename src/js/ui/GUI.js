@@ -30,6 +30,7 @@ function GUI(hookSelectorParam, simulation, configuration) {
 			this.cfdDiagram.renderCheckboxes();
 			this.renderHeadcountConfigInputs();
 			this.renderTaskStrategies();
+			this.renderBoardConfig();
 			this.rendered = true;
 		}
 		this.bind();
@@ -37,6 +38,28 @@ function GUI(hookSelectorParam, simulation, configuration) {
 		this.update(this.simulation.board, this.simulation.stats, true);
 		this.updateColumnsAvailabilityCheckboxes();
 		this.initialiseBacklogStrategies();
+	}
+	
+	this.renderBoardConfig = function() {
+	    $$( ".board-config tbody" ).sortable({
+      		items: ".sortit",
+			cursor: "pointer"
+    	});
+		var columns = this.simulation.board.columns;
+		var html = "";
+		for (var i=0; i<columns.length; i++) {
+			var column = columns[i];
+			html += (i == 0 || i==columns.length -1 ? "<tr><td>" : "<tr class='sortit'><td>");
+			html += (i == 0 || i==columns.length -1 ? "" : "<span class='glyphicon glyphicon-menu-hamburger' aria-hidden='true'></span>") + "</td><td>";
+			html += (i == 0 || i==columns.length -1 ? "" :"<input type='text' placeholder='Group name' value='" + (column.parent ? column.parent.boardLabel : "")+ "'/>");
+			html += "</td><td><input type='text' placeholder='Column name' value='" + column.boardLabel + "'/></td>";
+			html += "<td><input type='text' placeholder='Long name' value='" + column.label + "'/></td>"
+			html += "<td><input type='text' placeholder='Short name' value='" + column.shortLabel + "'/></td><td>";
+			html += (i == 0 || i==columns.length -1 ? "" : "<input type='checkbox' " + (column.isQueue()? "checked" :"" ) + "/>");
+			html += "</td><td>" + (i == 0 || i==columns.length -1 ? "" : "<span class='glyphicon glyphicon-remove board-column-remove' aria-hidden='true'></span>");
+			html += "</td></tr>";
+		}
+		$$( ".board-config tr").after(html);
 	}
 	
 	this.renderBoard = function() {

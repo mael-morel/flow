@@ -3,6 +3,7 @@
 <head>
 	<link rel="stylesheet" href="libs/bootstrap.min.css">
 	<link rel="stylesheet" href="libs/bootstrap-slider.min.css">
+	<link rel="stylesheet" href="libs/jquery-ui.min.css">
 	<link rel="stylesheet" href="kanban-flow.css">
 	<script>
 	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -15,6 +16,7 @@
 
 	</script>
 	<script src="libs/jquery-2.2.3.min.js"></script>
+	<script src="libs/jquery-ui.min.js"></script>
 	<script src="libs/bootstrap.min.js"></script>
 	<script src="libs/bootstrap-slider.min.js"></script>
 	<script src="libs/jquery.canvasjs.min.js"></script>
@@ -23,13 +25,9 @@
 </head>
 <body>
 <div class="kanban-board" style="display:inline-block">	
-	<div class="modal fade simulation-settings-modal" tabindex="-1" role="dialog" aria-labelledby="sim-settings-label">
+	<div class="modal fade simulation-settings-modal" tabindex="-1" role="dialog">
 	  <div class="modal-dialog modal-lg" role="document">
 	    <div class="modal-content">
-	      <div class="modal-header">
-	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-	        <h4 class="modal-title" id="sim-settings-label">Settings</h4>
-	      </div>
 	      <div class="modal-body">
 	  		<ul class="nav nav-tabs">
 	  			<li role="presentation" class="active"><a>Team</a></li>
@@ -150,11 +148,27 @@
 				</div>
 			</div>
 			<div>
-				<table class="settings-table">
+				<table class="settings-table board-config">
 					<tr>
 						<td>No. of days to calculate moving averages</td>
 						<td><input type="text" maxlength="3" data-model="stats.noOfDaysForMovingAverage"/></td>
 					</tr>
+				</table>
+			</div>
+			<div class="board-config-div">
+				<p><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Changes in board layout will reset your simulation! Also, you will need to save the changes by pressing the Save button at the bottom.</p>
+				<table class="board-config">
+					<tbody>
+						<tr>
+							<th/>
+							<th>Group name</th>
+							<th>Column name</th>
+							<th>Long name</th>
+							<th>Short name</th>
+							<th>Queue?</th>
+							<th></th>	
+						</tr>
+					</tbody>
 				</table>
 			</div>
 	      </div>
