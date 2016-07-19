@@ -60,8 +60,16 @@ function GUI(hookSelectorParam, simulation, configuration) {
 			html += "</td></tr>";
 		}
 		$$( ".board-config tr").after(html);
-		$$(".board-column-remove").click(function() {
+		var removeListener = function() {
 			$(this).parent().parent().remove();
+		};
+		$$(".board-column-remove").click(removeListener);
+		$$(".board-config-add-column").click(function() {
+			var html = "<tr class='sortit'><td><span class='glyphicon glyphicon-menu-hamburger' aria-hidden='true'></span></td><td><input type='text' placeholder='Group name'></td><td><input type='text' placeholder='Column name'></td><td><input type='text' placeholder='Long name'></td><td><input type='text' placeholder='Short name'></td><td><input type='checkbox'></td><td><span class='glyphicon glyphicon-remove board-column-remove' aria-hidden='true'></span></td></tr>"
+			var rows = $$( ".board-config tr", false);
+			var newRow = $(html);
+			$(rows[rows.length-1]).before(newRow);
+			newRow.find(".board-column-remove").click(removeListener);
 		});
 	}
 	
