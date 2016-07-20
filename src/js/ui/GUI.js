@@ -74,7 +74,8 @@ function GUI(hookSelectorParam, simulation, configuration) {
 		
 		$$(".board-config-save").click(function() {
 			var newConfig = [];
-			var groups = {};
+			var groups = [];
+			var groupIndex;
 			$$(".board-config tr:visible", false).each(function(index, row) {
 				if (index == 0) return;
 				$row = $(row);
@@ -90,13 +91,15 @@ function GUI(hookSelectorParam, simulation, configuration) {
 					}
 					var type = $input.data("type");
 					if (type == "group" && value != "") {
-						var group = groups[value];
-						if (!group) {
-							group = {};
+						if (groups.length == 0 || groups[groups.length-1].label != value) {
+							var group = {};
 							group['label'] = value;
 							group.children = [];
-							groups[value] = group;
+							group.name = "colgrp" + groupIndex;
+							groupIndex++;
+							groups.push(group);
 						}
+						var group = groups[groups.length-1];
 						group.children.push(column);
 					} else {
 						column[type] = value;
