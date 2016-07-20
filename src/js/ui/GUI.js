@@ -143,6 +143,20 @@ function GUI(hookSelectorParam, simulation, configuration) {
 				}
 			}
 			
+			var team = this.configuration.get("team");
+			var teamKeys = Object.keys(team);
+			for (var i = 0; i<teamKeys.length; i++) {
+				if (teamKeys[i].startsWith("col")) {
+					delete team[teamKeys[i]];
+				}
+			}
+			for (var i=1; i<newConfig.length; i++) {
+				var column = newConfig[i];
+				if (!column.queue) {
+					team[column.name] = {headcount: 2, columns: [column.name]};
+				}
+			}
+			
 			this.updateURL();
 			location.reload();
 		}.bind(this));
