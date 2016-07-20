@@ -143,20 +143,39 @@ function GUI(hookSelectorParam, simulation, configuration) {
 				}
 			}
 			
-			var team = this.configuration.get("team");
-			var teamKeys = Object.keys(team);
-			for (var i = 0; i<teamKeys.length; i++) {
-				if (teamKeys[i].startsWith("col")) {
-					delete team[teamKeys[i]];
+			var clearColsFrom = function(obj) {
+				var keys = Object.keys(obj);
+				for (var i = 0; i<keys.length; i++) {
+					if (keys[i].startsWith("col")) {
+						delete obj[keys[i]];
+					}
 				}
 			}
+			var team = this.configuration.get("team");
+			clearColsFrom(team);
+			var constant = this.configuration.get("tasks.sizeStrategy.configs.constant");
+			clearColsFrom(constant);
+			var normal = this.configuration.get("tasks.sizeStrategy.configs.normal");
+			clearColsFrom(normal);
+			var tshirt = this.configuration.get("tasks.sizeStrategy.configs.tshirt");
+			clearColsFrom(tshirt);
+			var activeCount = 0;
 			for (var i=1; i<newConfig.length; i++) {
 				var column = newConfig[i];
-				if (!column.queue) {
+				if (column.queue === false) {
+					activeCount ++;
 					team[column.name] = {headcount: 2, columns: [column.name]};
+					constant[column.name] = 2;
+					normal[column.name] = 2;
+					normal[column.name + "-variation"] = 1;
 				}
 			}
-			
+			for (var i=1; i<newConfig.length && activeCount >0; i++) {
+				var column = newConfig[i];
+				if (!column.queue) {
+					tshirt[column.name] = 100/activeCount;
+				}
+			}
 			this.updateURL();
 			location.reload();
 		}.bind(this));
