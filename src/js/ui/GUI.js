@@ -75,7 +75,7 @@ function GUI(hookSelectorParam, simulation, configuration) {
 		$$(".board-config-save").click(function() {
 			var newConfig = [];
 			var groups = [];
-			var groupIndex;
+			var groupIndex = 0;
 			$$(".board-config tr:visible", false).each(function(index, row) {
 				if (index == 0) return;
 				$row = $(row);
@@ -112,10 +112,8 @@ function GUI(hookSelectorParam, simulation, configuration) {
 			for (var i=0; i<newConfig.length; i++) {
 				newConfig[i].name = "col" + i;
 			}
-			var groupNames = Object.keys(groups);
-			for (var i=0; i<groupNames.length; i++) {
-				var group = groups[groupNames[i]];
-				group.name = "colgrp" + i;
+			for (var i=0; i<groups.length; i++) {
+				var group = groups[i];
 				var childrenNames = [];
 				for (var j=0; j < group.children.length; j++) {
 					childrenNames.push(group.children[j].name);
@@ -125,6 +123,26 @@ function GUI(hookSelectorParam, simulation, configuration) {
 			}
 			this.configuration.pauseListeners();
 			this.configuration.set("columns.definitions", newConfig);
+			
+			var columnsWithUpdatedLimits = [];			
+			this.configuration.set("columns.limits", {});
+			for (var i=0; i<groups.length; i++) {
+				var group = groups[i];
+				this.configuration.set("columns.limits." + group.name, 3);
+				columnsWithUpdatedLimits.push(group.name);
+				for (var j=0; j<group.children.length; j++) {
+					var columnName = group.children[j];
+					this.configuration.set("columns.limits." + columnName, null);
+					columnsWithUpdatedLimits.push(columnName);
+				}
+			}
+			for (var i=1; i<newConfig.length; i++) {
+				var column = newConfig[i];
+				if (columnsWithUpdatedLimits.indexOf(column.name) == -1) {
+					this.configuration.set("columns.limits." + column.name, 3);
+				}
+			}
+			
 			this.updateURL();
 			location.reload();
 		}.bind(this));
