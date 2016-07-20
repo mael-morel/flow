@@ -209,6 +209,9 @@
 	-ms-flex-grow: 1;
 	vertical-align: top;
 }
+.simulation-settings-team .simulation-settings-team-headcount {
+    table-layout: auto;
+}
 
 .title {
 	flex: 1;
