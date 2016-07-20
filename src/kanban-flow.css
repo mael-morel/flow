@@ -153,6 +153,7 @@
 .settings-table tr td:first-child {
 	text-align: right;
 	padding-right: 3pt;
+	overflow: hidden;
 }
 
 .board-config-div {
@@ -193,10 +194,17 @@
     display: -webkit-flex;
     display: flex;
 }
-.simulation-settings-team>div {
+.simulation-settings-team>div:nth-child(1) {
     flex: 1;
     -webkit-flex: 1;
 	-ms-flex: 1;
+	vertical-align: top;
+	min-width: 250px;
+}
+.simulation-settings-team>div:nth-child(2) {
+    flex-grow: 1;
+    -webkit-flex-grow: 1;
+	-ms-flex-grow: 1;
 	vertical-align: top;
 }
 

@@ -13,7 +13,7 @@ function GUI(hookSelectorParam, simulation, configuration) {
 	this.codDiagram = new DiagramCOD(this.simulation);
 	this.scatterplotDiagram = new DiagramScatterplot(this.simulation);
 	
-	this.colors = ['mediumaquamarine', 'lightskyblue', 'lightpink', 'lightgray', 'lightcoral', 'lightblue', 'burlywood', 'antiquewhite', 'silver'];
+	this.colors = ['blue', 'chocolate', 'darkturquoise', 'royalblue', 'hotpink', 'green', 'goldenrod', 'aqua', 'cadetblue'];
 	this.colorsForColumns = function() {
 		var result = {};
 		var columnDefs = this.configuration.get("columns.definitions");
