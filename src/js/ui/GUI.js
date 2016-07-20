@@ -177,7 +177,7 @@ function GUI(hookSelectorParam, simulation, configuration) {
 				}
 			}
 			this.updateURL();
-			location.reload();
+			window.top.location.reload();
 		}.bind(this));
 	}
 	
