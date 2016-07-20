@@ -42,6 +42,11 @@ module.exports = function(grunt) {
 				files: {
 					'dist/kanban-flow.js': ['src/js/**/*.js']
 				}
+			},
+			dist: {
+				files: {
+					'dist/kanban-flow.js': ['src/js/**/*.js']
+				}
 			}
 		},
 		watch: {
@@ -62,19 +67,16 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-cleanempty');
 
     grunt.registerTask(
-      'scripts', 
-      'Compiles the JavaScript files.', 
-      [ 'uglify', 'clean:scripts' ]
+      'build', 
+      [ 'clean:build', 'copy', 'uglify:build', 'clean:scripts', 'cleanempty' ]
     );
     grunt.registerTask(
-      'build', 
-      'Compiles all of the assets and copies the files to the build directory.', 
-      [ 'clean:build', 'copy', 'scripts', 'cleanempty' ]
+      'dist', 
+      [ 'clean:build', 'copy', 'uglify:dist', 'clean:scripts', 'cleanempty' ]
     );
 
     grunt.registerTask(
       'default', 
-      'Watches the project for changes, automatically builds them and runs a server.', 
       [ 'build']
     );
 
