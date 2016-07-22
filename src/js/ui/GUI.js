@@ -53,8 +53,7 @@ function GUI(hookSelectorParam, simulation, configuration) {
 			html += (i == 0 || i==columns.length -1 ? "" : "<span class='glyphicon glyphicon-menu-hamburger' aria-hidden='true'></span>") + "</td><td>";
 			html += (i == 0 || i==columns.length -1 ? "" :"<input data-type='group' type='text' placeholder='Group name' value='" + (column.parent ? column.parent.boardLabel : "")+ "'/>");
 			html += "</td><td><input data-type='label' type='text' placeholder='Column name' value='" + column.boardLabel + "'/></td>";
-			html += "<td><input data-type='cfdLabel' type='text' placeholder='Long name' value='" + column.label + "'/></td>"
-			html += "<td><input data-type='cfdShortLabel' type='text' placeholder='Short name' value='" + column.shortLabel + "'/></td><td>";
+			html += "<td><input data-type='cfdLabel' type='text' placeholder='Long name' value='" + column.label + "'/></td><td>"
 			html += (i == 0 || i==columns.length -1 ? "" : "<input data-type='queue' type='checkbox' " + (column.isQueue()? "checked" :"" ) + "/>");
 			html += "</td><td>" + (i == 0 || i==columns.length -1 ? "" : "<span class='glyphicon glyphicon-remove board-column-remove' aria-hidden='true'></span>");
 			html += "</td></tr>";
@@ -65,7 +64,7 @@ function GUI(hookSelectorParam, simulation, configuration) {
 		};
 		$$(".board-column-remove").click(removeListener);
 		$$(".board-config-add-column").click(function() {
-			var html = "<tr class='sortit'><td><span class='glyphicon glyphicon-menu-hamburger' aria-hidden='true'></span></td><td><input data-type='group' type='text' placeholder='Group name'></td><td><input data-type='label' type='text' placeholder='Column name'></td><td><input data-type='cfdLabel' type='text' placeholder='Long name'></td><td><input data-type='cfdShortLabel' type='text' placeholder='Short name'></td><td><input data-type='queue' type='checkbox'></td><td><span class='glyphicon glyphicon-remove board-column-remove' aria-hidden='true'></span></td></tr>"
+			var html = "<tr class='sortit'><td><span class='glyphicon glyphicon-menu-hamburger' aria-hidden='true'></span></td><td><input data-type='group' type='text' placeholder='Group name'></td><td><input data-type='label' type='text' placeholder='Column name'></td><td><input data-type='cfdLabel' type='text' placeholder='Long name'></td><td><input data-type='queue' type='checkbox'></td><td><span class='glyphicon glyphicon-remove board-column-remove' aria-hidden='true'></span></td></tr>"
 			var rows = $$( ".board-config tr", false);
 			var newRow = $(html);
 			$(rows[rows.length-1]).before(newRow);
@@ -101,10 +100,14 @@ function GUI(hookSelectorParam, simulation, configuration) {
 						}
 						var group = groups[groups.length-1];
 						group.children.push(column);
-					} else {
-						column[type] = value;
-					}
+					} 
+					column[type] = value;
 				});
+				if (!column.cfdLabel || column.cfdLabel == "") {
+					column.cfdLabel = (column.group ? column.group + " " : "") + column.label;
+				}
+				column.cfdShortLabel = column.cfdLabel;
+				delete column['group'];
 			});
 			newConfig[newConfig.length - 1]["ignoreLimit"] = true;
 			newConfig[newConfig.length - 1]["queue"] = true;

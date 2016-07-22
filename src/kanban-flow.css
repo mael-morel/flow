@@ -212,7 +212,9 @@
 .simulation-settings-team .simulation-settings-team-headcount {
     table-layout: auto;
 }
-
+.who-works-where tr:nth-child(1) {
+	word-wrap: break-word;
+}
 .title {
 	flex: 1;
 	-webkit-flex: 1;
