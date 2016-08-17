@@ -72,7 +72,7 @@ function DiagramCFD(simulation) {
                 if (fromCoumnsActive.length > 1) {
                     name = "";
                     for (var k = 0; k < fromCoumnsActive.length; k++) {
-                        name += fromCoumnsActive[k].shortLabel + " ";
+                        name += fromCoumnsActive[k].label + " ";
                     }
                 }
             }

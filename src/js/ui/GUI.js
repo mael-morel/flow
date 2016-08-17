@@ -106,7 +106,6 @@ function GUI(hookSelectorParam, simulation, configuration) {
                 if (!column.cfdLabel || column.cfdLabel == "") {
                     column.cfdLabel = (column.group ? column.group + " " : "") + column.label;
                 }
-                column.cfdShortLabel = column.cfdLabel;
                 delete column['group'];
             });
             newConfig[newConfig.length - 1]["ignoreLimit"] = true;
@@ -246,7 +245,7 @@ function GUI(hookSelectorParam, simulation, configuration) {
         var html = "<tr><td></td>";
         for (var i = 0; i < activeColumns.length; i++) {
             var column = activeColumns[i];
-            html += "<td>" + column.shortLabel + "</td>";
+            html += "<td>" + column.label + "</td>";
         }
         html += "</tr>";
         for (var i = 0; i < activeColumns.length; i++) {

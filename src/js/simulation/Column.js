@@ -7,7 +7,6 @@ function Column(definition, simulation) {
     this.queue = definition.queue;
     this.simulation = simulation;
     this.label = definition.cfdLabel;
-    this.shortLabel = definition.cfdShortLabel;
     this.boardLabel = definition.label;
     this.index = -1;
     this.configuration = simulation.configuration;
