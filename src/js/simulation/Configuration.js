@@ -117,12 +117,79 @@ function Configuration(externalConfig) {
             externalConfig.columns.definitions = columnDefinitions;
             externalConfig.version = 2;
         }.bind(this),
+        2: function (externalConfig) {
+            if (externalConfig.columns.definitions[0].name == "input") {
+                externalConfig.columns.definitions = historicalConfigs[3].columns.definitions;
+                var limits = {};
+                var limitsKeys = Object.keys(externalConfig.columns.limits);
+                var dictionary = {
+                    input: "col0",
+                    analysis: "col1",
+                    analysisDone: "col2",
+                    analysisWithQueue: "colgrp0",
+                    development: "col3",
+                    developmentDone: "col4",
+                    developmentWithQueue: "colgrp1",
+                    qa: "col5",
+                    qaDone: "col6",
+                    qaWithQueue: "colgrp2",
+                    deployment: "col7",
+                    deploymentDone: "col8",
+                };
+                for (var i=0; i<limitsKeys.length; i++) {
+                    var key = dictionary[limitsKeys[i]];
+                    if (!key) {
+                        key = limitsKeys[i];
+                    }
+                    limits[key] = externalConfig.columns.limits[limitsKeys[i]];
+                }
+                externalConfig.columns.limits = limits;
+
+                var team = externalConfig.team;
+                var teamKeys = Object.keys(team);
+                var newTeam = {};
+                for (var i=0; i<teamKeys.length; i++) {
+                    var key = teamKeys[i];
+                    if (dictionary[key]) {
+                        var personType = team[key];
+                        personType.columns = personType.columns.map(function(value) {
+                           return dictionary[value];
+                        });
+                        newTeam[dictionary[key]] = personType;
+                    } else {
+                        newTeam[key] = team[key];
+                    }
+                }
+                externalConfig.team = newTeam;
+
+                var configs = externalConfig.tasks.sizeStrategy.configs;
+                Object.keys(configs).forEach(function(value) {
+                    var config = configs[value];
+                    Object.keys(config).forEach(function(value) {
+                        if (dictionary[value]) {
+                            config[dictionary[value]] = config[value];
+                            delete config[value];
+                        } else if(/.*-variation$/.test(value)) {
+                            var subValue = /\w*/.exec(value);
+                            config[dictionary[subValue] + '-variation'] = config[value];
+                            delete config[value];
+                        }
+                    });
+                });
+            } else {
+                for (var i = 0; i < externalConfig.columns.definitions.length; i++) {
+                    delete externalConfig.columns.definitions[i]['cfdShortLabel'];
+                }
+            }
+            externalConfig.version = 3;
+            console.log(externalConfig);
+        }
     };
     this.loadExternalConfig = function (externalConfig) {
         if (!externalConfig || Object.keys(externalConfig).length == 0) return;
         var version = externalConfig.version;
         if (!version) version = 1;
-        while (version != 2) {
+        while (version != 3) {
             this.loaders[version](externalConfig);
             version = externalConfig.version;
         }
