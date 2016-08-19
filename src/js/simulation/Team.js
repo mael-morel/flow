@@ -26,10 +26,10 @@ function Team(configuration) {
         return result;
     }
 
-    this.getSpecialistsWorkingInColumnOrderedByTaskCount = function (column, specialisation) {
+    this.getWorkingInColumn = function (column) {
         var result = [];
         column.tasks.forEach(function (task) {
-            if (task.peopleAssigned.length == 1 && (!specialisation || task.peopleAssigned[0].specialisation == specialisation)) {
+            if (task.peopleAssigned.length == 1) {
                 var person = task.peopleAssigned[0];
                 if (result.indexOf(person) == -1 && person.isAllowedToWorkIn(column.name)) {
                     result.push(person);
@@ -37,7 +37,7 @@ function Team(configuration) {
             }
         });
         result.sort(function (a, b) {
-            return a.tasksWorkingOn.length > b.tasksWorkingOn.length;
+            return a.tasksWorkingOn.length * a.productivity[column.name] < b.tasksWorkingOn.length * b.productivity[column.name];
         });
         return result;
     }

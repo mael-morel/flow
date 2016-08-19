@@ -246,7 +246,7 @@ function Simulation(hookSelector, externalConfig) {
         }
         var stoppedAtIndex = i;
         if (stoppedAtIndex < tasksWithNoAssignee.length) {
-            var workingPpl = this.team.getSpecialistsWorkingInColumnOrderedByTaskCount(column, specialisation);
+            var workingPpl = this.team.getWorkingInColumn(column);
             var j = 0;
             for (; i < tasksWithNoAssignee.length && workingPpl.length > 0 && workingPpl[j].tasksWorkingOn.length < this.configuration.get("maxTasksOnOnePerson"); i++) {
                 workingPpl[j].assignTo(tasksWithNoAssignee[i]);
