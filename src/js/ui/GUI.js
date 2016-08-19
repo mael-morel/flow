@@ -14,14 +14,6 @@ function GUI(hookSelectorParam, simulation, configuration) {
     this.scatterplotDiagram = new DiagramScatterplot(this.simulation);
 
     this.colors = ['blue', 'chocolate', 'darkturquoise', 'royalblue', 'hotpink', 'green', 'goldenrod', 'aqua', 'cadetblue'];
-    this.colorsForColumns = function () {
-        var result = {};
-        var columnDefs = this.configuration.get("columns.definitions");
-        for (var i = 0; i < columnDefs.length; i++) {
-            result[columnDefs[i].name] = this.colors[i % this.colors.length];
-        }
-        return result;
-    }.bind(this)();
 
     this.rendered = false;
     this.init = function () {
@@ -527,7 +519,7 @@ function GUI(hookSelectorParam, simulation, configuration) {
         }
         var html = "";
         peopleWorkingOn.forEach(function (person) {
-            var color = this.colorsForColumns[person.specialisation];
+            var color = this.colors[person.typeIndex % this.colors.length];
             html += "<span class='glyphicon glyphicon-user person' style='color: " + color + "'/>";
         }.bind(this));
         return html;
