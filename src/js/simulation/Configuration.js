@@ -182,7 +182,6 @@ function Configuration(externalConfig) {
                 }
             }
             externalConfig.version = 3;
-            console.log(externalConfig);
         }
     };
     this.loadExternalConfig = function (externalConfig) {
