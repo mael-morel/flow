@@ -1,8 +1,6 @@
-function Person(name, productivity, team, configuration) {
+function Person(name, productivity) {
     this.tasksWorkingOn = [];
     this.productivityPerHour = 60;
-    this.team = team;
-    this.configuration = configuration;
     this.productivity = productivity;
     this.name = name;
 

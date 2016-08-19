@@ -80,7 +80,7 @@ function Team(configuration) {
         }
         for (var i=0; i<newConfig.length; i++) {
             for (var j=0; j<newConfig[i].count; j++) {
-                this.members.push(new Person(newConfig[i].name, newConfig[i].productivity, this, this.configuration));
+                this.members.push(new Person(newConfig[i].name, newConfig[i].productivity));
             }
         }
     }
