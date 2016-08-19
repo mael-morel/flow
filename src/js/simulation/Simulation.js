@@ -232,21 +232,15 @@ function Simulation(hookSelector, externalConfig) {
             if (column.isQueue()) {
                 continue;
             }
-            this.assignTeamMembersToTasksBySpecialisation(column, column.name);
-        }
-        for (var columnIndex = columns.length - 1; columnIndex >= 0; columnIndex--) {
-            var column = columns[columnIndex];
-            if (column.isQueue()) {
-                continue;
-            }
-            this.assignTeamMembersToTasksBySpecialisation(column);
+            this.assignTeamMembersToTasksByColumn(column);
         }
     }
 
-    this.assignTeamMembersToTasksBySpecialisation = function (column, specialisation) {
-        var notWorkingPpl = this.team.getNotWorkingForColumn(column, specialisation);
+    this.assignTeamMembersToTasksByColumn = function (column) {
+        var notWorkingPpl = this.team.getNotWorkingForColumn(column);
         var tasksWithNoAssignee = column.getNotAssignedTasks();
         var i;
+        var specialisation;
         for (i = 0; i < notWorkingPpl.length && i < tasksWithNoAssignee.length; i++) {
             notWorkingPpl[i].assignTo(tasksWithNoAssignee[i]);
         }

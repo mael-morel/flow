@@ -1,26 +1,19 @@
 function Team(configuration) {
     this.members = [];
-    this.removedButWorking = [];
     this.configuration = configuration;
 
     this.doWork = function (ticksPerHour) {
         this.members.forEach(function (person) {
             person.work(ticksPerHour);
         });
-        this.removedButWorking = this.removedButWorking.filter(function (person) {
-            return person.tasksWorkingOn.length != 0;
-        })
-        this.removedButWorking.forEach(function (person) {
-            person.work(ticksPerHour);
-        });
     }
 
-    this.getNotWorkingForColumn = function (column, specialisation) {
-        var result = [];
-        this.members.forEach(function (person) {
-            if (person.tasksWorkingOn.length == 0 && (!specialisation || person.specialisation == specialisation) && person.isAllowedToWorkIn(column.name)) {
-                result.push(person);
-            }
+    this.getNotWorkingForColumn = function (column) {
+        var membersFiltered = this.members.filter(function (person) {
+            return person.tasksWorkingOn.length == 0 && person.isAllowedToWorkIn(column.name);
+        });
+        var result = membersFiltered.sort(function(personA, personB) {
+            return personA.productivity[column.name] < personB.productivity[column.name];
         });
         return result;
     }
