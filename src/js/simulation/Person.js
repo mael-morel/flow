@@ -1,14 +1,22 @@
-function Person(productivity, team, configuration) {
+function Person(name, productivity, team, configuration) {
     this.tasksWorkingOn = [];
     this.productivityPerHour = 60;
     this.team = team;
-    this.markedAsRemoved = false;
     this.configuration = configuration;
     this.productivity = productivity;
+    this.name = name;
 
     this.assignTo = function (task) {
         this.tasksWorkingOn.push(task);
         task.peopleAssigned.push(this);
+    }
+
+    this.unassignFromAll = function() {
+        for (var i=0; i<this.tasksWorkingOn.length; i++) {
+            var task = this.tasksWorkingOn[i];
+            task.peopleAssigned.splice(task.peopleAssigned.indexOf(this), 1);
+        }
+        this.tasksWorkingOn = [];
     }
 
     this.work = function (ticksPerHour) {

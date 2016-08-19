@@ -19,7 +19,7 @@ function Simulation(hookSelector, externalConfig) {
         this.team = new Team(this.configuration);
         this.board = new Board(this.ticksPerHour, this);
         this.stats = new Stats(this, this.configuration);
-        this.team.initHeadcount();
+        this.team.initTeam();
         this.gui.init();
     }
 

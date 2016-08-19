@@ -38,7 +38,7 @@ function Team(configuration) {
         column.tasks.forEach(function (task) {
             if (task.peopleAssigned.length == 1 && (!specialisation || task.peopleAssigned[0].specialisation == specialisation)) {
                 var person = task.peopleAssigned[0];
-                if (result.indexOf(person) == -1 && person.isAllowedToWorkIn(column.name) && !person.markedAsRemoved) {
+                if (result.indexOf(person) == -1 && person.isAllowedToWorkIn(column.name)) {
                     result.push(person);
                 }
             }
@@ -74,34 +74,19 @@ function Team(configuration) {
         return result;
     }
 
-    this.updateHeadcount = function (newHeadcount, attributeChanged) {
-        var specialisation = attributeChanged.split(".")[1];
-        var specialists = this.members.filter(function (person) {
-            return person.specialisation == specialisation;
-        });
-        if (specialists.length < newHeadcount) {
-            for (var i = 0; i < newHeadcount - specialists.length; i++) {
-                this.members.push(new Person(specialisation, this, this.configuration));
-            }
-        } else if (specialists.length > newHeadcount) {
-            for (var i = 0; i < specialists.length - newHeadcount; i++) {
-                this.members.splice(this.members.indexOf(specialists[i]), 1);
-                if (specialists[i].tasksWorkingOn.length > 0) {
-                    this.removedButWorking.push(specialists[i]);
-                    specialists[i].markedAsRemoved = true;
-                }
+    this.updateTeam = function (newConfig) {
+        for (var i=0; i<this.members.length; i++) {
+            this.members[i].unassignFromAll();
+        }
+        for (var i=0; i<newConfig.length; i++) {
+            for (var j=0; j<newConfig[i].count; j++) {
+                this.members.push(new Person(newConfig[i].name, newConfig[i].productivity, this, this.configuration));
             }
         }
     }
-    var activeStates = this.configuration.getActiveStates();
-    activeStates.forEach(function (element) {
-        this.configuration.onChange("team." + element + ".headcount", this.updateHeadcount.bind(this));
-    }.bind(this));
+    this.configuration.onChange("team", this.updateTeam.bind(this));
 
-    this.initHeadcount = function () {
-        var activeStates = this.configuration.getActiveStates();
-        activeStates.forEach(function (element) {
-            this.updateHeadcount(this.configuration.get("team." + element + ".headcount"), "team." + element + ".headcount");
-        }.bind(this));
+    this.initTeam = function () {
+        this.updateTeam(this.configuration.get("team"));
     }
 }

@@ -238,8 +238,6 @@ function GUI(hookSelectorParam, simulation, configuration) {
             var column = columns[i];
             if (!column.isQueue()) {
                 activeColumns.push(column);
-                // var html = "<tr><td>" + column.label + " headcount</td><td><input type='text' maxlength='3' data-model='team." + column.name + ".headcount'/></td></tr>";
-                // $$(".simulation-settings-team-headcount").append(html);
             }
         }
         var html = "<tr><td></td><td>Headcount</td>";
