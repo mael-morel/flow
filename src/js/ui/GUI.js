@@ -238,22 +238,24 @@ function GUI(hookSelectorParam, simulation, configuration) {
             var column = columns[i];
             if (!column.isQueue()) {
                 activeColumns.push(column);
-                var html = "<tr><td>" + column.label + " headcount</td><td><input type='text' maxlength='3' data-model='team." + column.name + ".headcount'/></td></tr>";
-                $$(".simulation-settings-team-headcount").append(html);
+                // var html = "<tr><td>" + column.label + " headcount</td><td><input type='text' maxlength='3' data-model='team." + column.name + ".headcount'/></td></tr>";
+                // $$(".simulation-settings-team-headcount").append(html);
             }
         }
-        var html = "<tr><td></td>";
+        var html = "<tr><td></td><td>Headcount</td>";
         for (var i = 0; i < activeColumns.length; i++) {
             var column = activeColumns[i];
             html += "<td>" + column.label + "</td>";
         }
         html += "</tr>";
-        for (var i = 0; i < activeColumns.length; i++) {
-            var row = activeColumns[i];
-            html += "<tr><td>" + row.label + "</td>";
+        var team = this.configuration.get("team");
+        for (var i = 0; i < team.length; i++) {
+            var row = team[i];
+            html += "<tr><td><input type='text' value='" + row.name + "'></input></td>";
+            html += "<td><input type='text' value='" + row.count + "'></input></td>";
             for (var j = 0; j < activeColumns.length; j++) {
                 var column = activeColumns[j];
-                html += "<td><input type='checkbox' data-column-permissions-column='" + column.name + "' data-column-permissions-specialist='" + row.name + "'/></td>";
+                html += "<td><input type='text' value='" + row.productivity[column.name] + "'></input></td>";
             }
             html += "</tr>";
         }
