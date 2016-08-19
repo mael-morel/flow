@@ -36,25 +36,12 @@ function Configuration(externalConfig) {
                 col7: 5,
             },
         },
-        team: {
-            workingOutOfSpecialisationCoefficient: 50,
-            col1: {
-                headcount: 2,
-                columns: ['col1'],
-            },
-            col3: {
-                headcount: 5,
-                columns: ['col3'],
-            },
-            col5: {
-                headcount: 3,
-                columns: ['col5'],
-            },
-            col7: {
-                headcount: 1,
-                columns: ['col7'],
-            },
-        },
+        team: [
+            {name: "Analyst", productivity: {col1: 100, col3: 0, col5: 0, col7: 0}, count: 2},
+            {name: "Developer", productivity: {col1: 0, col3: 100, col5: 0, col7: 0}, count: 5},
+            {name: "Tester", productivity: {col1: 0, col3: 0, col5: 100, col7: 0}, count: 3},
+            {name: "DevOps", productivity: {col1: 0, col3: 0, col5: 0, col7: 100}, count: 1},
+        ],
         tasks: {
             arrivalStrategy: {
                 current: "up-to-limit",
