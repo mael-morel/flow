@@ -225,19 +225,39 @@ function Simulation(hookSelector, externalConfig) {
     4. jesli dalej sa wolni ludzie, poszukaj im taska do sparowania sie
      */
     this.assignTeamMembersToTasks = function () {
-        this.assignNonWorkingToUnassignedTasks();
+        var unassignedTasks = this.board.getNotAssignedTasks();
+        this.assignNonWorkingToUnassignedTasks(unassignedTasks);
+        this.assignWorkingToUnassignedTasksIfPossible(unassignedTasks);
     }
 
-    this.assignNonWorkingToUnassignedTasks = function() {
-        var membersSorted = this.team.membersSortedBySkill;
-        var unassignedTasks = this.board.getNotAssignedTasks();
-        membersSorted.forEach(function(personAndActivity) {
+    this.assignNonWorkingToUnassignedTasks = function(unassignedTasks) {
+        var membersSortedBySkill = this.team.membersSortedBySkill;
+        membersSortedBySkill.forEach(function(personAndActivity) {
             if (personAndActivity.person.tasksWorkingOn.length != 0) return;
             var task = unassignedTasks[personAndActivity.activityIndex].shift();
             if (task) {
                 personAndActivity.person.assignTo(task);
             }
         });
+    }
+
+    this.assignWorkingToUnassignedTasksIfPossible = function(unassignedTasks) {
+        var membersSortedBySkill = this.team.membersSortedBySkill;
+        var maxTasksOnOnePerson = this.configuration.get("maxTasksOnOnePerson");
+        var workingMembers = this.team.getPeopleAssignedToAtLeastOneTaskAndLessThan(maxTasksOnOnePerson);
+        while (workingMembers.length > 0) {
+            var currentTaskCount = workingMembers[0].tasksWorkingOn.length;
+            membersSortedBySkill.forEach(function (personAndActivity) {
+                if (personAndActivity.person.tasksWorkingOn.length != currentTaskCount) return;
+                var task = unassignedTasks[personAndActivity.activityIndex].shift();
+                if (task) {
+                    personAndActivity.person.assignTo(task);
+                }
+            });
+            workingMembers = workingMembers.filter(function(person) {
+                return person.tasksWorkingOn.length != currentTaskCount && person.tasksWorkingOn.length < maxTasksOnOnePerson;
+            });
+        }
     }
 
     this.assignTeamMembersToTasksByColumn = function (column) {

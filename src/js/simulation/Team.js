@@ -59,6 +59,14 @@ function Team(configuration) {
         return result;
     }
 
+    this.getPeopleAssignedToAtLeastOneTaskAndLessThan = function(lessThan) {
+        return this.members.filter(function(person) {
+            return person.tasksWorkingOn.length > 0 && person.tasksWorkingOn.length < lessThan && person.tasksWorkingOn[0].peopleAssigned.length == 1;
+        }).sort(function(a, b) {
+            return a.tasksWorkingOn.length < b.tasksWorkingOn.length;
+        });
+    }
+
     this.updateTeam = function (newConfig) {
         for (var i=0; i<this.members.length; i++) {
             this.members[i].unassignFromAll();
