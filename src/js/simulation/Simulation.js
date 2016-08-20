@@ -228,6 +228,7 @@ function Simulation(hookSelector, externalConfig) {
         var unassignedTasks = this.board.getNotAssignedTasks();
         this.assignNonWorkingToUnassignedTasks(unassignedTasks);
         this.assignWorkingToUnassignedTasksIfPossible(unassignedTasks);
+        this.assignNonWorkingToMultitaskedTasks();
     }
 
     this.assignNonWorkingToUnassignedTasks = function(unassignedTasks) {
@@ -258,6 +259,19 @@ function Simulation(hookSelector, externalConfig) {
                 return person.tasksWorkingOn.length != currentTaskCount && person.tasksWorkingOn.length < maxTasksOnOnePerson;
             });
         }
+    }
+
+    this.assignNonWorkingToMultitaskedTasks = function() {
+        var membersSortedBySkill = this.team.membersSortedBySkill;
+        var multitaskedTasks = this.board.getMostMultitaskedTasks();
+        membersSortedBySkill.forEach(function(personAndActivity) {
+            if (personAndActivity.person.tasksWorkingOn.length != 0) return;
+            var task = multitaskedTasks[personAndActivity.activityIndex].shift();
+            if (task) {
+                task.unassignPeople();
+                personAndActivity.person.assignTo(task);
+            }
+        });
     }
 
     this.assignTeamMembersToTasksByColumn = function (column) {

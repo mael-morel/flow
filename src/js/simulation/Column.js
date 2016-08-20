@@ -36,6 +36,19 @@ function Column(definition, simulation) {
         return result;
     }
 
+    this.getMostMultitaskedTasks = function () {
+        var result = [];
+        this.tasks.forEach(function (task) {
+            if (task.peopleAssigned.length == 1 && task.peopleAssigned[0].tasksWorkingOn.length > 1 && !task.finished()) {
+                result.push(task);
+            }
+        });
+        result.sort(function(a, b) {
+            return a.peopleAssigned[0].tasksWorkingOn.length < b.peopleAssigned[0].tasksWorkingOn.length;
+        });
+        return result;
+    }
+
     this.isQueue = function () {
         return this.queue == true;
     }
