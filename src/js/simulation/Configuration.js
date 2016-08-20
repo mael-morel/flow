@@ -38,7 +38,7 @@ function Configuration(externalConfig) {
         },
         team: [
             {name: "Analyst", productivity: {col1: 100, col3: 70, col5: 60, col7: 30}, count: 5},
-            {name: "Developer", productivity: {col1: 0, col3: 100, col5: 0, col7: 0}, count: 5},
+            {name: "Developer", productivity: {col1: 20, col3: 100, col5: 0, col7: 0}, count: 5},
             {name: "Tester", productivity: {col1: 0, col3: 0, col5: 100, col7: 0}, count: 0},
             {name: "DevOps", productivity: {col1: 0, col3: 0, col5: 0, col7: 100}, count: 0},
         ],

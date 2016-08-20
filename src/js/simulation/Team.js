@@ -42,7 +42,7 @@ function Team(configuration) {
         return result;
     }
 
-    this.getPeopleAssignedToMoreThanOneTaskOrderderByTaskCountAndSpecialisation = function (column) {
+    this.getPeopleAssignedToMoreThanOneTask = function (column) {
         var result = [];
         column.tasks.forEach(function (task) {
             var person = task.peopleAssigned[0];
@@ -52,17 +52,8 @@ function Team(configuration) {
                 }
             }
         });
-        result.sort(function (personA, personB) { //TODO: to be tested!
-            if (personA.specialisation == personB.specialisation) {
-                return personA.tasksWorkingOn.length < personB.tasksWorkingOn.length;
-            }
-            if (personA.specialisation == column.name) {
-                return true;
-            }
-            if (personB.specialisation == column.name) {
-                return false;
-            }
-            return personA.tasksWorkingOn.length < personB.tasksWorkingOn.length;
+        result.sort(function (a, b) {
+            return a.tasksWorkingOn.length * a.productivity[column.name] < b.tasksWorkingOn.length * b.productivity[column.name];
         });
         return result;
     }
@@ -71,6 +62,7 @@ function Team(configuration) {
         for (var i=0; i<this.members.length; i++) {
             this.members[i].unassignFromAll();
         }
+        this.members = [];
         for (var i=0; i<newConfig.length; i++) {
             for (var j=0; j<newConfig[i].count; j++) {
                 this.members.push(new Person(newConfig[i].name, newConfig[i].productivity, i));

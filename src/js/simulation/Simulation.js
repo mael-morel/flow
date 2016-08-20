@@ -240,7 +240,6 @@ function Simulation(hookSelector, externalConfig) {
         var notWorkingPpl = this.team.getNotWorkingForColumn(column);
         var tasksWithNoAssignee = column.getNotAssignedTasks();
         var i;
-        var specialisation;
         for (i = 0; i < notWorkingPpl.length && i < tasksWithNoAssignee.length; i++) {
             notWorkingPpl[i].assignTo(tasksWithNoAssignee[i]);
         }
@@ -259,7 +258,7 @@ function Simulation(hookSelector, externalConfig) {
         }
         if (stoppedAtIndex < notWorkingPpl.length) {
             i = stoppedAtIndex;
-            var peopleWithMoreTasks = this.team.getPeopleAssignedToMoreThanOneTaskOrderderByTaskCountAndSpecialisation(column);
+            var peopleWithMoreTasks = this.team.getPeopleAssignedToMoreThanOneTask(column);
             var j = 0;
             for (; i < notWorkingPpl.length && j < peopleWithMoreTasks.length; i++) {
                 var person = peopleWithMoreTasks[j];
@@ -289,10 +288,6 @@ function Simulation(hookSelector, externalConfig) {
 
     this.doWork = function () {
         this.team.doWork(this.ticksPerHour);
-    }
-
-    this.updateColumnsAvailabilityForSpecialisation = function (specialisation, column, checked) {
-        this.team.updateColumnsAvailabilityForSpecialisation(specialisation, column, checked);
     }
 
     this.initBasics();
