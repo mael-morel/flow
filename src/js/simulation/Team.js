@@ -1,5 +1,6 @@
 function Team(configuration) {
     this.members = [];
+    this.membersSortedBySkill = [];
     this.configuration = configuration;
 
     this.doWork = function (ticksPerHour) {
@@ -68,6 +69,42 @@ function Team(configuration) {
                 this.members.push(new Person(newConfig[i].name, newConfig[i].productivity, i));
             }
         }
+        this.membersSortedBySkill = [];
+        var membersGroupedAndSorted = [];
+        var activities = this.configuration.getActiveStates();
+        for (var i=0; i<activities.length; i++) {
+            var activity = activities[i];
+            var membersWithSomeProductivity = this.members.filter(function(person) {
+                return person.productivity[activity] > 0;
+            });
+            membersWithSomeProductivity.sort(function(a, b) {
+                return a.productivity[activity] < b.productivity[activity];
+            });
+            membersGroupedAndSorted.push(membersWithSomeProductivity);
+        }
+        var personWithHighestSkill = null;
+        do {
+            personWithHighestSkill = null;
+            var skillGroupIndex = null;
+            membersGroupedAndSorted.forEach(function(skillGroup, index) {
+                if (skillGroup.length ==0) return;
+                var personFromGroup = skillGroup[0];
+                var activity = activities[index];
+                if (personWithHighestSkill == null) {
+                    personWithHighestSkill = personFromGroup;
+                    skillGroupIndex = index;
+                } else {
+                    if (personFromGroup.productivity[activity] >= personWithHighestSkill.productivity[activities[skillGroupIndex]]) {
+                        personWithHighestSkill = personFromGroup;
+                        skillGroupIndex = index;
+                    }
+                }
+            });
+            if (personWithHighestSkill) {
+                this.membersSortedBySkill.push({person: personWithHighestSkill, activity: activities[skillGroupIndex]});
+                membersGroupedAndSorted[skillGroupIndex].shift();
+            }
+        } while (personWithHighestSkill != null);
     }
     this.configuration.onChange("team", this.updateTeam.bind(this));
 
