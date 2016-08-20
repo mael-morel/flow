@@ -79,6 +79,16 @@ function Board(ticksPerHour, simulation) {
         }.bind(this));
     }
 
+    this.getNotAssignedTasks = function () {
+        var result = [];
+        this.columns.forEach(function (column) {
+            if (!column.isQueue()) {
+                result.push(column.getNotAssignedTasks());
+            }
+        });
+        return result;
+    }
+
     this.createColumns = function () {
         var definitions = simulation.configuration.get("columns.definitions");
         var parentDefinitions = definitions.filter(function (element) {

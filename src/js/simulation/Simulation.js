@@ -218,16 +218,26 @@ function Simulation(hookSelector, externalConfig) {
         }
         return column;
     }
-
+    /*
+    1. sprobowac przypisac bezrobotnych do wolnych taskow, zgodnie z priorytetami
+    2. jesli dalej sa wolne taski, poszukac chetnych do multitaskingu
+    3. jesli dalej sa wolni ludzie, poszukaj najbardziej multitaskowane taski do objecia pracy nad
+    4. jesli dalej sa wolni ludzie, poszukaj im taska do sparowania sie
+     */
     this.assignTeamMembersToTasks = function () {
-        var columns = this.board.columns;
-        for (var columnIndex = columns.length - 1; columnIndex >= 0; columnIndex--) {
-            var column = columns[columnIndex];
-            if (column.isQueue()) {
-                continue;
+        this.assignNonWorkingToUnassignedTasks();
+    }
+
+    this.assignNonWorkingToUnassignedTasks = function() {
+        var membersSorted = this.team.membersSortedBySkill;
+        var unassignedTasks = this.board.getNotAssignedTasks();
+        membersSorted.forEach(function(personAndActivity) {
+            if (personAndActivity.person.tasksWorkingOn.length != 0) return;
+            var task = unassignedTasks[personAndActivity.activityIndex].shift();
+            if (task) {
+                personAndActivity.person.assignTo(task);
             }
-            this.assignTeamMembersToTasksByColumn(column);
-        }
+        });
     }
 
     this.assignTeamMembersToTasksByColumn = function (column) {

@@ -101,7 +101,7 @@ function Team(configuration) {
                 }
             });
             if (personWithHighestSkill) {
-                this.membersSortedBySkill.push({person: personWithHighestSkill, activity: activities[skillGroupIndex]});
+                this.membersSortedBySkill.push({person: personWithHighestSkill, activity: activities[skillGroupIndex], activityIndex: skillGroupIndex});
                 membersGroupedAndSorted[skillGroupIndex].shift();
             }
         } while (personWithHighestSkill != null);
