@@ -279,7 +279,9 @@ function Simulation(hookSelector, externalConfig) {
         var membersSortedBySkill = this.team.membersSortedBySkill;
         var maxPeopleOnOneTask = this.configuration.get("maxPeopleOnOneTask");
         var tasksToSwarm = this.board.getTasksToSwarm();
-        while (true) {
+        while (tasksToSwarm.reduce(function(sum, element) {
+            return sum + element.length;
+        }) > 0) {
             var lowestCount = Math.min.apply(null, tasksToSwarm.map(function(element) {
                 return element.length > 0 ? element[0].peopleAssigned.length : Number.POSITIVE_INFINITY;
             }));
