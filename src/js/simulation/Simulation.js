@@ -229,6 +229,7 @@ function Simulation(hookSelector, externalConfig) {
         this.assignNonWorkingToUnassignedTasks(unassignedTasks);
         this.assignWorkingToUnassignedTasksIfPossible(unassignedTasks);
         this.assignNonWorkingToMultitaskedTasks();
+        this.swarmNonWorking();
     }
 
     this.assignNonWorkingToUnassignedTasks = function(unassignedTasks) {
@@ -272,6 +273,41 @@ function Simulation(hookSelector, externalConfig) {
                 personAndActivity.person.assignTo(task);
             }
         });
+    }
+
+    this.swarmNonWorking = function() {
+        var membersSortedBySkill = this.team.membersSortedBySkill;
+        var maxPeopleOnOneTask = this.configuration.get("maxPeopleOnOneTask");
+        var tasksToSwarm = this.board.getTasksToSwarm();
+        while (true) {
+            var lowestCount = Math.min.apply(null, tasksToSwarm.map(function(element) {
+                return element.length > 0 ? element[0].peopleAssigned.length : Number.POSITIVE_INFINITY;
+            }));
+            if (lowestCount >= maxPeopleOnOneTask) break;
+            var filteredTasksToSwarm = tasksToSwarm.map(function(tasksInColumn) {
+                return tasksInColumn.filter(function(task) {
+                    return task.peopleAssigned.length == lowestCount;
+                });
+            })
+            membersSortedBySkill.forEach(function (personAndActivity) {
+                if (personAndActivity.person.tasksWorkingOn.length != 0) return;
+                var tasksInColumn = filteredTasksToSwarm[personAndActivity.activityIndex];
+                for (var i = 0; i<tasksInColumn.length; i++) {
+                    var task = tasksInColumn[i];
+                    if (task.peopleAssigned.indexOf(personAndActivity.person) < 0) {
+                        personAndActivity.person.assignTo(task);
+                        tasksInColumn.splice(tasksInColumn.indexOf(task), 1);
+                        return;
+                    }
+                }
+            });
+            filteredTasksToSwarm.forEach(function(tasksInColumn, index) {
+                tasksInColumn.forEach(function(task) {
+                    tasksToSwarm[index].splice(tasksToSwarm[index].indexOf(task), 1);
+                });
+            });
+        }
+
     }
 
     this.assignTeamMembersToTasksByColumn = function (column) {

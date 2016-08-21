@@ -49,6 +49,19 @@ function Column(definition, simulation) {
         return result;
     }
 
+    this.getTasksToSwarm = function() {
+        var result = [];
+        this.tasks.forEach(function (task) {
+            if (task.peopleAssigned.length >= 1 && task.peopleAssigned[0].tasksWorkingOn.length == 1 && !task.finished()) {
+                result.push(task);
+            }
+        });
+        result.sort(function(a, b) {
+            return a.peopleAssigned.length > b.peopleAssigned.length;
+        });
+        return result;
+    }
+
     this.isQueue = function () {
         return this.queue == true;
     }

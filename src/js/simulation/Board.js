@@ -99,6 +99,16 @@ function Board(ticksPerHour, simulation) {
         return result;
     }
 
+    this.getTasksToSwarm = function () {
+        var result = [];
+        this.columns.forEach(function (column) {
+            if (!column.isQueue()) {
+                result.push(column.getTasksToSwarm());
+            }
+        });
+        return result;
+    }
+
     this.createColumns = function () {
         var definitions = simulation.configuration.get("columns.definitions");
         var parentDefinitions = definitions.filter(function (element) {
