@@ -218,12 +218,7 @@ function Simulation(hookSelector, externalConfig) {
         }
         return column;
     }
-    /*
-    1. sprobowac przypisac bezrobotnych do wolnych taskow, zgodnie z priorytetami
-    2. jesli dalej sa wolne taski, poszukac chetnych do multitaskingu
-    3. jesli dalej sa wolni ludzie, poszukaj najbardziej multitaskowane taski do objecia pracy nad
-    4. jesli dalej sa wolni ludzie, poszukaj im taska do sparowania sie
-     */
+
     this.assignTeamMembersToTasks = function () {
         var unassignedTasks = this.board.getNotAssignedTasks();
         this.assignNonWorkingToUnassignedTasks(unassignedTasks);
@@ -281,7 +276,7 @@ function Simulation(hookSelector, externalConfig) {
         var tasksToSwarm = this.board.getTasksToSwarm();
         while (tasksToSwarm.reduce(function(sum, element) {
             return sum + element.length;
-        }) > 0) {
+        }, 0) > 0) {
             var lowestCount = Math.min.apply(null, tasksToSwarm.map(function(element) {
                 return element.length > 0 ? element[0].peopleAssigned.length : Number.POSITIVE_INFINITY;
             }));
@@ -310,56 +305,6 @@ function Simulation(hookSelector, externalConfig) {
             });
         }
 
-    }
-
-    this.assignTeamMembersToTasksByColumn = function (column) {
-        var notWorkingPpl = this.team.getNotWorkingForColumn(column);
-        var tasksWithNoAssignee = column.getNotAssignedTasks();
-        var i;
-        for (i = 0; i < notWorkingPpl.length && i < tasksWithNoAssignee.length; i++) {
-            notWorkingPpl[i].assignTo(tasksWithNoAssignee[i]);
-        }
-        var stoppedAtIndex = i;
-        if (stoppedAtIndex < tasksWithNoAssignee.length) {
-            var workingPpl = this.team.getWorkingInColumn(column);
-            var j = 0;
-            for (; i < tasksWithNoAssignee.length && workingPpl.length > 0 && workingPpl[j].tasksWorkingOn.length < this.configuration.get("maxTasksOnOnePerson"); i++) {
-                workingPpl[j].assignTo(tasksWithNoAssignee[i]);
-                if (workingPpl[j].tasksWorkingOn.length > workingPpl[(j + 1) % workingPpl.length].tasksWorkingOn.length) {
-                    j = (j + 1) % workingPpl.length;
-                } else {
-                    j = 0;
-                }
-            }
-        }
-        if (stoppedAtIndex < notWorkingPpl.length) {
-            i = stoppedAtIndex;
-            var peopleWithMoreTasks = this.team.getPeopleAssignedToMoreThanOneTask(column);
-            var j = 0;
-            for (; i < notWorkingPpl.length && j < peopleWithMoreTasks.length; i++) {
-                var person = peopleWithMoreTasks[j];
-                var task = person.tasksWorkingOn[0];
-                task.unassignPeople();
-                notWorkingPpl[i].assignTo(task);
-                if (!peopleWithMoreTasks[j + 1] || person.tasksWorkingOn.length < peopleWithMoreTasks[j + 1].tasksWorkingOn.length || person.tasksWorkingOn.length == 1) {
-                    j++;
-                }
-            }
-            stoppedAtIndex = i;
-        }
-        if (stoppedAtIndex < notWorkingPpl.length) {
-            i = stoppedAtIndex;
-            var tasks = column.getTasksAssignedToOneOrMoreOrderedByNumberOfPeople();
-            var j = 0;
-            for (; i < notWorkingPpl.length && tasks.length > 0 && tasks[j].peopleAssigned.length < this.configuration.get("maxPeopleOnOneTask"); i++) {
-                notWorkingPpl[i].assignTo(tasks[j]);
-                if (tasks[j].peopleAssigned.length > tasks[(j + 1) % tasks.length].peopleAssigned.length) {
-                    j = (j + 1) % tasks.length;
-                } else {
-                    j = 0;
-                }
-            }
-        }
     }
 
     this.doWork = function () {

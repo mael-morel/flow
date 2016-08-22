@@ -37,10 +37,10 @@ function Configuration(externalConfig) {
             },
         },
         team: [
-            {name: "Analyst", productivity: {col1: 100, col3: 70, col5: 60, col7: 30}, count: 10},
-            {name: "Developer", productivity: {col1: 20, col3: 100, col5: 0, col7: 20}, count: 10},
-            {name: "Tester", productivity: {col1: 0, col3: 0, col5: 100, col7: 0}, count: 0},
-            {name: "DevOps", productivity: {col1: 0, col3: 0, col5: 0, col7: 100}, count: 0},
+            {name: "Analyst", productivity: {col1: 100, col3: 50, col5: 50, col7: 50}, count: 2},
+            {name: "Developer", productivity: {col1: 50, col3: 100, col5: 50, col7: 50}, count: 5},
+            {name: "Tester", productivity: {col1: 50, col3: 50, col5: 100, col7: 50}, count: 3},
+            {name: "DevOps", productivity: {col1: 50, col3: 50, col5: 50, col7: 100}, count: 1},
         ],
         tasks: {
             arrivalStrategy: {

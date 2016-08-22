@@ -1,9 +1,10 @@
-function Person(name, productivity, typeIndex) {
+function Person(name, productivity, typeIndex, id) {
     this.tasksWorkingOn = [];
     this.productivityPerHour = 60;
     this.productivity = productivity;
     this.name = name;
     this.typeIndex = typeIndex;
+    this.id = id;
 
     this.assignTo = function (task) {
         this.tasksWorkingOn.push(task);

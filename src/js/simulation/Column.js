@@ -11,21 +11,6 @@ function Column(definition, simulation) {
     this.index = -1;
     this.configuration = simulation.configuration;
 
-    this.getTasksAssignedToOneOrMoreOrderedByNumberOfPeople = function () {
-        var result = [];
-        this.tasks.forEach(function (task) {
-            if (task.peopleAssigned.every(function (person) {
-                    return person.tasksWorkingOn.length == 1;
-                }) && !task.finished()) {
-                result.push(task);
-            }
-        });
-        result.sort(function (a, b) {
-            return a.peopleAssigned.length > b.peopleAssigned.length;
-        });
-        return result;
-    }
-
     this.getNotAssignedTasks = function () {
         var result = [];
         this.tasks.forEach(function (task) {
@@ -44,7 +29,7 @@ function Column(definition, simulation) {
             }
         });
         result.sort(function(a, b) {
-            return a.peopleAssigned[0].tasksWorkingOn.length < b.peopleAssigned[0].tasksWorkingOn.length;
+            return b.peopleAssigned[0].tasksWorkingOn.length - a.peopleAssigned[0].tasksWorkingOn.length;
         });
         return result;
     }
@@ -57,7 +42,7 @@ function Column(definition, simulation) {
             }
         });
         result.sort(function(a, b) {
-            return a.peopleAssigned.length > b.peopleAssigned.length;
+            return a.peopleAssigned.length - b.peopleAssigned.length;
         });
         return result;
     }

@@ -9,16 +9,6 @@ function Team(configuration) {
         });
     }
 
-    this.getNotWorkingForColumn = function (column) {
-        var membersFiltered = this.members.filter(function (person) {
-            return person.tasksWorkingOn.length == 0 && person.isAllowedToWorkIn(column.name);
-        });
-        var result = membersFiltered.sort(function(personA, personB) {
-            return personA.productivity[column.name] < personB.productivity[column.name];
-        });
-        return result;
-    }
-
     this.getNotWorking = function () {
         var result = [];
         this.members.forEach(function (person) {
@@ -27,43 +17,11 @@ function Team(configuration) {
         return result;
     }
 
-    this.getWorkingInColumn = function (column) {
-        var result = [];
-        column.tasks.forEach(function (task) {
-            if (task.peopleAssigned.length == 1) {
-                var person = task.peopleAssigned[0];
-                if (result.indexOf(person) == -1 && person.isAllowedToWorkIn(column.name)) {
-                    result.push(person);
-                }
-            }
-        });
-        result.sort(function (a, b) {
-            return a.tasksWorkingOn.length * a.productivity[column.name] < b.tasksWorkingOn.length * b.productivity[column.name];
-        });
-        return result;
-    }
-
-    this.getPeopleAssignedToMoreThanOneTask = function (column) {
-        var result = [];
-        column.tasks.forEach(function (task) {
-            var person = task.peopleAssigned[0];
-            if (task.peopleAssigned.length == 1 && person.tasksWorkingOn.length > 1) {
-                if (result.indexOf(person) == -1) {
-                    result.push(person);
-                }
-            }
-        });
-        result.sort(function (a, b) {
-            return a.tasksWorkingOn.length * a.productivity[column.name] < b.tasksWorkingOn.length * b.productivity[column.name];
-        });
-        return result;
-    }
-
     this.getPeopleAssignedToAtLeastOneTaskAndLessThan = function(lessThan) {
         return this.members.filter(function(person) {
             return person.tasksWorkingOn.length > 0 && person.tasksWorkingOn.length < lessThan && person.tasksWorkingOn[0].peopleAssigned.length == 1;
         }).sort(function(a, b) {
-            return a.tasksWorkingOn.length < b.tasksWorkingOn.length;
+            return a.tasksWorkingOn.length - b.tasksWorkingOn.length;
         });
     }
 
@@ -74,7 +32,7 @@ function Team(configuration) {
         this.members = [];
         for (var i=0; i<newConfig.length; i++) {
             for (var j=0; j<newConfig[i].count; j++) {
-                this.members.push(new Person(newConfig[i].name, newConfig[i].productivity, i));
+                this.members.push(new Person(newConfig[i].name, newConfig[i].productivity, i, newConfig[i].name.substring(0,1) + j));
             }
         }
         this.membersSortedBySkill = [];
@@ -86,7 +44,7 @@ function Team(configuration) {
                 return person.productivity[activity] > 0;
             });
             membersWithSomeProductivity.sort(function(a, b) {
-                return a.productivity[activity] < b.productivity[activity];
+                return b.productivity[activity] - a.productivity[activity];
             });
             membersGroupedAndSorted.push(membersWithSomeProductivity);
         }
