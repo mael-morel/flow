@@ -28,7 +28,6 @@ function GUI(hookSelectorParam, simulation, configuration) {
         this.bind();
         this.registerConfigurationOnChangeListeners();
         this.update(this.simulation.board, this.simulation.stats, true);
-        this.updateColumnsAvailabilityCheckboxes();
         this.initialiseBacklogStrategies();
     }
 
@@ -306,24 +305,6 @@ function GUI(hookSelectorParam, simulation, configuration) {
         window.top.location = url;
     }
 
-    this.updateColumnsAvailabilityCheckboxes = function () {
-        this.configuration.pauseListeners();
-        var specialisations = this.configuration.getActiveStates();
-        for (var i = 0; i < specialisations.length; i++) {
-            var checkboxes = $$(".who-works-where input[type=checkbox][data-column-permissions-specialist=" + specialisations[i] + "]");
-            var checkboxesToCheck = this.configuration.get("team." + specialisations[i] + ".columns");
-            for (var j = 0; j < checkboxes.length; j++) {
-                var checkbox = $(checkboxes[j]);
-                if (checkboxesToCheck.indexOf(checkbox.data("columnPermissionsColumn")) >= 0) {
-                    checkbox.attr('checked', 'checked');
-                } else {
-                    checkbox.removeAttr('checked');
-                }
-
-            }
-        }
-        this.configuration.activateListeners();
-    }
     this.updateComponentsDependingOnRunningAverage = function () {
         this.littlesDiagram.redraw();
         this.littlesDiagram.redraw(true);
@@ -391,9 +372,29 @@ function GUI(hookSelectorParam, simulation, configuration) {
         }
     }
     this.settingsClosed = function () {
+        var newTeamConfig = this.getTeamConfigurationFromInputs();
+        this.configuration.set("team", newTeamConfig);
         if (this.wasRunningWhenSettingsOpened) {
             this.play();
         }
+    }
+
+    this.getTeamConfigurationFromInputs = function() {
+        var activities = this.configuration.getActiveStates();
+        var result = [];
+        $$(".who-works-where tr:not(:first-child)").each(function(index, tr) {
+            var memberType = {productivity: {}};
+            result.push(memberType);
+            $(tr).find("input").each(function(index, input) {
+                switch (index) {
+                    case 0: memberType.name = input.value; break;
+                    case 1: memberType.count = parseInt(input.value); break;
+                    default: memberType.productivity[activities[index - 2]] = parseInt(input.value);
+                }
+
+            });
+        });
+        return result;
     }
 
     $$(".simulation-settings-modal").on("show.bs.modal", this.settingsOpened.bind(this));

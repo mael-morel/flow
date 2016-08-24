@@ -201,7 +201,7 @@ function Configuration(externalConfig) {
             var launchListeners = function (list) {
                 if (list[property]) {
                     for (var i = 0; i < list[property].length; i++) {
-                        list[property][i](newValue, property);
+                        list[property][i](newValue, property, oldValue);
                     }
                 }
             }

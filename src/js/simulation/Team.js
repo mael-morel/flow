@@ -25,16 +25,43 @@ function Team(configuration) {
         });
     }
 
-    this.updateTeam = function (newConfig) {
+    this.recreateTeam = function (newConfig) {
         for (var i=0; i<this.members.length; i++) {
             this.members[i].unassignFromAll();
         }
         this.members = [];
         for (var i=0; i<newConfig.length; i++) {
             for (var j=0; j<newConfig[i].count; j++) {
-                this.members.push(new Person(newConfig[i].name, newConfig[i].productivity, i, newConfig[i].name.substring(0,1) + j));
+                this.members.push(new Person(newConfig[i].name, newConfig[i].productivity, i));
             }
         }
+        this.recreateMembersSortedBySkill();
+    }
+
+    this.updateTeamNamesAndCount = function(newConfig) {
+        newConfig.forEach(function(memberType, index) {
+            var membersOfType = this.members.filter(function (member) {
+                return (member.typeIndex == index);
+            });
+            membersOfType.forEach(function(member) {
+                member.name = memberType.name;
+            });
+
+            if (membersOfType.length < memberType.count) {
+                for (var i = 0; i < memberType.count - membersOfType.length; i++) {
+                    this.members.push(new Person(memberType.name, memberType.productivity, index));
+                }
+            } else if (membersOfType.length > memberType.count) {
+                for (var i = 0; i < membersOfType.length - memberType.count; i++) {
+                    this.members.splice(this.members.indexOf(membersOfType[i]), 1);
+                    membersOfType[i].unassignFromAll();
+                }
+            }
+        }.bind(this));
+        this.recreateMembersSortedBySkill();
+    }
+
+    this.recreateMembersSortedBySkill = function() {
         this.membersSortedBySkill = [];
         var membersGroupedAndSorted = [];
         var activities = this.configuration.getActiveStates();
@@ -72,9 +99,30 @@ function Team(configuration) {
             }
         } while (personWithHighestSkill != null);
     }
+
+    this.updateTeam = function(newConfig, path, oldConfig) {
+        if (!equalProductivities(newConfig, oldConfig)) {
+            this.recreateTeam(newConfig);
+        } else {
+            this.updateTeamNamesAndCount(newConfig);
+        }
+    }
+
+    function equalProductivities (config1, config2) {
+        if (config1.length != config2.length) return false;
+        return config1.every(function(memberType, index) {
+            var keys = Object.keys(memberType.productivity);
+            return keys.every(function (key) {
+                return memberType.productivity[key] == config2[index].productivity[key];
+            });
+        });
+    }
+
     this.configuration.onChange("team", this.updateTeam.bind(this));
 
+
+
     this.initTeam = function () {
-        this.updateTeam(this.configuration.get("team"));
+        this.recreateTeam(this.configuration.get("team"));
     }
 }
