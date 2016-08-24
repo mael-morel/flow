@@ -374,6 +374,7 @@ function GUI(hookSelectorParam, simulation, configuration) {
     this.settingsClosed = function () {
         var newTeamConfig = this.getTeamConfigurationFromInputs();
         this.configuration.set("team", newTeamConfig);
+        this.updateURL();
         if (this.wasRunningWhenSettingsOpened) {
             this.play();
         }
@@ -556,27 +557,5 @@ function GUI(hookSelectorParam, simulation, configuration) {
             }.bind(this));
             $input.data("binded", true);
         }
-        $$(".who-works-where input[type=checkbox]", false).change(function (event) {
-            var checkbox = event.target;
-            var checked = event.target.checked;
-            var column = $(event.target).data("columnPermissionsColumn");
-            var specialisation = $(event.target).data("columnPermissionsSpecialist");
-            var collumnsAllowedToWorkIn = this.configuration.get("team." + specialisation + ".columns");
-            var newArray;
-            if (checked) {
-                newArray = collumnsAllowedToWorkIn.slice();
-                newArray.push(column);
-            } else {
-                newArray = collumnsAllowedToWorkIn.slice();
-                newArray.splice(collumnsAllowedToWorkIn.indexOf(column), 1);
-            }
-            this.configuration.set("team." + specialisation + ".columns", newArray);
-            this.updateURL();
-            ga('send', {
-                hitType: 'event',
-                eventCategory: 'Configuration change',
-                eventAction: "team." + specialisation + ".columns",
-            });
-        }.bind(this));
     }
 }
