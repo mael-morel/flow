@@ -219,33 +219,23 @@
     vertical-align: top;
 }
 
-.simulation-settings-team {
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-}
-
-.simulation-settings-team > div:nth-child(1) {
-    flex: 1;
-    -webkit-flex: 1;
-    -ms-flex: 1;
-    vertical-align: top;
-    min-width: 250px;
-}
-
-.simulation-settings-team > div:nth-child(2) {
-    flex-grow: 1;
-    -webkit-flex-grow: 1;
-    -ms-flex-grow: 1;
-    vertical-align: top;
-}
-
 .simulation-settings-team .simulation-settings-team-headcount {
     table-layout: auto;
 }
-
-.who-works-where tr:nth-child(1) {
-    word-wrap: break-word;
+.simulation-settings-team .simulation-settings-team-headcount td:nth-child(odd){
+    text-align: right;
+    padding-right: 3pt;
+    overflow: hidden;
+}
+.simulation-settings-team h4 {
+    text-align: center;
+}
+.who-works-where {
+    width: auto;
+    margin: 0 auto;
+}
+.who-works-where tr td:nth-child(2) input{
+    width: inherit;
 }
 
 .title {

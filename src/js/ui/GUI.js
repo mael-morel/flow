@@ -231,7 +231,7 @@ function GUI(hookSelectorParam, simulation, configuration) {
                 activeColumns.push(column);
             }
         }
-        var html = "<tr><td></td><td>Headcount</td>";
+        var html = "<tr><td></td><td>Name</td><td>Headcount</td>";
         for (var i = 0; i < activeColumns.length; i++) {
             var column = activeColumns[i];
             html += "<td>" + column.label + "</td>";
@@ -240,7 +240,10 @@ function GUI(hookSelectorParam, simulation, configuration) {
         var team = this.configuration.get("team");
         for (var i = 0; i < team.length; i++) {
             var row = team[i];
-            html += "<tr><td><input type='text' value='" + row.name + "'></input></td>";
+            var color = this.colors[i % this.colors.length];
+            var personSpan = "<span class='glyphicon glyphicon-user person' style='color: " + color + "'/>";
+            html += "<tr><td>" + personSpan + "</td>"
+            html += "<td><input type='text' value='" + row.name + "'></input></td>";
             html += "<td><input type='text' value='" + row.count + "'></input></td>";
             for (var j = 0; j < activeColumns.length; j++) {
                 var column = activeColumns[j];
