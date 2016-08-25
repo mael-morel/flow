@@ -234,8 +234,15 @@
     width: auto;
     margin: 0 auto;
 }
+.who-works-where th {
+    text-align: center;
+    padding: 3pt;
+}
 .who-works-where tr td:nth-child(2) input{
     width: inherit;
+}
+.team-member-remove {
+    color: red;
 }
 
 .title {

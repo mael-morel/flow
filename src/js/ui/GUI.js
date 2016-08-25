@@ -231,12 +231,12 @@ function GUI(hookSelectorParam, simulation, configuration) {
                 activeColumns.push(column);
             }
         }
-        var html = "<tr><td></td><td>Name</td><td>Headcount</td>";
+        var html = "<tr><th></th><th>Name</th><th>Headcount</th>";
         for (var i = 0; i < activeColumns.length; i++) {
             var column = activeColumns[i];
-            html += "<td>" + column.label + "</td>";
+            html += "<th>" + column.label + "</th>";
         }
-        html += "</tr>";
+        html += "<th></th></tr>";
         var team = this.configuration.get("team");
         for (var i = 0; i < team.length; i++) {
             var row = team[i];
@@ -249,9 +249,25 @@ function GUI(hookSelectorParam, simulation, configuration) {
                 var column = activeColumns[j];
                 html += "<td><input type='text' value='" + row.productivity[column.name] + "'></input></td>";
             }
+            html += "<td><span class='glyphicon glyphicon-remove team-member-remove' aria-hidden='true'></span></td>"
             html += "</tr>";
         }
         $$(".who-works-where").append(html);
+        var removeListener = function (event) {
+            $(this).parent().parent().remove();
+            $$(".who-works-where span.person", false).each(function(index, span) {
+                var color = this.colors[index % this.colors.length];
+                $(span).css("color", color);
+            }.bind(event.data));
+        };
+        $$(".team-member-remove").click(this, removeListener);
+        $$(".team-member-add").click(function () {
+            var html = "<tr class='sortit'><td><span class='glyphicon glyphicon-menu-hamburger' aria-hidden='true'></span></td><td><input data-type='group' type='text' placeholder='Group name'></td><td><input data-type='label' type='text' placeholder='Column name'></td><td><input data-type='cfdLabel' type='text' placeholder='Long name'></td><td><input data-type='queue' type='checkbox'></td><td><span class='glyphicon glyphicon-remove board-column-remove' aria-hidden='true'></span></td></tr>"
+            var rows = $$(".board-config tr", false);
+            var newRow = $(html);
+            $(rows[rows.length - 1]).before(newRow);
+            newRow.find(".board-column-remove").click(removeListener);
+        });
     }
 
     this.renderTaskStrategies = function () {
