@@ -145,7 +145,20 @@ function GUI(hookSelectorParam, simulation, configuration) {
                 }
             }
             var team = this.configuration.get("team");
-            clearColsFrom(team);
+            var activities = configuration.getActiveStates();
+            team.forEach(function(memberType) {
+                var keys = Object.keys(memberType.productivity);
+                keys.forEach(function(key) {
+                    if (activities.indexOf(key) == -1) {
+                        delete memberType.productivity[key];
+                    }
+                });
+                activities.forEach(function(activity) {
+                    if (memberType.productivity[activity] === undefined) {
+                        memberType.productivity[activity] = 50;
+                    }
+                });
+            });
             var constant = this.configuration.get("tasks.sizeStrategy.configs.constant");
             clearColsFrom(constant);
             var normal = this.configuration.get("tasks.sizeStrategy.configs.normal");
