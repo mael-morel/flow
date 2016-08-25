@@ -420,8 +420,8 @@ function GUI(hookSelectorParam, simulation, configuration) {
             $(tr).find("input").each(function(index, input) {
                 switch (index) {
                     case 0: memberType.name = input.value; break;
-                    case 1: memberType.count = parseInt(input.value); break;
-                    default: memberType.productivity[activities[index - 2]] = parseInt(input.value);
+                    case 1: memberType.count = parseInt(input.value) || 0; break;
+                    default: memberType.productivity[activities[index - 2]] = parseInt(input.value) || 0;
                 }
 
             });
