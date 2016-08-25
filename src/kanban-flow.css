@@ -244,6 +244,9 @@
 .team-member-remove {
     color: red;
 }
+.team-config-buttons {
+    text-align: center;
+}
 
 .title {
     flex: 1;

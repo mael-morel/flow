@@ -253,21 +253,33 @@ function GUI(hookSelectorParam, simulation, configuration) {
             html += "</tr>";
         }
         $$(".who-works-where").append(html);
+        var recolorPersonIcons = function(colors) {
+            $$(".who-works-where span.person", false).each(function(index, span) {
+                var color = colors[index % colors.length];
+                $(span).css("color", color);
+            });
+        }
         var removeListener = function (event) {
             $(this).parent().parent().remove();
-            $$(".who-works-where span.person", false).each(function(index, span) {
-                var color = this.colors[index % this.colors.length];
-                $(span).css("color", color);
-            }.bind(event.data));
+            recolorPersonIcons(event.data.colors);
         };
         $$(".team-member-remove").click(this, removeListener);
         $$(".team-member-add").click(function () {
-            var html = "<tr class='sortit'><td><span class='glyphicon glyphicon-menu-hamburger' aria-hidden='true'></span></td><td><input data-type='group' type='text' placeholder='Group name'></td><td><input data-type='label' type='text' placeholder='Column name'></td><td><input data-type='cfdLabel' type='text' placeholder='Long name'></td><td><input data-type='queue' type='checkbox'></td><td><span class='glyphicon glyphicon-remove board-column-remove' aria-hidden='true'></span></td></tr>"
-            var rows = $$(".board-config tr", false);
+            var personSpan = "<span class='glyphicon glyphicon-user person'/>";
+            var html = "<tr><td>" + personSpan + "</td>"
+            html += "<td><input type='text' ></input></td>";
+            html += "<td><input type='text' value='1'></input></td>";
+            for (var j = 0; j < activeColumns.length; j++) {
+                html += "<td><input type='text' value='50'></input></td>";
+            }
+            html += "<td><span class='glyphicon glyphicon-remove team-member-remove' aria-hidden='true'></span></td>"
+            html += "</tr>";
+            var rows = $$(".who-works-where tr", false);
             var newRow = $(html);
-            $(rows[rows.length - 1]).before(newRow);
-            newRow.find(".board-column-remove").click(removeListener);
-        });
+            $(rows[rows.length - 1]).after(newRow);
+            newRow.find(".team-member-remove").click(this, removeListener);
+            recolorPersonIcons(this.colors);
+        }.bind(this));
     }
 
     this.renderTaskStrategies = function () {
@@ -402,7 +414,7 @@ function GUI(hookSelectorParam, simulation, configuration) {
     this.getTeamConfigurationFromInputs = function() {
         var activities = this.configuration.getActiveStates();
         var result = [];
-        $$(".who-works-where tr:not(:first-child)").each(function(index, tr) {
+        $$(".who-works-where tr:not(:first-child)", false).each(function(index, tr) {
             var memberType = {productivity: {}};
             result.push(memberType);
             $(tr).find("input").each(function(index, input) {
