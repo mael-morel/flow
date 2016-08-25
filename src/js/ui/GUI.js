@@ -170,7 +170,6 @@ function GUI(hookSelectorParam, simulation, configuration) {
                 var column = newConfig[i];
                 if (column.queue === false) {
                     activeCount++;
-                    team[column.name] = {headcount: 2, columns: [column.name]};
                     constant[column.name] = 2;
                     normal[column.name] = 2;
                     normal[column.name + "-variation"] = 1;

@@ -1,6 +1,6 @@
 function Configuration(externalConfig) {
     this.data = {
-        version: 3,
+        version: 4,
         maxTasksOnOnePerson: 2,
         maxPeopleOnOneTask: 2,
         stats: {
@@ -169,13 +169,43 @@ function Configuration(externalConfig) {
                 }
             }
             externalConfig.version = 3;
+        },
+        3: function (externalConfig) {
+            var team = externalConfig.team;
+            var workingOutOfSpecialisationCoefficient = parseInt(team.workingOutOfSpecialisationCoefficient) || 0;
+            var newTeam = [];
+            var keys = Object.keys(team).filter(function(key) {
+                return key != "workingOutOfSpecialisationCoefficient";
+            });
+            var dictionary = {Analysis: "Analyst", Development: "Developer", QA: "Tester", Deployment: "DevOps"};
+            keys.forEach(function(specialistKey) {
+                var memberType = {count: team[specialistKey].headcount, productivity: {}, name: ""};
+                externalConfig.columns.definitions.forEach(function(column) {
+                    if (column.name == specialistKey && dictionary[column.cfdLabel]) {
+                        memberType.name = dictionary[column.cfdLabel];
+                    }
+                });
+                keys.forEach(function(key) {
+                    memberType.productivity[key] = 0;
+                    if (team[specialistKey].columns.indexOf(key) != -1) {
+                        if (key == specialistKey) {
+                            memberType.productivity[key] = 100;
+                        } else {
+                            memberType.productivity[key] = workingOutOfSpecialisationCoefficient;
+                        }
+                    }
+                });
+                newTeam.push(memberType);
+            });
+            externalConfig.team = newTeam;
+            externalConfig.version = 4;
         }
     };
     this.loadExternalConfig = function (externalConfig) {
         if (!externalConfig || Object.keys(externalConfig).length == 0) return;
         var version = externalConfig.version;
         if (!version) version = 1;
-        while (version != 3) {
+        while (version != 4) {
             this.loaders[version](externalConfig);
             version = externalConfig.version;
         }
