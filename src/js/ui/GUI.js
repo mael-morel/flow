@@ -416,13 +416,18 @@ function GUI(hookSelectorParam, simulation, configuration) {
         }
     }
     this.settingsClosed = function () {
-        var newTeamConfig = this.getTeamConfigurationFromInputs();
-        this.configuration.set("team", newTeamConfig);
-        this.updateURL();
+        this.updateTeam();
         if (this.wasRunningWhenSettingsOpened) {
             this.play();
         }
     }
+    this.updateTeam = function() {
+        var newTeamConfig = this.getTeamConfigurationFromInputs();
+        this.configuration.set("team", newTeamConfig);
+        this.updateURL();
+    }
+
+    $$(".simulation-settings-team-tab").bind('isHidden', this.updateTeam.bind(this));
 
     this.getTeamConfigurationFromInputs = function() {
         var activities = this.configuration.getActiveStates();
