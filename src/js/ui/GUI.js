@@ -4,7 +4,6 @@ function GUI(hookSelectorParam, simulation, configuration) {
     this.simulation = simulation;
     this.fps = 4;
     this.lastUpdated = Date.now();
-    this.renderTasks = true;
     this.animate = true;
 
     var controls = new Controls(this.simulation, this);
@@ -449,38 +448,57 @@ function GUI(hookSelectorParam, simulation, configuration) {
     $$(".simulation-settings-modal").on("show.bs.modal", this.settingsOpened.bind(this));
     $$(".simulation-settings-modal").on("hide.bs.modal", this.settingsClosed.bind(this));
 
-    $$(".tasksDivOverlay").click(function () {
-        var divOverlay = $$('.tasksDivOverlay');
-        divOverlay.hide();
-        this.renderTasks = !this.renderTasks;
-        if (this.renderTasks) {
-            $$(".tasks-count", false).remove();
-        }
-        $$(".board-wrapper").toggleClass("board-wrapper-max-height");
-        this.updateBoard();
-
-    }.bind(this));
-
-    $$(".tasks").mouseover(function () {
-        var divOverlay = $$('.tasksDivOverlay');
-        var bottomWidth = $(this).css('width');
-        var bottomHeight = $(this).css('height');
-        var rowPos = $(this).position();
-        bottomTop = rowPos.top;
-        bottomLeft = rowPos.left;
-        divOverlay.css({
+    this.taskDetails = null;
+    function taskMouseover(event) {
+        var div = $$('.task-details');
+        var $taskDiv = $(event.currentTarget);
+        var position = $taskDiv.position();
+        var top = position.top;
+        var left = position.left;
+        div.css({
             position: 'absolute',
-            top: bottomTop,
-            right: '0px',
-            width: '100%',
-            height: bottomHeight
+            top: top,
+            left: left,
+            minWidth: $taskDiv.css("width"),
         });
-        divOverlay.show();
-    });
-    $$('.tasksDivOverlay').mouseleave(function () {
-        var divOverlay = $$('.tasksDivOverlay');
-        divOverlay.hide();
-    });
+        div.show();
+        var task = $taskDiv.data("taskReference");
+        this.taskDetails = task;
+        this.updateTaskDetails(task);
+    }
+    this.updateTaskDetails = function(task) {
+        if (!task) return;
+        var div = $$('.task-details');
+        var $taskDiv = $$("." + task.id, false);
+        var detailsDivPosition = div.position();
+        var taskDivPosition = $taskDiv.position();
+        if (detailsDivPosition.top != taskDivPosition.top || detailsDivPosition.left != taskDivPosition.left) {
+            div.hide();
+            this.taskDetails = null;
+            return;
+        }
+        div.find("[data-task-detail=name]").html(task.label);
+        var created = "D: " + (Math.floor(task.created / 60 / 8) + 1) + ", t: " + Math.floor(task.created / 60 % 8 + 9) +
+            ":" + (task.created % 60 < 10 ? "0": "") + (task.created % 60);
+        div.find("[data-task-detail=since]").html(created);
+        var activities = this.configuration.getActiveStates();
+        var work = div.find(".task-details-work");
+        work.html("");
+        activities.forEach(function (activity) {
+            work.append("<p>" + this.simulation.board.getColumnByName(activity).label + ": <span>" + Math.max(0, task.size[activity]).toFixed(0) + "/" + task.originalSize[activity].toFixed(0)) + "</span></p>";
+        }.bind(this));
+        var people = div.find(".task-details-people");
+        people.html(task.peopleAssigned.length > 0 ? "<p>People assigned:</p>" : "");
+        task.peopleAssigned.forEach(function(person) {
+            people.append('<p><span class="glyphicon glyphicon-user person" style="color: ' + this.colors[person.typeIndex] +
+                '"></span> ' + person.name + (person.tasksWorkingOn.length > 1 ? ' (' + (100 / person.tasksWorkingOn.length).toFixed(0) + '%)' : '') + '</p>');
+        }.bind(this));
+    }
+    function taskMouseleave() {
+        var div = $$('.task-details');
+        this.taskDetails = null;
+        div.hide();
+    }
 
     this.update = function (board, stats, force) {
         var now = Date.now();
@@ -493,6 +511,7 @@ function GUI(hookSelectorParam, simulation, configuration) {
         this.littlesDiagram.update();
         this.codDiagram.update(force);
         this.scatterplotDiagram.update(force);
+        this.updateTaskDetails(this.taskDetails);
     }
 
     this.updateTime = function () {
@@ -518,49 +537,42 @@ function GUI(hookSelectorParam, simulation, configuration) {
 
     this.updateBoard = function () {
         var board = this.simulation.board;
-        var renderTasks = this.renderTasks;
         var allVisualColumns = $($$('.tasks td', false).get().reverse()).toArray();
         allVisualColumns.forEach(function (columnVisual) {
             var columnVisualId = columnVisual.className;
             columnVisual = $(columnVisual);
-            if (!renderTasks) {
-                columnVisual.html("<span class='tasks-count'>" + board.getColumnByName(columnVisualId).tasks.length + "</span>");
-            } else {
-                columnVisual.children().each(function (index, taskElement) {
-                    var $task = $(taskElement);
-                    var task = $task.data("taskReference");
-                    if (task.column) {
-                        $task.find('.progress-bar').width((100 * task.size[task.column.name] / task.originalSize[task.column.name]).toFixed(1) + '%');
-                        $task.find('.task-status').html(this.createStatusSpan(task.peopleAssigned));
-                    }
-                    if (!board.tasks[task.id]) {
-                        $task.remove();
-                    } else if (task.column && task.column.name != columnVisualId) {
-                        $task.remove();
-                        var newTaskInstance = this.createTaskDiv(task);
-                        $$(".tasks td." + task.column.name, false).append(newTaskInstance);
-                        $task = newTaskInstance;
-                    }
-                }.bind(this));
-            }
+            columnVisual.children().each(function (index, taskElement) {
+                var $task = $(taskElement);
+                var task = $task.data("taskReference");
+                if (task.column) {
+                    $task.find('.progress-bar').width((100 * task.size[task.column.name] / task.originalSize[task.column.name]).toFixed(1) + '%');
+                    $task.find('.task-status').html(this.createStatusSpan(task.peopleAssigned));
+                }
+                if (!board.tasks[task.id]) {
+                    $task.remove();
+                } else if (task.column && task.column.name != columnVisualId) {
+                    $task.remove();
+                    var newTaskInstance = this.createTaskDiv(task);
+                    $$(".tasks td." + task.column.name, false).append(newTaskInstance);
+                    $task = newTaskInstance;
+                }
+            }.bind(this));
         }.bind(this));
-        if (renderTasks) {
-            for (var key in board.tasks) {
-                if (!board.tasks.hasOwnProperty(key)) {
-                    continue;
-                }
-                var task = board.tasks[key];
-                if ($$("." + task.id, false).length == 0) {
-                    var newTask = this.createTaskDiv(task);
-                    $$('.tasks td.' + task.column.name, false).append(newTask);
-                }
+        for (var key in board.tasks) {
+            if (!board.tasks.hasOwnProperty(key)) {
+                continue;
+            }
+            var task = board.tasks[key];
+            if ($$("." + task.id, false).length == 0) {
+                var newTask = this.createTaskDiv(task);
+                $$('.tasks td.' + task.column.name, false).append(newTask);
             }
         }
     };
 
     this.createTaskDiv = function (task) {
         var html = "<div class='task " + task.id + (this.animate ? " task-animation" : "") + "'>" + task.label + " <div class='task-status'>" + this.createStatusSpan(task.peopleAssigned) + "</div><div class='progress'><div class='progress-bar progress-bar-info' style='width:100%'/></div></div>";
-        return $(html).data("taskReference", task);
+        return $(html).data("taskReference", task).mouseover(taskMouseover.bind(this)).mouseleave(taskMouseleave);
     }
 
     this.createStatusSpan = function (peopleWorkingOn) {
