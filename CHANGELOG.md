@@ -1,3 +1,13 @@
+## 0.3.1 (2016-08-31)
+
+Features:
+
+  - task details shown when hovering over a task
+
+Bugfixes:
+
+  - fixed a bug that allowed people to multitask and swarm at the same time
+
 ## 0.3 (2016-08-25)
 
 Features:
