@@ -3,9 +3,9 @@ function Team(configuration) {
     this.membersSortedBySkill = [];
     this.configuration = configuration;
 
-    this.doWork = function (ticksPerHour) {
+    this.doWork = function (ticksPerHour, time) {
         this.members.forEach(function (person) {
-            person.work(ticksPerHour);
+            person.work(ticksPerHour, time);
         });
     }
 

@@ -8,6 +8,8 @@ function Task(taskId, time, size) {
     this.peopleAssigned = [];
     this.arrivalTime = {};
     this.value = new Value(this, time, 10, normal_random(0, 1000));
+    this.touchCounter = 0;
+    this.lastTouchedTime = -1;
 
     function Value(task, start, durationInDays, valuePerDay) {
         this.start = start;
@@ -59,8 +61,12 @@ function Task(taskId, time, size) {
         return sizeSummed;
     }
 
-    this.work = function (amount) {
+    this.work = function (amount, time) {
         this.size[this.column.name] -= amount;
+        if (time != this.lastTouchedTime) {
+            this.touchCounter++;
+            this.lastTouchedTime = time;
+        }
     }
 
     this.unassignPeople = function () {
@@ -72,5 +78,9 @@ function Task(taskId, time, size) {
 
     this.getLeadTime = function () {
         return this.arrivalTime[this.column.name] - this.created;
+    }
+
+    this.getTouchCount = function() {
+        return this.touchCounter;
     }
 }

@@ -20,11 +20,11 @@ function Person(name, productivity, typeIndex) {
         this.tasksWorkingOn = [];
     }
 
-    this.work = function (ticksPerHour) {
+    this.work = function (ticksPerHour, time) {
         if (this.tasksWorkingOn.length == 0) return;
         var workPerTask = this.productivityPerHour / this.tasksWorkingOn.length / ticksPerHour;
         this.tasksWorkingOn.forEach(function (task) {
-            task.work(workPerTask * (this.productivity[task.column.name] / 100));
+            task.work(workPerTask * (this.productivity[task.column.name] / 100), time);
             if (task.finished()) {
                 task.unassignPeople();
             }

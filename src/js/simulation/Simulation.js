@@ -309,7 +309,7 @@ function Simulation(hookSelector, externalConfig) {
     }
 
     this.doWork = function () {
-        this.team.doWork(this.ticksPerHour);
+        this.team.doWork(this.ticksPerHour, this.time);
     }
 
     this.initBasics();

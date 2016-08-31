@@ -36,6 +36,12 @@ function DiagramLittles(simulation) {
             showInLegend: true,
         }, {
             type: "line",
+            name: "Touch Time %",
+            dataPoints: [],
+            showInLegend: true,
+            axisYType: "secondary",
+        }, {
+            type: "line",
             name: "Capacity Utilisation",
             dataPoints: [],
             showInLegend: true,
@@ -59,8 +65,8 @@ function DiagramLittles(simulation) {
         diagramData[0].dataPoints = stats.wip.getAvgHistory();
         diagramData[1].dataPoints = stats.throughput.getAvgHistory();
         diagramData[2].dataPoints = stats.leadTime.getAvgHistory();
-        ;
-        diagramData[3].dataPoints = stats.capacityUtilisation.getAvgHistory();
+        diagramData[3].dataPoints = stats.touchTimePercent.getAvgHistory();
+        diagramData[4].dataPoints = stats.capacityUtilisation.getAvgHistory();
         tab.CanvasJSChart().render();
     }
 

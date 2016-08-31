@@ -14,7 +14,7 @@ function Stats(simulation, configuration) {
             index = index == undefined ? this.events.length - 1 : index;
             if (forceRecalculate || !this.avg) {
                 var subArray = this.events.slice(Math.max(0, index - (this.stats.dataPointsToRemember / this.interval)), index);
-                if (eventsAsArrays) {
+                if (this.eventsAsArrays) {
                     subArray = [].concat.apply([], subArray);
                 }
                 this.avg = subArray.average() * this.avgMultiplier;
@@ -51,6 +51,7 @@ function Stats(simulation, configuration) {
     this.busyPeople = new DataSet(this);
     this.capacityUtilisation = new DataSet(this);
     this.leadTime = new DataSet(this, 1, 1 / (8 * 60), true);
+    this.touchTimePercent = new DataSet(this, 1, 1, true);
     this.costOfDelay = new DataSet(this, 8);
     this.valueDelivered = new DataSet(this, 8);
     this.valueDropped = new DataSet(this, 8);
@@ -69,6 +70,7 @@ function Stats(simulation, configuration) {
         this.throughput.recalculateAvg();
         this.capacityUtilisation.recalculateAvg();
         this.leadTime.recalculateAvg();
+        this.touchTimePercent.recalculateAvg();
         this.costOfDelay.recalculateAvg();
         this.valueDelivered.recalculateAvg();
         this.valueDropped.recalculateAvg();
@@ -83,10 +85,15 @@ function Stats(simulation, configuration) {
 
         var lastColumn = simulation.board.lastColumn();
         var leadTimes = [];
+        var touchTimes = [];
         lastColumn.tasks.forEach(function (task) {
-            leadTimes.push(task.getLeadTime());
+            var leadTime = task.getLeadTime();
+            var touchTime = task.getTouchCount() * (60 / simulation.ticksPerHour);
+            leadTimes.push(leadTime);
+            touchTimes.push(100 * touchTime / leadTime);
         });
         this.leadTime.addEvent(leadTimes);
+        this.touchTimePercent.addEvent(touchTimes);
 
         this.wip.addEvent(this.currentWip / simulation.ticksPerHour);
         this.currentWip = 0;
