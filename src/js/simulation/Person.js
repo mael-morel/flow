@@ -1,9 +1,11 @@
+var personIndex = 1;
 function Person(name, productivity, typeIndex) {
     this.tasksWorkingOn = [];
     this.productivityPerHour = 60;
     this.productivity = productivity;
     this.name = name;
     this.typeIndex = typeIndex;
+    this.id = personIndex++;
 
     this.assignTo = function (task) {
         this.tasksWorkingOn.push(task);

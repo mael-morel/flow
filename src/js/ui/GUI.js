@@ -470,6 +470,11 @@ function GUI(hookSelectorParam, simulation, configuration) {
         if (!task) return;
         var div = $$('.task-details');
         var $taskDiv = $$("." + task.id, false);
+        if ($taskDiv.length == 0) {
+            div.hide();
+            this.taskDetails = null;
+            return;
+        }
         var detailsDivPosition = div.position();
         var taskDivPosition = $taskDiv.position();
         if (detailsDivPosition.top != taskDivPosition.top || detailsDivPosition.left != taskDivPosition.left) {

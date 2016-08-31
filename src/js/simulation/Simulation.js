@@ -246,6 +246,7 @@ function Simulation(hookSelector, externalConfig) {
             var currentTaskCount = workingMembers[0].tasksWorkingOn.length;
             membersSortedBySkill.forEach(function (personAndActivity) {
                 if (personAndActivity.person.tasksWorkingOn.length != currentTaskCount) return;
+                if (personAndActivity.person.tasksWorkingOn[0].peopleAssigned.length > 1) return;
                 var task = unassignedTasks[personAndActivity.activityIndex].shift();
                 if (task) {
                     personAndActivity.person.assignTo(task);
