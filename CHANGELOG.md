@@ -1,3 +1,9 @@
+## 0.3.2 (2016-08-31)
+
+Features:
+
+  - touch time % statistics
+
 ## 0.3.1 (2016-08-31)
 
 Features:
