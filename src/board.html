@@ -37,33 +37,12 @@
             <div class="modal-content">
                 <div class="modal-body">
                     <ul class="nav nav-tabs">
-                        <li role="presentation" class="active"><a>Team</a></li>
-                        <li role="presentation"><a>Backlog</a></li>
-                        <li role="presentation"><a>Stats</a></li>
+                        <li role="presentation" class="active"><a>Backlog</a></li>
+                        <li role="presentation"><a>Rules</a></li>
+                        <li role="presentation"><a>Team</a></li>
                         <li role="presentation"><a>Board</a></li>
+                        <li role="presentation"><a>Stats</a></li>
                     </ul>
-                    <div class="simulation-settings-team-tab">
-                        <div class="simulation-settings-team">
-                            <div>
-                                <table class="settings-table simulation-settings-team-headcount">
-                                    <tr>
-                                        <td>Max WIP for a single person</td>
-                                        <td><input type="text" maxlength="2" data-model="maxTasksOnOnePerson"/></td>
-                                        <td>Max no. of people working on a single task</td>
-                                        <td><input type="text" maxlength="2" data-model="maxPeopleOnOneTask"/></td>
-                                    </tr>
-                                </table>
-                            </div>
-                            <div>
-                                <h4>Team members headcount and productivity</h4>
-                                <table class="settings-table who-works-where">
-                                </table>
-                                <div class="team-config-buttons">
-                                    <button type="button" class="btn team-member-add">Add a new row</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     <div>
                         <table class="settings-table">
                             <tr>
@@ -182,10 +161,30 @@
                     <div>
                         <table class="settings-table">
                             <tr>
-                                <td>No. of days to calculate moving averages</td>
-                                <td><input type="text" maxlength="3" data-model="stats.noOfDaysForMovingAverage"/></td>
+                                <td>Max WIP for a single person</td>
+                                <td><input type="text" maxlength="2" data-model="maxTasksOnOnePerson"/></td>
+                            </tr>
+                            <tr>
+                                <td>Max no. of people working on a single task</td>
+                                <td><input type="text" maxlength="2" data-model="maxPeopleOnOneTask"/></td>
+                            </tr>
+                            <tr>
+                                <td>Warmup time before working on a task (around)</td>
+                                <td><input type="text" maxlength="2" data-model="warmupTime"/> hours</td>
                             </tr>
                         </table>
+                    </div>
+                    <div class="simulation-settings-team-tab">
+                        <div class="simulation-settings-team">
+                            <div>
+                                <h4>Team members headcount and productivity</h4>
+                                <table class="settings-table who-works-where">
+                                </table>
+                                <div class="team-config-buttons">
+                                    <button type="button" class="btn team-member-add">Add a new row</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="board-config-div">
                         <p><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Changes in
@@ -207,6 +206,14 @@
                             <button type="button" class="btn board-config-add-column">Add new column</button>
                             <button type="button" class="btn btn-danger board-config-save">Save and reload</button>
                         </div>
+                    </div>
+                    <div>
+                        <table class="settings-table">
+                            <tr>
+                                <td>No. of days to calculate moving averages</td>
+                                <td><input type="text" maxlength="3" data-model="stats.noOfDaysForMovingAverage"/></td>
+                            </tr>
+                        </table>
                     </div>
                 </div>
                 <div class="modal-footer">

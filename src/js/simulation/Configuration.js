@@ -3,6 +3,7 @@ function Configuration(externalConfig) {
         version: 4,
         maxTasksOnOnePerson: 2,
         maxPeopleOnOneTask: 2,
+        warmupTime: 1,
         stats: {
             noOfDaysForMovingAverage: 5,
         },

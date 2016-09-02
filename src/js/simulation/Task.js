@@ -84,7 +84,7 @@ function Task(taskId, time, size) {
         if (warmingCount == undefined) {
             warmingCount = this.warmupTime;
         }
-        if (warmingCount > 0) { 
+        if (warmingCount > 0) {
             this.peopleWarmingUp[person.id] = warmingCount -= amount;
         } else {
             this.size[this.column.name] -= amount;
