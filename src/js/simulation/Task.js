@@ -10,6 +10,8 @@ function Task(taskId, time, size) {
     this.value = new Value(this, time, 10, normal_random(0, 1000));
     this.touchCounter = 0;
     this.lastTouchedTime = -1;
+    this.warmupTime = 60;
+    this.peopleWarmingUp = {};
 
     function Value(task, start, durationInDays, valuePerDay) {
         this.start = start;
@@ -61,11 +63,31 @@ function Task(taskId, time, size) {
         return sizeSummed;
     }
 
-    this.work = function (amount, time) {
-        this.size[this.column.name] -= amount;
+    this.work = function (amount, time, person) {
         if (time != this.lastTouchedTime) {
             this.touchCounter++;
             this.lastTouchedTime = time;
+            Object.keys(this.peopleWarmingUp).forEach(function (warmingUpPerson) {
+                var contains = false;
+                for (var i=0 ;i<this.peopleAssigned.length; i++) {
+                    if (this.peopleAssigned[i].id == warmingUpPerson) {
+                        contains = true;
+                        break;
+                    }
+                }
+                if (!contains) {
+                    delete this.peopleWarmingUp[warmingUpPerson];
+                }
+            }.bind(this));
+        }
+        var warmingCount = this.peopleWarmingUp[person.id];
+        if (warmingCount == undefined) {
+            warmingCount = this.warmupTime;
+        }
+        if (warmingCount > 0) { 
+            this.peopleWarmingUp[person.id] = warmingCount -= amount;
+        } else {
+            this.size[this.column.name] -= amount;
         }
     }
 
