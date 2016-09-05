@@ -164,7 +164,10 @@ function Simulation(hookSelector, externalConfig) {
 
     this.createTask = function(taskConfig) {
         var warmupTime = this.configuration.get("warmupTime") * 60;
-        return new Task(this.taskCounter++, this.time, taskConfig, normal_random(warmupTime, warmupTime/2, false));
+        var valueMean = this.configuration.get("value.mean");
+        var valueVariation = this.configuration.get("value.variation");
+        var value = normal_random(valueMean, valueVariation, false);
+        return new Task(this.taskCounter++, this.time, taskConfig, normal_random(warmupTime, warmupTime/2, false), value);
     }
 
     this.prioritisationStrategies = {

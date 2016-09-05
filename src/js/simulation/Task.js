@@ -1,4 +1,4 @@
-function Task(taskId, time, size, warmupTime) {
+function Task(taskId, time, size, warmupTime, value) {
     this.id = "Task" + taskId;
     this.label = "#" + taskId;
     this.created = time;
@@ -7,7 +7,7 @@ function Task(taskId, time, size, warmupTime) {
     this.column = null;
     this.peopleAssigned = [];
     this.arrivalTime = {};
-    this.value = new Value(this, time, 10, normal_random(0, 1000));
+    this.value = new Value(this, time, 10, value);
     this.touchCounter = 0;
     this.lastTouchedTime = -1;
     this.warmupTime = warmupTime;

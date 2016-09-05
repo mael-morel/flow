@@ -1,9 +1,13 @@
 function Configuration(externalConfig) {
     this.data = {
-        version: 5,
+        version: 6,
         maxTasksOnOnePerson: 2,
         maxPeopleOnOneTask: 2,
         warmupTime: 1,
+        value: {
+            mean: 0,
+            variation: 1000,
+        },
         stats: {
             noOfDaysForMovingAverage: 5,
         },
