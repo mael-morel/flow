@@ -36,7 +36,7 @@ function DiagramLittles(simulation) {
             showInLegend: true,
         }, {
             type: "line",
-            name: "Touch Time %",
+            name: "Flow Efficiency",
             dataPoints: [],
             showInLegend: true,
             axisYType: "secondary",
