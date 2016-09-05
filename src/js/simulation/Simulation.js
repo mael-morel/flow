@@ -166,7 +166,9 @@ function Simulation(hookSelector, externalConfig) {
         var warmupTime = this.configuration.get("warmupTime") * 60;
         var valueMean = this.configuration.get("value.mean");
         var valueVariation = this.configuration.get("value.variation");
-        var value = normal_random(valueMean, valueVariation, false);
+        var start = this.time + this.configuration.get("value.start") * 8 * 60;
+        var durationInDays = this.configuration.get("value.duration");
+        var value = new Value(start, durationInDays, normal_random(valueMean, valueVariation, false));
         return new Task(this.taskCounter++, this.time, taskConfig, normal_random(warmupTime, warmupTime/2, false), value);
     }
 

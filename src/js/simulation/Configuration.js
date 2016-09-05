@@ -7,6 +7,8 @@ function Configuration(externalConfig) {
         value: {
             mean: 0,
             variation: 1000,
+            start: 0,
+            duration: 10,
         },
         stats: {
             noOfDaysForMovingAverage: 5,
