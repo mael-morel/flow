@@ -428,5 +428,104 @@ var historicalConfigs = {
                 }
             }
         }
+    },
+    5: {
+        version: 5,
+        maxTasksOnOnePerson: 2,
+        maxPeopleOnOneTask: 2,
+        warmupTime: 1,
+        stats: {
+            noOfDaysForMovingAverage: 5,
+        },
+        columns: {
+            prioritisationStrategy: "fifo",
+            definitions: [
+                {name: "col0", queue: true, label: "Backlog", cfdLabel: "Backlog"},
+                {name: "col1", queue: false, label: "Doing", cfdLabel: "Analysis"},
+                {name: "col2", queue: true, label: "Done", cfdLabel: "Analysis Done"},
+                {name: "col3", queue: false, label: "Doing", cfdLabel: "Development"},
+                {name: "col4", queue: true, label: "Done", cfdLabel: "Development Done"},
+                {name: "col5", queue: false, label: "Doing", cfdLabel: "QA"},
+                {name: "col6", queue: true, label: "Done", cfdLabel: "QA Done"},
+                {name: "col7", queue: false, label: "Deployment", cfdLabel: "Deployment"},
+                {name: "col8", queue: true, label: "Done", cfdLabel: "Done", ignoreLimit: true},
+                {name: "colgrp0", label: "Analysis", children: ["col1", "col2"]},
+                {name: "colgrp1", label: "Development", children: ["col3", "col4"]},
+                {name: "colgrp2", label: "QA", children: ["col5", "col6"]},
+            ],
+            limits: {
+                col0: null,
+                col1: null,
+                col2: null,
+                colgrp0: 5,
+                col3: null,
+                col4: null,
+                colgrp1: 5,
+                col5: null,
+                col6: null,
+                colgrp2: 3,
+                col7: 5,
+            },
+        },
+        team: [
+            {name: "Analyst", productivity: {col1: 100, col3: 0, col5: 0, col7: 0}, count: 2},
+            {name: "Developer", productivity: {col1: 0, col3: 100, col5: 0, col7: 0}, count: 5},
+            {name: "Tester", productivity: {col1: 0, col3: 0, col5: 100, col7: 0}, count: 3},
+            {name: "DevOps", productivity: {col1: 0, col3: 0, col5: 0, col7: 100}, count: 1},
+        ],
+        tasks: {
+            arrivalStrategy: {
+                current: "up-to-limit",
+                configs: {
+                    scrum: {
+                        length: 10,
+                        tasks: 55,
+                        "include-existing": false,
+                    },
+                    "constant-push": {
+                        demand: 5.5,
+                    },
+                    "random-push": {
+                        demand: 5.5,
+                        "batch-size": 1,
+                    }
+                }
+            },
+            sizeStrategy: {
+                current: "constant",
+                configs: {
+                    constant: {
+                        col1: 2,
+                        col3: 7,
+                        col5: 4,
+                        col7: 1,
+                    },
+                    normal: {
+                        col1: 2,
+                        col3: 7,
+                        col5: 4,
+                        col7: 1,
+                        "col1-variation": 2,
+                        "col3-variation": 4,
+                        "col5-variation": 3,
+                        "col7-variation": 2,
+                    },
+                    tshirt: {
+                        col1: 14,
+                        col3: 50,
+                        col5: 28,
+                        col7: 8,
+                        "small-probability": 45,
+                        "medium-probability": 30,
+                        "large-probability": 20,
+                        "xlarge-probability": 5,
+                        "small-effort": 3,
+                        "medium-effort": 10,
+                        "large-effort": 25,
+                        "xlarge-effort": 75,
+                    }
+                }
+            }
+        }
     }
 }

@@ -1,6 +1,6 @@
 function Configuration(externalConfig) {
     this.data = {
-        version: 4,
+        version: 5,
         maxTasksOnOnePerson: 2,
         maxPeopleOnOneTask: 2,
         warmupTime: 1,
@@ -200,13 +200,18 @@ function Configuration(externalConfig) {
             });
             externalConfig.team = newTeam;
             externalConfig.version = 4;
-        }
+        },
+        4: function (externalConfig) {
+            externalConfig.warmupTime = 0;
+            externalConfig.version = 5;
+        }.bind(this),
     };
     this.loadExternalConfig = function (externalConfig) {
         if (!externalConfig || Object.keys(externalConfig).length == 0) return;
         var version = externalConfig.version;
         if (!version) version = 1;
-        while (version != 4) {
+        var versions = Object.keys(this.loaders).sort();
+        while (version != parseInt(versions[versions.length - 1])) {
             this.loaders[version](externalConfig);
             version = externalConfig.version;
         }
