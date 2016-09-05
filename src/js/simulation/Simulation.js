@@ -65,7 +65,7 @@ function Simulation(hookSelector, externalConfig) {
             if (includeExisting) tasks = tasks - this.board.getCurrentWip();
             if (this.time / (60 * 8) % length == 0) {
                 for (var i = 0; i < tasks; i++) {
-                    this.board.addTask(createTaskFunction(this.taskCounter++, this.time));
+                    this.board.addTask(createTaskFunction());
                 }
             }
         }.bind(this),
@@ -73,7 +73,7 @@ function Simulation(hookSelector, externalConfig) {
             var limit = this.board.columns[0].limit();
             if (limit == Number.POSITIVE_INFINITY) limit = 1;
             for (var i = this.board.columns[0].tasks.length; i < limit; i++) {
-                this.board.addTask(createTaskFunction(this.taskCounter++, this.time));
+                this.board.addTask(createTaskFunction());
             }
         }.bind(this),
         "constant-push": function (createTaskFunction) {
@@ -94,7 +94,7 @@ function Simulation(hookSelector, externalConfig) {
                     noOfTasksToSpawn += spawnTask ? 1 : 0;
                 }
                 for (var i = 0; i < noOfTasksToSpawn; i++) {
-                    this.board.addTask(createTaskFunction(this.taskCounter++, this.time));
+                    this.board.addTask(createTaskFunction());
                 }
             }
 
@@ -108,7 +108,7 @@ function Simulation(hookSelector, externalConfig) {
                 batchSize = Math.max(demand / ticksPerDay, batchSize);
                 var noOfTasksToSpawn = Math.max(0, Math.round(normal_random(batchSize, batchSize / 3, true)));
                 for (var i = 0; i < noOfTasksToSpawn; i++) {
-                    this.board.addTask(createTaskFunction(this.taskCounter++, this.time));
+                    this.board.addTask(createTaskFunction());
                 }
             }
         }.bind(this),
@@ -122,7 +122,7 @@ function Simulation(hookSelector, externalConfig) {
             activeStates.forEach(function (element) {
                 taskConfig[element] = conf[element] * 60;
             });
-            return new Task(id, time, taskConfig);
+            return this.createTask(taskConfig);
         }.bind(this),
 
         "normal": function (id, time) {
@@ -132,7 +132,7 @@ function Simulation(hookSelector, externalConfig) {
             activeStates.forEach(function (element) {
                 taskConfig[element] = normal_random(conf[element], conf[element + "-variation"]) * 60;
             });
-            return new Task(id, time, taskConfig);
+            return this.createTask(taskConfig);
         }.bind(this),
 
         "tshirt": function (id, time) {
@@ -158,9 +158,14 @@ function Simulation(hookSelector, externalConfig) {
                 var effort = 60 * totalSize * percentage / sum;
                 taskConfig[element] = normal_random(effort, effort / 2);
             });
-            return new Task(id, time, taskConfig);
+            return this.createTask(taskConfig);
         }.bind(this),
     };
+
+    this.createTask = function(taskConfig) {
+        var warmupTime = this.configuration.get("warmupTime") * 60;
+        return new Task(this.taskCounter++, this.time, taskConfig, normal_random(warmupTime, warmupTime/2, false));
+    }
 
     this.prioritisationStrategies = {
         fifo: function (tasksList) {
