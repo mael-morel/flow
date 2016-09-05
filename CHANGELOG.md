@@ -1,3 +1,10 @@
+## 0.4.0 (2016-09-05)
+
+Features:
+
+  - warmup time (or transaction cost for each task)
+  - restructured configuration window
+
 ## 0.3.2 (2016-08-31)
 
 Features:
