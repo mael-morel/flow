@@ -1,3 +1,13 @@
+## 0.4.1 (2016-09-05)
+
+Features:
+
+  - change name of touch time metric to flow efficiency
+
+Bugfixes:
+
+  - fixed problem when loading config from url with current version
+
 ## 0.4.0 (2016-09-05)
 
 Features:
