@@ -211,7 +211,7 @@ function Configuration(externalConfig) {
         var version = externalConfig.version;
         if (!version) version = 1;
         var versions = Object.keys(this.loaders).sort();
-        while (version != parseInt(versions[versions.length - 1])) {
+        while (version <= parseInt(versions[versions.length - 1])) {
             this.loaders[version](externalConfig);
             version = externalConfig.version;
         }
