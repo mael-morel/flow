@@ -1,3 +1,9 @@
+## 0.5 (2016-09-06)
+
+Features:
+
+  - added value configuration to GUI
+
 ## 0.4.1 (2016-09-05)
 
 Features:
