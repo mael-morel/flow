@@ -211,6 +211,16 @@ function Configuration(externalConfig) {
             externalConfig.warmupTime = 0;
             externalConfig.version = 5;
         }.bind(this),
+        5: function (externalConfig) {
+            var value = {
+                mean: 0,
+                variation: 1000,
+                start: 0,
+                duration: 10,
+            };
+            externalConfig.value = value;
+            externalConfig.version = 6;
+        }
     };
     this.loadExternalConfig = function (externalConfig) {
         if (!externalConfig || Object.keys(externalConfig).length == 0) return;
