@@ -1,3 +1,9 @@
+## 0.5.1 (2016-09-07)
+
+Features:
+
+  - value configuration explained differently with additional diagram
+
 ## 0.5 (2016-09-06)
 
 Features:
