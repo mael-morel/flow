@@ -160,24 +160,30 @@
                         </div>
                     </div>
                     <div>
-                        <table class="settings-table">
-                            <tr>
-                                <td>Mean:</td>
-                                <td><input type="text" data-model="value.mean"/>$/day</td>
-                            </tr>
-                            <tr>
-                                <td>Variation:</td>
-                                <td><input type="text" data-model="value.variation"/></td>
-                            </tr>
-                            <tr>
-                                <td>Capitalisation start (from task creation):</td>
-                                <td><input type="text" data-model="value.start"/>days</td>
-                            </tr>
-                            <tr>
-                                <td>Capitalisation duration:</td>
-                                <td><input type="text" data-model="value.duration"/>days</td>
-                            </tr>
-                        </table>
+                        <div class="value-settings">
+                            <div>
+                                <table class="settings-table">
+                                    <tr>
+                                        <td>Value per day (mean):</td>
+                                        <td><input type="text" data-model="value.mean"/>$/day</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Value per day (variation):</td>
+                                        <td><input type="text" data-model="value.variation"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Capitalisation start after (from task creation):</td>
+                                        <td><input type="text" data-model="value.start"/>days</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Capitalisation duration:</td>
+                                        <td><input type="text" data-model="value.duration"/>days</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div>
+                                <img src="value-diagram.svg" />
+                            </div></div>
                     </div>
                     <div>
                         <table class="settings-table">

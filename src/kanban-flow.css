@@ -240,6 +240,19 @@
     vertical-align: top;
 }
 
+.value-settings {
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+}
+
+.value-settings > div {
+    flex: 1;
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    vertical-align: middle;
+}
+
 .simulation-settings-team h4 {
     text-align: center;
 }
