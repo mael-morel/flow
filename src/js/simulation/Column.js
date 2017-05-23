@@ -10,7 +10,6 @@ function Column(definition, simulation) {
     this.boardLabel = definition.label;
     this.index = -1;
     this.configuration = simulation.configuration;
-    this.reducesComplexity = definition.reducesComplexity;
 
     this.getNotAssignedTasks = function () {
         var result = [];

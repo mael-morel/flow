@@ -1,4 +1,4 @@
-function Task(taskId, time, size, warmupTime, value, technicalDebt) {
+function Task(taskId, time, size, warmupTime, value) {
     this.id = "Task" + taskId;
     this.label = "#" + taskId;
     this.created = time;
@@ -13,8 +13,6 @@ function Task(taskId, time, size, warmupTime, value, technicalDebt) {
     this.lastTouchedTime = -1;
     this.warmupTime = warmupTime;
     this.peopleWarmingUp = {};
-    this.technicalDebt = technicalDebt;
-    this.complexityIncreasedBy = 0;
 
     this.finished = function (column) {
         if (!column) {
@@ -53,18 +51,9 @@ function Task(taskId, time, size, warmupTime, value, technicalDebt) {
             warmingCount = this.warmupTime;
         }
         if (warmingCount > 0) {
-            this.peopleWarmingUp[person.id] = warmingCount - amount;
+            this.peopleWarmingUp[person.id] = warmingCount -= amount;
         } else {
-            var decreasedAmount = amount * this.technicalDebt.productivityRatio();
-            this.size[this.column.name] -= decreasedAmount;
-            if (this.column.reducesComplexity) {
-                var reduceComplexityBy = Math.min(decreasedAmount, this.complexityIncreasedBy);
-                this.technicalDebt.decrease(reduceComplexityBy);
-                this.complexityIncreasedBy -= reduceComplexityBy;
-            } else {
-                this.technicalDebt.increase(decreasedAmount);
-                this.complexityIncreasedBy += decreasedAmount;
-            }
+            this.size[this.column.name] -= amount;
         }
     }
 

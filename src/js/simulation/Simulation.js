@@ -11,11 +11,9 @@ function Simulation(hookSelector, externalConfig) {
     this.board;
     this.stats;
     this.team;
-    this.technicalDebt;
 
     this.initBasics = function () {
         this.configuration.clearListeners();
-        this.technicalDebt = new TechnicalDebt();
         this.time = 0;
         this.taskCounter = 1;
         this.team = new Team(this.configuration);
@@ -171,7 +169,7 @@ function Simulation(hookSelector, externalConfig) {
         var start = this.time + this.configuration.get("value.start") * 8 * 60;
         var durationInDays = this.configuration.get("value.duration");
         var value = new Value(start, durationInDays, normal_random(valueMean, valueVariation, false));
-        return new Task(this.taskCounter++, this.time, taskConfig, normal_random(warmupTime, warmupTime/2, false), value, this.technicalDebt);
+        return new Task(this.taskCounter++, this.time, taskConfig, normal_random(warmupTime, warmupTime/2, false), value);
     }
 
     this.prioritisationStrategies = {
