@@ -1,3 +1,9 @@
+## 0.5.2 (2017-05-23)
+
+Features:
+
+  - upgraded CanvasJS to 1.9.8 - labels don't disappear from diagrams after some time now
+
 ## 0.5.1 (2016-09-07)
 
 Features:
