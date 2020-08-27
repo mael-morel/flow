@@ -1,6 +1,7 @@
 function Controls(simulation, gui) {
     this.simulation = simulation;
     this.gui = gui;
+    this.showAllBoard = false;
 
     this.adjustTempo = function (sliderValue) {
         this.simulation.hourLengthInSeconds = 100 / sliderValue;
@@ -57,5 +58,14 @@ function Controls(simulation, gui) {
     }.bind(this));
     $$(".play").click(function () {
         this.gui.play();
+    }.bind(this));
+    $$(".show").click(function () {
+        if (this.showAllBoard) {
+            $(".board-wrapper").css("max-height", 300);
+            this.showAllBoard = false;
+        } else {
+            $(".board-wrapper").css("max-height", 800);
+            this.showAllBoard = true;
+        }
     }.bind(this));
 }

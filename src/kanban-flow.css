@@ -301,7 +301,7 @@
 .board-wrapper {
     overflow-y: hidden;
     overflow-x: hidden;
-    max-height: 210pt;
+    max-height: 300pt;
     border-width: 0px;
 }
 
