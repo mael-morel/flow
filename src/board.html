@@ -60,7 +60,7 @@
                             <div class="backlog-settings-temporal">
                                 <table class="settings-table">
                                     <tr>
-                                        <td>Task creation strategy</td>
+                                        <td>Stratégie de création des tâches</td>
                                         <td><select data-model="tasks.arrivalStrategy.current">
                                             <option value="up-to-limit">If Limit Allows</option>
                                             <option value="constant-push">Constant Push</option>
@@ -69,21 +69,21 @@
                                         </select></td>
                                     </tr>
                                     <tr data-for-option="constant-push">
-                                        <td>Constant demand level:</td>
+                                        <td>Niveau de demandes constant:</td>
                                         <td><input type="text"
                                                    data-model="tasks.arrivalStrategy.configs.constant-push.demand"/>
                                             items/day
                                         </td>
                                     </tr>
                                     <tr data-for-option="random-push">
-                                        <td>Variable demand level (around):</td>
+                                        <td>Niveau de demande variable (autour de) :</td>
                                         <td><input type="text"
                                                    data-model="tasks.arrivalStrategy.configs.random-push.demand"/>
                                             items/day
                                         </td>
                                     </tr>
                                     <tr data-for-option="random-push">
-                                        <td>Expected batch size (around):</td>
+                                        <td>Taille des paquets attendu (autour de) :</td>
                                         <td><input type="text"
                                                    data-model="tasks.arrivalStrategy.configs.random-push.batch-size"/>
                                             items
